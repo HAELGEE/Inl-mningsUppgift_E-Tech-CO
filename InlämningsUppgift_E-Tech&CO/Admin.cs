@@ -15,7 +15,7 @@ internal class Admin
         {
             Console.Clear();
 
-            Console.Write("Please type the password: ");
+            Console.Write("Please type the correct password: ");
             string passwordCheck = Console.ReadLine()!;
 
             if (passwordCheck == "apa")
@@ -23,24 +23,35 @@ internal class Admin
                 bool adminRunning = true;
                 while (adminRunning)
                 {
-                    int input = 0;
+                    bool validInput = false;
+                    int userInput = 0;
                     do
                     {
                         Console.Clear();
 
                         Console.WriteLine("What do you want to do?");
-                        Console.WriteLine($"1. Add Item to shop");
-                        Console.WriteLine($"2. Remove Item in shop");
-                        Console.WriteLine($"3. Add or Remove stock for item");
-                        Console.WriteLine($"4. Back");
-                        input = int.Parse(Console.ReadLine()!);
-                        if (input < 1 || input > 4)
+                        Console.WriteLine($"1.  Add Item to shop");
+                        Console.WriteLine($"2.  Remove Item in shop");
+                        Console.WriteLine($"3.  Increase stock for items");
+                        Console.WriteLine($"4.  Decrease stock for items");
+                        Console.WriteLine($"5.  Change price for item");
+                        Console.WriteLine($"6.  Change Category/subcategory");
+                        Console.WriteLine($"7.  Product info");
+                        Console.WriteLine($"8.  Provider");
+                        Console.WriteLine($"9.  Change customer information");
+                        Console.WriteLine($"10. Look Orderhistory");
+                        Console.WriteLine($"11. Back");
+                        string input = Console.ReadLine()!;
+
+                        if (int.TryParse(input, out userInput) && userInput >= 1 && userInput <= 11)
+                            validInput = true;
+                        else
                         {
-                            Console.WriteLine("Must be numbers from 1-4 ");
+                            Console.WriteLine("Must be numbers from 1-11 ");
                             Thread.Sleep(1000);
                         }
 
-                    } while (input < 1 || input > 4);
+                    } while (!validInput);
 
                     Console.Clear();
                     // lägga ut en foreach-loop där man skriver ut alla items så man ser Vad man har så man vet Vad man kan uppdatera eller lägga till
@@ -58,7 +69,7 @@ internal class Admin
                         }
                     }
                     Console.WriteLine();
-                    switch (input)
+                    switch (userInput)
                     {
                         case 1:                            
 
@@ -95,8 +106,36 @@ internal class Admin
 
                             db.SaveChanges();
                             break;
-
                         case 4:
+
+                            db.SaveChanges();
+                            break;
+                        case 5:
+
+                            db.SaveChanges();
+                            break;
+                        case 6:
+
+                            db.SaveChanges();
+                            break;
+                        case 7:
+
+                            db.SaveChanges();
+                            break;
+                        case 8:
+
+                            db.SaveChanges();
+                            break;
+                        case 9:
+
+                            db.SaveChanges();
+                            break;
+                        case 10:
+
+                            db.SaveChanges();
+                            break;
+
+                        case 11:
                             adminRunning = false;
                             break;
                     }

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ internal class RunningProgram
             using (var db = new MyDbContext())
             {
                 string loggedinName = "";
-                var menu = 0;
+                int menu = 0;
                 bool validInput = false;
                 do
                 {
@@ -151,31 +152,75 @@ internal class RunningProgram
 
                         if (customerLogedIn)
                         {
-                            Console.WriteLine("Top sellers!");
-                            Console.WriteLine("----------------------");
-                            foreach (var item in topSeller)
-                            {
-                                Console.WriteLine(item.Sold);
-                            }
-                            Console.WriteLine("----------------------");
-                            foreach (var cat in items)
-                            {
+                            //Console.WriteLine("Top sellers!");
+                            //Console.WriteLine("----------------------");
+                            //foreach (var item in topSeller)
+                            //{
+                            //    Console.WriteLine(item.Sold);
+                            //}
 
-                                Console.WriteLine($"Category: {cat.Key}");
-                                Console.WriteLine("----------------------");
-                                foreach (var item in cat)
+                            //Console.WriteLine("----------------------");
+
+                            int categoryNum = 0;
+                            int validNum = 0;
+
+                            string categoryName = "";
+                            var itemsSubcategory = db.Shop  .Where(cn => cn.Category == categoryName)
+                                                            .GroupBy(sc => sc.SubCategory);
+                            while (validNum <= 0 || validNum > 3)
+                            {
+                                foreach (var cat in items)
                                 {
-                                    Console.WriteLine($"   ID: {item.Id} \t {item.Name}");
+                                    categoryNum++;
+                                    Console.WriteLine($"{categoryNum}. Category: {cat.Key}");
+                                    Console.WriteLine("----------------------");
                                 }
+                                Console.Write("Wich product do you want to enter?: ");
+
+                                string numberCheck = Console.ReadLine()!;
+                                if (!int.TryParse(numberCheck, out validNum) || validNum < 1 || validNum > 3)
+                                    Console.WriteLine($"Must be a number from {categoryNum / categoryNum} to {categoryNum}");
+                                else
+                                {
+                                    if (validNum == 1)
+                                        categoryName = "Computer";
+                                    else if (validNum == 2)
+                                        categoryName = "Cell phone";
+                                    else if (validNum == 3)
+                                        categoryName = "Screen";
+                                }
+                                categoryNum = 0; // En reset
                             }
 
-                            Console.Write("Wich product do you want to enter?: ");
 
+                            switch (validNum)
+                            {
+                                case 1:
+                                    Console.Clear();
+
+                                    foreach (var sub in itemsSubcategory)
+                                    {
+                                        categoryNum++;
+                                        Console.WriteLine($"{categoryNum}. Category: {sub.Key}\n----------------------\n");
+                                    }
+                                    
+                                    Console.ReadKey();
+                                    break;
+
+                                case 2:
+
+
+                                    break;
+
+
+                                case 3:
+
+
+                                    break;
+                            }
 
                             Console.ReadKey();
                         }
-
-
                         break;
 
                     case 5:
