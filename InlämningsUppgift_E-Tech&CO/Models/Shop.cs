@@ -18,5 +18,6 @@ internal class Shop
     public string? Name { get; set; }
     public int? Stock { get; set; }
     public int? Sold { get; set; }
+    public double? Price { get; set; }
     public string? ProductInformation { get; set; }
 }

@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 namespace InlämningsUppgift_E_Tech_CO;
 internal class RunningProgram
 {
+    static string categoryName = ""; // Sätter denna här så att jag kan komma åt den i mina metoder
+
     public static void RunProgram()
     {
         bool running = true;
@@ -150,77 +152,81 @@ internal class RunningProgram
                                 customerLogedIn = true;
                         }
 
-                        if (customerLogedIn)
+                        //if (customerLogedIn)
+                        //{
+                        //Console.WriteLine("Top sellers!");
+                        //Console.WriteLine("----------------------");
+                        //foreach (var item in topSeller)
+                        //{
+                        //    Console.WriteLine(item.Sold);
+                        //}
+
+                        //Console.WriteLine("----------------------");
+
+                        int categoryNum = 0;
+                        int validNum = 0;
+
+                        
+                        
+                        while (validNum <= 0 || validNum > 3)
                         {
-                            //Console.WriteLine("Top sellers!");
-                            //Console.WriteLine("----------------------");
-                            //foreach (var item in topSeller)
-                            //{
-                            //    Console.WriteLine(item.Sold);
-                            //}
-
-                            //Console.WriteLine("----------------------");
-
-                            int categoryNum = 0;
-                            int validNum = 0;
-
-                            string categoryName = "";
-                            var itemsSubcategory = db.Shop  .Where(cn => cn.Category == categoryName)
-                                                            .GroupBy(sc => sc.SubCategory);
-                            while (validNum <= 0 || validNum > 3)
+                            foreach (var cat in items)
                             {
-                                foreach (var cat in items)
-                                {
-                                    categoryNum++;
-                                    Console.WriteLine($"{categoryNum}. Category: {cat.Key}");
-                                    Console.WriteLine("----------------------");
-                                }
-                                Console.Write("Wich product do you want to enter?: ");
-
-                                string numberCheck = Console.ReadLine()!;
-                                if (!int.TryParse(numberCheck, out validNum) || validNum < 1 || validNum > 3)
-                                    Console.WriteLine($"Must be a number from {categoryNum / categoryNum} to {categoryNum}");
-                                else
-                                {
-                                    if (validNum == 1)
-                                        categoryName = "Computer";
-                                    else if (validNum == 2)
-                                        categoryName = "Cell phone";
-                                    else if (validNum == 3)
-                                        categoryName = "Screen";
-                                }
-                                categoryNum = 0; // En reset
+                                categoryNum++;
+                                Console.WriteLine($"{categoryNum}. Category: {cat.Key}");
+                                Console.WriteLine("----------------------");
                             }
+                            Console.Write("Wich product do you want to enter?: ");
 
-
-                            switch (validNum)
+                            string numberCheck = Console.ReadLine()!;
+                            if (!int.TryParse(numberCheck, out validNum) || validNum < 1 || validNum > 3)
+                                Console.WriteLine($"Must be a number from {categoryNum / categoryNum} to {categoryNum}");
+                            else
                             {
-                                case 1:
-                                    Console.Clear();
-
-                                    foreach (var sub in itemsSubcategory)
-                                    {
-                                        categoryNum++;
-                                        Console.WriteLine($"{categoryNum}. Category: {sub.Key}\n----------------------\n");
-                                    }
-                                    
-                                    Console.ReadKey();
-                                    break;
-
-                                case 2:
-
-
-                                    break;
-
-
-                                case 3:
-
-
-                                    break;
+                                if (validNum == 1)
+                                    categoryName = "Computer";
+                                else if (validNum == 2)
+                                    categoryName = "Phone";
+                                else if (validNum == 3)
+                                    categoryName = "Screen";
                             }
-
-                            Console.ReadKey();
+                            categoryNum = 0; // En reset
                         }
+
+
+                        switch (validNum)
+                        {
+                            case 1:
+                                Console.Clear();
+                                GettingProducts();
+
+
+
+                                Console.ReadKey();
+                                break;
+
+                            case 2:
+                                Console.Clear();
+                                GettingProducts();
+
+
+
+                                Console.ReadKey();
+                                break;
+
+
+                            case 3:
+                                Console.Clear();
+                                GettingProducts();
+
+
+
+                                Console.ReadKey();
+                                break;
+                        }
+
+                        Console.ReadKey();
+                        //}
                         break;
 
                     case 5:
@@ -260,6 +266,43 @@ internal class RunningProgram
         Console.WriteLine();
         Console.WriteLine();
         Console.ResetColor();
+    }
+
+    static void GettingProducts()
+    {
+        using (var db = new MyDbContext())
+        {
+            var itemsSubcategory = db.Shop.Where(cn => cn.Category == categoryName)
+                                                            .GroupBy(sc => sc.SubCategory);
+
+            foreach (var sub in itemsSubcategory)
+            {
+                Console.WriteLine($"Category: {sub.Key}\n----------------------");
+                foreach (var item in sub)
+                {
+                    Console.Write($"{item.Id}. Name: {item.Name} Total in stock: ");
+
+                    if (item.Stock > 0)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"{item.Stock}");
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"{item.Stock}");
+                    }
+                    Console.ResetColor();
+
+                    Console.Write($"Product info:");
+
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.WriteLine($" {item.ProductInformation} \n");
+                    Console.ResetColor();
+                }
+                Console.WriteLine("---------------------------");
+            }
+        }
     }
 
 }
