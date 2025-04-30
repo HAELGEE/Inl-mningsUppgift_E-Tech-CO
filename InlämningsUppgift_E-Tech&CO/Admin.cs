@@ -52,8 +52,7 @@ internal class Admin
 
                     } while (!validInput);
 
-                    Console.Clear();
-                    // lägga ut en foreach-loop där man skriver ut alla items så man ser Vad man har så man vet Vad man kan uppdatera eller lägga till
+                    Console.Clear();                    
 
                     var categorySearch = db.Shop.GroupBy(c => new { c.Category, c.SubCategory });
 
@@ -137,10 +136,8 @@ internal class Admin
                                             else
                                                 Console.WriteLine("You cant have negative in your balance");
                                         }
-
                                     }
                                 }
-
                             }
 
                             db.SaveChanges();
