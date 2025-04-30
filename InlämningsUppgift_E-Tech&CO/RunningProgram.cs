@@ -30,13 +30,13 @@ internal class RunningProgram
                     WelcomeMessage();       // Skrivet ut ett välkomstmeddelande
                     CompanyName();          // Skriver ut Företagsnamnet
 
-                    Console.WriteLine($"What do you wanna do?");
-                    Console.WriteLine("1. Login");
-                    Console.WriteLine("2. Register");
-                    Console.WriteLine("3. Profile");
-                    Console.WriteLine("4. Enter Shop");
-                    Console.WriteLine("5. Admin");
-                    Console.WriteLine("6. Quit\n");
+                    Console.WriteLine($"What do you want to do?");
+                    Console.WriteLine($"1. Login");
+                    Console.WriteLine($"2. Register");
+                    Console.WriteLine($"3. Profile");
+                    Console.WriteLine($"4. Enter Shop");
+                    Console.WriteLine($"5. Admin");
+                    Console.WriteLine($"6. Quit\n");
                     foreach (var customer in db.Customer)
                     {
                         if (customer.LoggedIn)
