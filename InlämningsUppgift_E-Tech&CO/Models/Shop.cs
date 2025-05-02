@@ -20,4 +20,7 @@ internal class Shop
     public int? Sold { get; set; }
     public double? Price { get; set; }
     public string? ProductInformation { get; set; }
+    public virtual ICollection<OrderHistory> OrderHistory { get; set; } = new List<OrderHistory>();
+    public virtual ICollection<Order> Order { get; set; } = new List<Order>();
+
 }

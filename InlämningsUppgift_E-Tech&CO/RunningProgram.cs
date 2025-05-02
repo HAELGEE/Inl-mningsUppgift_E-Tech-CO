@@ -30,6 +30,12 @@ internal class RunningProgram
                     WelcomeMessage();       // Skrivet ut ett välkomstmeddelande
                     CompanyName();          // Skriver ut Företagsnamnet
 
+                    foreach (var customer in db.Customer)
+                    {
+                        if (customer.LoggedIn)
+                            loggedinName = customer.Name;
+                    }
+
                     Console.WriteLine($"What do you want to do?");
                     Console.WriteLine($"1. Login");
                     Console.WriteLine($"2. Register");
@@ -37,11 +43,6 @@ internal class RunningProgram
                     Console.WriteLine($"4. Enter Shop");
                     Console.WriteLine($"5. Admin");
                     Console.WriteLine($"6. Quit\n");
-                    foreach (var customer in db.Customer)
-                    {
-                        if (customer.LoggedIn)
-                            loggedinName = customer.Name;
-                    }
                     if (loggedinName != "")
                         Console.WriteLine($"You are currently logged in as {loggedinName}");
                     else
@@ -92,30 +93,32 @@ internal class RunningProgram
                         Console.Clear();
 
                         Console.Write("Please enter ur Firstname: ");
-                        string newfirstname = Console.ReadLine()!;
+                        string newFirstName = Console.ReadLine()!;
                         Console.Write("Please enter ur Lastname: ");
-                        string newlastname = Console.ReadLine()!;
-                        int newage = 0;
-                        do
+                        string newLastname = Console.ReadLine()!;
+
+                        int newAge = 0;
+                        while (newAge <= 0)
                         {
                             Console.Write("Please enter ur Age: ");
-                            newage = int.Parse(Console.ReadLine()!);
-                            if (newage < 0 || newage > 110)
+                            string inputCheck = Console.ReadLine()!;
+
+                            if (int.TryParse(inputCheck, out newAge) && !string.IsNullOrWhiteSpace(inputCheck) && newAge > 0)
                                 Console.WriteLine("Måste vara siffror");
-                        } while (newage < 0 || newage > 110);     // Sätter att man måste vara äldre än 0 år och yngre än 110 annars loopar den om
+                        }
 
                         Console.Write("Please enter UserName: ");
-                        string newuserName = Console.ReadLine()!;
+                        string newUserName = Console.ReadLine()!;
                         Console.Write("Please enter ur Password: ");
-                        string newpassword = Console.ReadLine()!;
+                        string newPassword = Console.ReadLine()!;
 
                         db.Customer.Add(new Customer
                         (
-                            newfirstname,
-                            newlastname,
-                            newage,
-                            newuserName,
-                            newpassword
+                            newFirstName,
+                            newLastname,
+                            newAge,
+                            newUserName,
+                            newPassword
                         ));
 
                         db.SaveChanges();
@@ -137,7 +140,6 @@ internal class RunningProgram
                     case 4:
                         Console.Clear();
 
-                        // kontrollerar alla användare om vilken som är inloggad annars kan man inte gå in i affären
                         var topSeller = db.Shop
                             .OrderByDescending(x => x.Sold)
                             .Take(3);
@@ -145,6 +147,7 @@ internal class RunningProgram
                         var items = db.Shop.GroupBy(x => x.Category);
 
 
+                        // kontrollerar alla användare om vilken som är inloggad annars kan man inte gå in i affären
                         bool customerLogedIn = false;
                         foreach (var customer in db.Customer)
                         {
@@ -163,70 +166,56 @@ internal class RunningProgram
 
                         //Console.WriteLine("----------------------");
 
-                        int categoryNum = 0;
-                        int validNum = 0;
 
-                        
-                        
-                        while (validNum <= 0 || validNum > 3)
+                        bool shopMore = true;
+                        while (shopMore)
                         {
-                            foreach (var cat in items)
+                            int validNum = 0;
+                            while (validNum <= 0 || validNum > 3)
                             {
-                                categoryNum++;
-                                Console.WriteLine($"{categoryNum}. Category: {cat.Key}");
-                                Console.WriteLine("----------------------");
+                                int categoryNum = 0;
+                                Console.Clear();
+                                foreach (var cat in items)
+                                {
+                                    categoryNum++;
+                                    Console.WriteLine($"{categoryNum}. Category: {cat.Key}");
+                                    Console.WriteLine("----------------------");
+                                }
+
+                                Console.WriteLine("Press B to back");
+                                Console.Write("Wich product do you want to enter?: ");
+                                string numberCheck = Console.ReadLine()!.ToLower();
+
+                                if (numberCheck == "b")
+                                {
+                                    shopMore = false;
+                                    break;
+                                }
+
+                                if (!int.TryParse(numberCheck, out validNum) || validNum < 1 || validNum > 3)
+                                {
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine($"Must be a number from {categoryNum / categoryNum} to {categoryNum}");
+                                    Console.ResetColor();
+                                    Thread.Sleep(1500);
+                                }
+                                else
+                                {
+                                    if (validNum == 1)
+                                        categoryName = "Computer";
+                                    else if (validNum == 2)
+                                        categoryName = "Phone";
+                                    else if (validNum == 3)
+                                        categoryName = "Screen";
+                                }
                             }
-                            Console.Write("Wich product do you want to enter?: ");
 
-                            string numberCheck = Console.ReadLine()!;
-                            if (!int.TryParse(numberCheck, out validNum) || validNum < 1 || validNum > 3)
-                                Console.WriteLine($"Must be a number from {categoryNum / categoryNum} to {categoryNum}");
-                            else
-                            {
-                                if (validNum == 1)
-                                    categoryName = "Computer";
-                                else if (validNum == 2)
-                                    categoryName = "Phone";
-                                else if (validNum == 3)
-                                    categoryName = "Screen";
-                            }
-                            categoryNum = 0; // En reset
+                            Console.Clear();
+                            GettingProducts();
+
+                            
+                            //}
                         }
-
-
-                        switch (validNum)
-                        {
-                            case 1:
-                                Console.Clear();
-                                GettingProducts();
-
-
-
-                                Console.ReadKey();
-                                break;
-
-                            case 2:
-                                Console.Clear();
-                                GettingProducts();
-
-
-
-                                Console.ReadKey();
-                                break;
-
-
-                            case 3:
-                                Console.Clear();
-                                GettingProducts();
-
-
-
-                                Console.ReadKey();
-                                break;
-                        }
-
-                        Console.ReadKey();
-                        //}
                         break;
 
                     case 5:
@@ -273,34 +262,66 @@ internal class RunningProgram
         using (var db = new MyDbContext())
         {
             var itemsSubcategory = db.Shop.Where(cn => cn.Category == categoryName)
-                                                            .GroupBy(sc => sc.SubCategory);
+                                          .GroupBy(sc => sc.SubCategory);
 
-            foreach (var sub in itemsSubcategory)
+            int addToOrder = 0;
+            while (true)
             {
-                Console.WriteLine($"Category: {sub.Key}\n----------------------");
-                foreach (var item in sub)
+                Console.Clear();
+
+                foreach (var sub in itemsSubcategory)
                 {
-                    Console.Write($"{item.Id}. Name: {item.Name} Total in stock: ");
-
-                    if (item.Stock > 0)
+                    Console.WriteLine($"Category: {sub.Key}\n----------------------");
+                    foreach (var item in sub)
                     {
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine($"{item.Stock}");
-                    }
-                    else
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine($"{item.Stock}");
-                    }
-                    Console.ResetColor();
+                        Console.Write($"{item.Id}. Name: {item.Name} Total in stock: ");
 
-                    Console.Write($"Product info:");
+                        if (item.Stock > 0)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine($"{item.Stock}");
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine($"{item.Stock}");
+                        }
+                        Console.ResetColor();
 
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine($" {item.ProductInformation} \n");
-                    Console.ResetColor();
+                        Console.Write($"Product info:");
+
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.WriteLine($" {item.ProductInformation} \n");
+                        Console.ResetColor();
+                    }
+                    Console.WriteLine("---------------------------");
                 }
-                Console.WriteLine("---------------------------");
+
+
+                Console.Write("\nWich Product do you want to buy?: ");
+                Console.WriteLine("\nPress B to back");
+
+                GUI.DrawWindowForShop("Shopping Cart", 50, 26, new List<string>() { 
+                    $"1. Firstname: ",
+                    $"2. Lastname: ",
+                    $"3. Age: ",
+                    $"4. Username: ",
+                    $"5. Total Price: ",
+                    $"Press C to checkout"
+                });
+                Console.SetCursorPosition(0, 31);
+                string orderAdd = Console.ReadLine()!.ToLower();
+
+                if(int.TryParse(orderAdd, out addToOrder) && !string.IsNullOrWhiteSpace(orderAdd))
+                {
+
+                }
+
+                
+
+                if (orderAdd == "b")
+                    break;
+
             }
         }
     }
