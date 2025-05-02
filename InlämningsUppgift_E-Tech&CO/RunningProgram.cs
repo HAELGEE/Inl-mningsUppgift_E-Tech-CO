@@ -147,7 +147,7 @@ internal class RunningProgram
                         var items = db.Shop.GroupBy(x => x.Category);
 
 
-                        // kontrollerar alla användare om vilken som är inloggad annars kan man inte gå in i affären
+                        
                         bool customerLogedIn = false;
                         foreach (var customer in db.Customer)
                         {
@@ -214,8 +214,9 @@ internal class RunningProgram
                             GettingProducts();
 
                             
-                            //}
                         }
+                            //}
+                        db.SaveChanges();
                         break;
 
                     case 5:
@@ -323,6 +324,7 @@ internal class RunningProgram
                     break;
 
             }
+            db.SaveChanges();
         }
     }
 
