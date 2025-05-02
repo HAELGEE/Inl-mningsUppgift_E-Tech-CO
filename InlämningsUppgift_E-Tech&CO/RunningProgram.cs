@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Numerics;
@@ -33,18 +34,27 @@ internal class RunningProgram
                     foreach (var customer in db.Customer)
                     {
                         if (customer.LoggedIn)
-                            loggedinName = customer.Name;
+                            loggedinName = customer.Name!;
+
                     }
 
                     Console.WriteLine($"What do you want to do?");
-                    Console.WriteLine($"1. Login");
+                    if (loggedinName == "")
+                        Console.WriteLine($"1. Login");
+                    else
+                        Console.WriteLine($"1. Logout");
                     Console.WriteLine($"2. Register");
                     Console.WriteLine($"3. Profile");
                     Console.WriteLine($"4. Enter Shop");
                     Console.WriteLine($"5. Admin");
                     Console.WriteLine($"6. Quit\n");
                     if (loggedinName != "")
-                        Console.WriteLine($"You are currently logged in as {loggedinName}");
+                    {
+                        Console.Write($"You are currently logged in as ");
+                        Console.ForegroundColor = ConsoleColor.DarkCyan;
+                        Console.WriteLine(loggedinName);
+                        Console.ResetColor();
+                    }
                     else
                         Console.WriteLine("You are currently not logged in");
 
@@ -54,40 +64,54 @@ internal class RunningProgram
 
                 } while (!validInput);
 
+                db.SaveChanges();
 
                 switch (menu)
                 {
+
                     case 1:
-                        Console.Clear();
-
-                        Console.Write("Please enter UserName: ");
-                        string userName = Console.ReadLine()!;
-
-                        foreach (var customer in db.Customer)
+                        if (loggedinName == "")
                         {
-                            if (customer.UserName == userName)
-                            {
-                                Console.Write("Please enter Password: ");
-                                string loginPassword = Console.ReadLine()!;
+                            Console.Clear();
 
-                                if (customer.Password == loginPassword)
+                            Console.Write("Please enter Username: ");
+                            string userName = Console.ReadLine()!;
+
+                            foreach (var customer in db.Customer)
+                            {
+                                if (customer.UserName == userName)
                                 {
-                                    Console.WriteLine("You are now logged in!");
-                                    customer.LoggedIn = true;
-                                    customer.Logins = customer.Logins + 1;
-                                    Thread.Sleep(1500);
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Incorret password!");
-                                    Thread.Sleep(1500);
+                                    Console.Write("Please enter Password: ");
+                                    string loginPassword = Console.ReadLine()!;
+
+                                    if (customer.Password == loginPassword)
+                                    {
+                                        Console.WriteLine("You are now logged in!");
+                                        customer.LoggedIn = true;
+                                        customer.Logins = customer.Logins + 1;
+                                        Thread.Sleep(1500);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Incorret password!");
+                                        Thread.Sleep(1500);
+                                    }
                                 }
                             }
-                        }
-                        ;
+                            ;
 
-                        db.SaveChanges();
-                        break;
+                            db.SaveChanges();
+                            break;
+                        }
+                        else
+                        {
+                            foreach (var customer in db.Customer)
+                            {
+                                customer.LoggedIn = false;
+                            }
+                            db.SaveChanges();
+                            break;
+                        }
 
                     case 2:
                         Console.Clear();
@@ -131,10 +155,38 @@ internal class RunningProgram
                         {
                             if (customer.LoggedIn)
                             {
-                                GUI.DrawWindow("Profile", 5, 10, new List<string>() { $"1. Firstname: {customer.Name}", $"2. Lastname: {customer.LastName}", $"3. Age: {customer.Age}", $"4. Username: {customer.UserName}", $"5. Total orders: {customer.OrderHistory.Count()}" });
+                                while (true)
+                                {
+                                    GUI.DrawWindow("Profile", 5, 10, new List<string>() {
+                                                $"1. Firstname: {customer.Name}",
+                                                $"2. Lastname: {customer.LastName}",
+                                                $"3. Age: {customer.Age}",
+                                                $"4. Username: {customer.UserName}",
+                                                $"5. Total orders: {customer.OrderHistory.Count()}"
+                                            });
+
+                                    GUI.DrawWindow("Update Profile", 38, 10, new List<string>() {
+                                                $"1. To change Password",
+                                                $"2. To see OrderHistory",
+                                                $"3. To see total money spent",
+                                                $"B to back"
+                                            });
+                                    int updateNumber = 0;
+
+                                    Console.SetCursorPosition(5, 18);
+                                    string profileCheck = Console.ReadLine()!.ToLower();
+
+                                    if (profileCheck == "b")
+                                        break;
+
+                                    if (int.TryParse(profileCheck, out updateNumber) && !string.IsNullOrWhiteSpace(profileCheck))
+                                    {
+
+                                    }
+                                }
+                                break;
                             }
                         }
-                        Console.ReadKey();
                         break;
 
                     case 4:
@@ -146,26 +198,12 @@ internal class RunningProgram
 
                         var items = db.Shop.GroupBy(x => x.Category);
 
-
-                        
                         bool customerLogedIn = false;
                         foreach (var customer in db.Customer)
                         {
                             if (customer.LoggedIn)
                                 customerLogedIn = true;
                         }
-
-                        //if (customerLogedIn)
-                        //{
-                        //Console.WriteLine("Top sellers!");
-                        //Console.WriteLine("----------------------");
-                        //foreach (var item in topSeller)
-                        //{
-                        //    Console.WriteLine(item.Sold);
-                        //}
-
-                        //Console.WriteLine("----------------------");
-
 
                         bool shopMore = true;
                         while (shopMore)
@@ -184,6 +222,19 @@ internal class RunningProgram
 
                                 Console.WriteLine("Press B to back");
                                 Console.Write("Wich product do you want to enter?: ");
+
+                                if (customerLogedIn)
+                                {
+                                    GUI.DrawWindow("Shopping Cart", 50, 10, new List<string>() {
+                                                $"1. Firstname: ",
+                                                $"2. Lastname: ",
+                                                $"3. Age: ",
+                                                $"4. Username: ",
+                                                $"5. Total Price: ",
+                                                $"Press C to checkout"
+                                            });
+                                }
+                                Console.SetCursorPosition(0, 9);
                                 string numberCheck = Console.ReadLine()!.ToLower();
 
                                 if (numberCheck == "b")
@@ -208,14 +259,16 @@ internal class RunningProgram
                                     else if (validNum == 3)
                                         categoryName = "Screen";
                                 }
+
                             }
 
                             Console.Clear();
-                            GettingProducts();
-
-                            
+                            if (shopMore)
+                            {
+                                GettingProducts();
+                            }
                         }
-                            //}
+                        //}
                         db.SaveChanges();
                         break;
 
@@ -246,7 +299,7 @@ internal class RunningProgram
     }
     static void CompanyName()
     {
-        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
         Console.WriteLine(@" ______   _______        _                 _____ ____   ");
         Console.WriteLine(@"|  ____| |__   __|      | |       ___     / ____/ __ \  ");
         Console.WriteLine(@"| |__ ______| | ___  ___| |__    ( _ )   | |   | |  | | ");
@@ -292,7 +345,11 @@ internal class RunningProgram
                         Console.Write($"Product info:");
 
                         Console.ForegroundColor = ConsoleColor.Blue;
-                        Console.WriteLine($" {item.ProductInformation} \n");
+                        Console.Write($" {item.ProductInformation} ");
+                        Console.ResetColor();
+                        Console.Write("Price: ");
+                        Console.ForegroundColor = ConsoleColor.Magenta;
+                        Console.WriteLine($"{item.Price:C}");
                         Console.ResetColor();
                     }
                     Console.WriteLine("---------------------------");
@@ -302,7 +359,7 @@ internal class RunningProgram
                 Console.Write("\nWich Product do you want to buy?: ");
                 Console.WriteLine("\nPress B to back");
 
-                GUI.DrawWindowForShop("Shopping Cart", 50, 26, new List<string>() { 
+                GUI.DrawWindow("Shopping Cart", 50, 26, new List<string>() {
                     $"1. Firstname: ",
                     $"2. Lastname: ",
                     $"3. Age: ",
@@ -313,12 +370,12 @@ internal class RunningProgram
                 Console.SetCursorPosition(0, 31);
                 string orderAdd = Console.ReadLine()!.ToLower();
 
-                if(int.TryParse(orderAdd, out addToOrder) && !string.IsNullOrWhiteSpace(orderAdd))
+                if (int.TryParse(orderAdd, out addToOrder) && !string.IsNullOrWhiteSpace(orderAdd))
                 {
 
                 }
 
-                
+
 
                 if (orderAdd == "b")
                     break;
