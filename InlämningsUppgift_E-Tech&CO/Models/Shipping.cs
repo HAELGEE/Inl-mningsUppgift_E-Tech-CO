@@ -14,8 +14,7 @@ internal class Shipping
     public int? PhoneNumber { get; set; }
     public int? OrderId { get; set; }
     public ICollection<Order>? Order { get; set; }
-    public int? OrderHistoryId { get; set; }
-    public virtual ICollection<OrderHistory>? OrderHistory { get; set; }
+    
 
 
 

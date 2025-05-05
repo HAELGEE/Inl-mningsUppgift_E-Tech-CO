@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InlämningsUppgift_E_Tech_CO.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20250502062130_stuff_added")]
-    partial class stuff_added
+    [Migration("20250502125927_first")]
+    partial class first
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -97,16 +97,16 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Property<int?>("CustomerId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Date")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PaymentChoice")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ShippingId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ShoppingCartId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TotalPrice")
+                    b.Property<int?>("TotalAmount")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -115,9 +115,7 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
 
                     b.HasIndex("ShippingId");
 
-                    b.HasIndex("ShoppingCartId");
-
-                    b.ToTable("Orders");
+                    b.ToTable("Order");
                 });
 
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.OrderHistory", b =>
@@ -131,14 +129,15 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Property<int?>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ShippingId")
+                    b.Property<string>("Date")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TotalAmount")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex("ShippingId");
 
                     b.ToTable("OrderHistories");
                 });
@@ -157,9 +156,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("OrderHistoryId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("OrderId")
                         .HasColumnType("int");
 
@@ -171,7 +167,7 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Shipping");
+                    b.ToTable("shipping");
                 });
 
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Shop", b =>
@@ -216,9 +212,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("TotalItems")
                         .HasColumnType("int");
 
@@ -260,6 +253,21 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.ToTable("OrderShop");
                 });
 
+            modelBuilder.Entity("OrderShoppingCart", b =>
+                {
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ShoppingCartId")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrderId", "ShoppingCartId");
+
+                    b.HasIndex("ShoppingCartId");
+
+                    b.ToTable("OrderShoppingCart");
+                });
+
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.CustomerSave", b =>
                 {
                     b.HasOne("InlämningsUppgift_E_Tech_CO.Models.Customer", "Customer")
@@ -279,17 +287,9 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                         .WithMany("Order")
                         .HasForeignKey("ShippingId");
 
-                    b.HasOne("InlämningsUppgift_E_Tech_CO.Models.ShoppingCart", "ShoppingCarts")
-                        .WithMany("Order")
-                        .HasForeignKey("ShoppingCartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Customer");
 
                     b.Navigation("Shipping");
-
-                    b.Navigation("ShoppingCarts");
                 });
 
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.OrderHistory", b =>
@@ -298,13 +298,7 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                         .WithMany("OrderHistory")
                         .HasForeignKey("CustomerId");
 
-                    b.HasOne("InlämningsUppgift_E_Tech_CO.Models.Shipping", "Shipping")
-                        .WithMany("OrderHistory")
-                        .HasForeignKey("ShippingId");
-
                     b.Navigation("Customer");
-
-                    b.Navigation("Shipping");
                 });
 
             modelBuilder.Entity("OrderHistoryShop", b =>
@@ -337,6 +331,21 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("OrderShoppingCart", b =>
+                {
+                    b.HasOne("InlämningsUppgift_E_Tech_CO.Models.Order", null)
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InlämningsUppgift_E_Tech_CO.Models.ShoppingCart", null)
+                        .WithMany()
+                        .HasForeignKey("ShoppingCartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Customer", b =>
                 {
                     b.Navigation("Order");
@@ -347,13 +356,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 });
 
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Shipping", b =>
-                {
-                    b.Navigation("Order");
-
-                    b.Navigation("OrderHistory");
-                });
-
-            modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.ShoppingCart", b =>
                 {
                     b.Navigation("Order");
                 });

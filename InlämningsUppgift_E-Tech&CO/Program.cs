@@ -23,5 +23,11 @@ namespace InlämningsUppgift_E_Tech_CO
                 db.SaveChanges();
             }
         }
+
+        public static string GetDate()
+        {
+            DateTime date = DateTime.Now;
+            return date.ToString();
+        }
     }
 }

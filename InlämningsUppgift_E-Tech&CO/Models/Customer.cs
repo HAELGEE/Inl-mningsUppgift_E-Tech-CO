@@ -16,7 +16,7 @@ internal class Customer
         Age = age;
         UserName = userName;
         Password = password;
-        Registered = GetDate();
+        Registered = Program.GetDate();
         Logins = 0;
         LoggedIn = true; // sätter denna till true när man registrerat sig så man automatiskt kan gå in i shop för att slippa login
     }
@@ -34,10 +34,6 @@ internal class Customer
     public virtual ICollection<OrderHistory> OrderHistory { get; set; } = new List<OrderHistory>(); // En kund kan har flera orderhistorik
     public virtual ICollection<Order> Order { get; set; } = new List<Order>(); // En kund kan har flera orderhistorik
 
-    private string GetDate()
-    {
-        DateTime date = DateTime.Now;        
-        return date.ToString();
-    }
+    
 
 }

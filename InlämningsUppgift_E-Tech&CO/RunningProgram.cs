@@ -1,5 +1,6 @@
 ﻿using InlämningsUppgift_E_Tech_CO.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
@@ -12,7 +13,9 @@ using System.Threading.Tasks;
 namespace InlämningsUppgift_E_Tech_CO;
 internal class RunningProgram
 {
-    static string categoryName = ""; // Sätter denna här så att jag kan komma åt den i mina metoder
+    static string categoryName = ""; // Sätter denna här så att jag kan komma åt den i mina metoder    
+    static List<string> cartProductsInString = new List<string>();
+
 
     public static void RunProgram()
     {
@@ -97,6 +100,11 @@ internal class RunningProgram
                                         Thread.Sleep(1500);
                                     }
                                 }
+                                else
+                                {
+                                    Console.WriteLine("No username found");
+                                    Thread.Sleep(1500);
+                                }
                             }
                             ;
 
@@ -127,8 +135,8 @@ internal class RunningProgram
                             Console.Write("Please enter ur Age: ");
                             string inputCheck = Console.ReadLine()!;
 
-                            if (int.TryParse(inputCheck, out newAge) && !string.IsNullOrWhiteSpace(inputCheck) && newAge > 0)
-                                Console.WriteLine("Måste vara siffror");
+                            if (int.TryParse(inputCheck, out newAge) && !string.IsNullOrWhiteSpace(inputCheck) && newAge < 0)
+                                Console.WriteLine("Must be numbers");
                         }
 
                         Console.Write("Please enter UserName: ");
@@ -225,14 +233,7 @@ internal class RunningProgram
 
                                 if (customerLogedIn)
                                 {
-                                    GUI.DrawWindow("Shopping Cart", 50, 10, new List<string>() {
-                                                $"1. Firstname: ",
-                                                $"2. Lastname: ",
-                                                $"3. Age: ",
-                                                $"4. Username: ",
-                                                $"5. Total Price: ",
-                                                $"Press C to checkout"
-                                            });
+                                    GUI.DrawWindowForCart("Shopping Cart", 20, 26, cartProductsInString);
                                 }
                                 Console.SetCursorPosition(0, 9);
                                 string numberCheck = Console.ReadLine()!.ToLower();
@@ -259,7 +260,6 @@ internal class RunningProgram
                                     else if (validNum == 3)
                                         categoryName = "Screen";
                                 }
-
                             }
 
                             Console.Clear();
@@ -315,14 +315,40 @@ internal class RunningProgram
     {
         using (var db = new MyDbContext())
         {
+            int addToOrder = 0;
+
             var itemsSubcategory = db.Shop.Where(cn => cn.Category == categoryName)
                                           .GroupBy(sc => sc.SubCategory);
 
-            int addToOrder = 0;
+            //var itemToBuy = db.Order.Where(x => x.Id == addToOrder)
+            //                            .Join(db.Customer, order => order.Id, customer => customer.Id, (order, customer) => new
+            //                            {
+            //                                order.Id,                                            
+            //                            })
+            //                            .Join(db.Shop, order => order.Id, shop => shop.Id, (order, shop, customer) => new
+            //                            {
+            //                                Order = order,
+            //                                Shop = shop,
+            //                                Customer = customer
+            //                            });
+            var itemToBuy = db.Order
+                                    .Where(o => o.Id == addToOrder)
+                                    .Select(o => new
+                                    {
+                                        Order = o,
+                                        Customer = o.Customer,
+                                        Shop = o.Shop
+                                    })
+                                    .ToList();
+
+
+
             while (true)
             {
                 Console.Clear();
+                List<Product> cartProducts = new List<Product>();
 
+                // Denna loopen skriver ut listan så man ser vad man kan köpa
                 foreach (var sub in itemsSubcategory)
                 {
                     Console.WriteLine($"Category: {sub.Key}\n----------------------");
@@ -356,26 +382,39 @@ internal class RunningProgram
                 }
 
 
-                Console.Write("\nWich Product do you want to buy?: ");
+                Console.WriteLine("\nWich Product do you want to buy?");
                 Console.WriteLine("\nPress B to back");
 
-                GUI.DrawWindow("Shopping Cart", 50, 26, new List<string>() {
-                    $"1. Firstname: ",
-                    $"2. Lastname: ",
-                    $"3. Age: ",
-                    $"4. Username: ",
-                    $"5. Total Price: ",
-                    $"Press C to checkout"
-                });
+                GUI.DrawWindowForCart("Shopping Cart", 20, 26, cartProductsInString); // Före
                 Console.SetCursorPosition(0, 31);
                 string orderAdd = Console.ReadLine()!.ToLower();
+                Console.WriteLine("How many of these?");
+                string amountAdd = Console.ReadLine()!.ToLower();
+                int amount = 0;
 
                 if (int.TryParse(orderAdd, out addToOrder) && !string.IsNullOrWhiteSpace(orderAdd))
                 {
+                    //    if (int.TryParse(amountAdd, out amount) && !string.IsNullOrWhiteSpace(amountAdd))
+                    //    {
+                    foreach (var item in itemToBuy)
+                    {
+                        if (addToOrder == item.Shop.Id)
 
+                            cartProducts.Add(new Product(item.Shop.Name, amount, item.Shop.Price));
+                    }
+                    //    }
                 }
 
+                foreach (var product in cartProducts)
+                {
+                    cartProductsInString.Add(new string($"Name: {product.Name.PadRight(23)}\t Amount: {product.Amount}, Price: {product.Price} "));
+                }
 
+                //GUI.DrawWindow("Shopping Cart", 20, 26, new List<string>
+                //{
+
+                //});
+                GUI.DrawWindow("Shopping Cart", 20, 26, cartProductsInString); // Efter
 
                 if (orderAdd == "b")
                     break;
