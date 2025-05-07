@@ -4,6 +4,7 @@ using InlämningsUppgift_E_Tech_CO.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InlämningsUppgift_E_Tech_CO.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250507110700_updates3")]
+    partial class updates3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -226,15 +229,15 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
 
             modelBuilder.Entity("OrderShop", b =>
                 {
-                    b.Property<int>("OrderId")
+                    b.Property<int>("OrdersId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ShopId")
+                    b.Property<int>("ShopsId")
                         .HasColumnType("int");
 
-                    b.HasKey("OrderId", "ShopId");
+                    b.HasKey("OrdersId", "ShopsId");
 
-                    b.HasIndex("ShopId");
+                    b.HasIndex("ShopsId");
 
                     b.ToTable("OrderShop");
                 });
@@ -294,13 +297,13 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 {
                     b.HasOne("InlämningsUppgift_E_Tech_CO.Models.Order", null)
                         .WithMany()
-                        .HasForeignKey("OrderId")
+                        .HasForeignKey("OrdersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("InlämningsUppgift_E_Tech_CO.Models.Shop", null)
                         .WithMany()
-                        .HasForeignKey("ShopId")
+                        .HasForeignKey("ShopsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -13,9 +13,5 @@ internal class Shipping
     public string? Name { get; set; }
     public int? PhoneNumber { get; set; }
     public int? OrderId { get; set; }
-    public ICollection<Order>? Order { get; set; }
-    
-
-
-
+    public virtual Order? Order { get; set; }
 }

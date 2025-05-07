@@ -65,7 +65,7 @@ internal class Admin
                         Console.WriteLine("-----------------------");
                         foreach (var item in cat)
                         {
-                            Console.WriteLine($"ID:{item.Id} \t Name: {item.Name}\t in Stock: {item.Stock}, Price: {item.Price}");
+                            Console.WriteLine($"ID:{item.Id} \t Name: {item.Name}\t in Stock: {item.Quantity}, Price: {item.Price}");
                         }
                         Console.WriteLine();
                     }
@@ -98,7 +98,7 @@ internal class Admin
                                 SubCategory = subCategory,
                                 Name = productName,
                                 Price = productPrice,
-                                Stock = stock,
+                                Quantity = stock,
                                 ProductInformation = information
                             });
 
@@ -144,8 +144,8 @@ internal class Admin
                                         string alterCheck = Console.ReadLine()!;
                                         if (int.TryParse(alterCheck, out updateStock) && updateStock != 0)
                                         {
-                                            if (updateItem.Stock > 0)
-                                                updateItem.Stock = updateItem.Stock + updateStock;
+                                            if (updateItem.Quantity > 0)
+                                                updateItem.Quantity = updateItem.Quantity + updateStock;
                                             else
                                                 Console.WriteLine("You cant have negative in your balance");
                                         }

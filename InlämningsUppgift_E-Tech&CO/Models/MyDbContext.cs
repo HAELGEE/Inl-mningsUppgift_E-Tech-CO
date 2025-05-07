@@ -9,11 +9,10 @@ namespace InlämningsUppgift_E_Tech_CO.Models;
 internal class MyDbContext : DbContext
 {
     public DbSet<Customer> Customer { get; set; }
-    public DbSet<CustomerSave> CustomerSave { get; set; }   
     public DbSet<Order> Order { get; set; }
-    public DbSet<OrderHistory> OrderHistories { get; set; }
     public DbSet<Shop> Shop { get; set; }
-    public DbSet<ShoppingCart> ShoppingCart { get; set; }
+    public DbSet<CustomerSave> CustomerSave { get; set; }   
+    public DbSet<OrderHistory> OrderHistories { get; set; }
     public DbSet<Shipping> shipping {  get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

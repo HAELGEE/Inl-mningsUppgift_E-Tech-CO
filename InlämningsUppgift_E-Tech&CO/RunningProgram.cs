@@ -1,6 +1,7 @@
 ﻿using InlämningsUppgift_E_Tech_CO.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
@@ -318,35 +319,12 @@ internal class RunningProgram
             int addToOrder = 0;
 
             var itemsSubcategory = db.Shop.Where(cn => cn.Category == categoryName)
-                                          .GroupBy(sc => sc.SubCategory);
-
-            //var itemToBuy = db.Order.Where(x => x.Id == addToOrder)
-            //                            .Join(db.Customer, order => order.Id, customer => customer.Id, (order, customer) => new
-            //                            {
-            //                                order.Id,                                            
-            //                            })
-            //                            .Join(db.Shop, order => order.Id, shop => shop.Id, (order, shop, customer) => new
-            //                            {
-            //                                Order = order,
-            //                                Shop = shop,
-            //                                Customer = customer
-            //                            });
-            var itemToBuy = db.Order
-                                    .Where(o => o.Id == addToOrder)
-                                    .Select(o => new
-                                    {
-                                        Order = o,
-                                        Customer = o.Customer,
-                                        Shop = o.Shop
-                                    })
-                                    .ToList();
-
-
+                                            .GroupBy(sc => sc.SubCategory);
 
             while (true)
             {
-                Console.Clear();
                 List<Product> cartProducts = new List<Product>();
+                Console.Clear();
 
                 // Denna loopen skriver ut listan så man ser vad man kan köpa
                 foreach (var sub in itemsSubcategory)
@@ -356,15 +334,15 @@ internal class RunningProgram
                     {
                         Console.Write($"{item.Id}. Name: {item.Name} Total in stock: ");
 
-                        if (item.Stock > 0)
+                        if (item.Quantity > 0)
                         {
                             Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine($"{item.Stock}");
+                            Console.WriteLine($"{item.Quantity}");
                         }
                         else
                         {
                             Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine($"{item.Stock}");
+                            Console.WriteLine($"{item.Quantity}");
                         }
                         Console.ResetColor();
 
@@ -381,28 +359,63 @@ internal class RunningProgram
                     Console.WriteLine("---------------------------");
                 }
 
-
                 Console.WriteLine("\nWich Product do you want to buy?");
                 Console.WriteLine("\nPress B to back");
 
                 GUI.DrawWindowForCart("Shopping Cart", 20, 26, cartProductsInString); // Före
                 Console.SetCursorPosition(0, 31);
+
+
                 string orderAdd = Console.ReadLine()!.ToLower();
+                if (orderAdd == "b")
+                    break;
+
                 Console.WriteLine("How many of these?");
                 string amountAdd = Console.ReadLine()!.ToLower();
                 int amount = 0;
 
-                if (int.TryParse(orderAdd, out addToOrder) && !string.IsNullOrWhiteSpace(orderAdd))
-                {
-                    //    if (int.TryParse(amountAdd, out amount) && !string.IsNullOrWhiteSpace(amountAdd))
-                    //    {
-                    foreach (var item in itemToBuy)
-                    {
-                        if (addToOrder == item.Shop.Id)
 
-                            cartProducts.Add(new Product(item.Shop.Name, amount, item.Shop.Price));
+
+
+                var itemsToBuy = db.Customer
+                                            .Join(db.Order, customer => customer.Id, order => order.CustomerId, (customer, order) => new { customer, order })
+                                             .Join(db.Shop, temp => temp.order.Id, shop => shop.Id, (temp, shop) => new
+                                             {
+                                                 CustomerId = temp.customer.Id,
+                                                 CustomerName = temp.customer.Name,
+                                                 CustomerLastName = temp.customer.LastName,
+                                                 OrderId = temp.order.Id,
+                                                 OrderName = temp.order.Name,
+                                                 OrderPriceAtPurchase = temp.order.PriceAtPurchase,
+                                                 OrderDate = temp.order.Date,
+                                                 ShopId = shop.Id,
+                                                 ShopName = shop.Name,
+                                                 ShopCategory = shop.Category,
+                                                 ShopPrice = shop.Price
+                                             })
+                                             .ToList();
+
+
+
+
+
+                if (int.TryParse(orderAdd, out addToOrder) && !string.IsNullOrWhiteSpace(orderAdd) && int.TryParse(amountAdd, out amount) && !string.IsNullOrWhiteSpace(amountAdd) && amount > 0)
+                {
+                    var itemToBuy = db.Shop.Where(s => s.Id == addToOrder)
+                                            .SingleOrDefault();
+
+                    if (cartProductsInString.IsNullOrEmpty())
+                    {
+                        cartProducts.Add(new Product(itemToBuy.Name, amount, itemToBuy.Price));
                     }
-                    //    }
+
+                    foreach (var item in itemsToBuy)    // Får inte denna att fungera som den skall!! Hittar inte mina itemsToBuy
+                    {
+                        if (item.ShopId == addToOrder)
+                        {
+                            cartProducts.Add(new Product(item.ShopName, amount, item.ShopPrice));
+                        }
+                    }
                 }
 
                 foreach (var product in cartProducts)
@@ -416,11 +429,11 @@ internal class RunningProgram
                 //});
                 GUI.DrawWindow("Shopping Cart", 20, 26, cartProductsInString); // Efter
 
-                if (orderAdd == "b")
-                    break;
 
+
+
+                db.SaveChanges();
             }
-            db.SaveChanges();
         }
     }
 
