@@ -31,23 +31,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "shipping",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ShippingType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<int>(type: "int", nullable: true),
-                    OrderId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_shipping", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Shop",
                 columns: table => new
                 {
@@ -56,28 +39,14 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     Category = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SubCategory = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Stock = table.Column<int>(type: "int", nullable: true),
                     Sold = table.Column<int>(type: "int", nullable: true),
+                    Quantity = table.Column<int>(type: "int", nullable: true),
                     Price = table.Column<double>(type: "float", nullable: true),
                     ProductInformation = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Shop", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ShoppingCart",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TotalPrice = table.Column<int>(type: "int", nullable: true),
-                    TotalItems = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ShoppingCart", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -95,6 +64,30 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     table.PrimaryKey("PK_CustomerSave", x => x.Id);
                     table.ForeignKey(
                         name: "FK_CustomerSave_Customer_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customer",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Order",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PriceAtPurchase = table.Column<double>(type: "float", nullable: true),
+                    Date = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CustomerId = table.Column<int>(type: "int", nullable: true),
+                    PaymentChoice = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TotalAmountPrice = table.Column<int>(type: "int", nullable: true),
+                    TotalItems = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Order", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Order_Customer_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "Customer",
                         principalColumn: "Id");
@@ -121,29 +114,51 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Order",
+                name: "OrderItem",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Date = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CustomerId = table.Column<int>(type: "int", nullable: true),
-                    ShippingId = table.Column<int>(type: "int", nullable: true),
-                    PaymentChoice = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TotalAmount = table.Column<int>(type: "int", nullable: true)
+                    OrderId = table.Column<int>(type: "int", nullable: false),
+                    ShopId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Order", x => x.Id);
+                    table.PrimaryKey("PK_OrderItem", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Order_Customer_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "Customer",
-                        principalColumn: "Id");
+                        name: "FK_OrderItem_Order_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Order",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Order_shipping_ShippingId",
-                        column: x => x.ShippingId,
-                        principalTable: "shipping",
+                        name: "FK_OrderItem_Shop_ShopId",
+                        column: x => x.ShopId,
+                        principalTable: "Shop",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "shipping",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ShippingType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<int>(type: "int", nullable: true),
+                    OrderId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_shipping", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_shipping_Order_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Order",
                         principalColumn: "Id");
                 });
 
@@ -171,54 +186,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "OrderShop",
-                columns: table => new
-                {
-                    OrderId = table.Column<int>(type: "int", nullable: false),
-                    ShopId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OrderShop", x => new { x.OrderId, x.ShopId });
-                    table.ForeignKey(
-                        name: "FK_OrderShop_Order_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Order",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_OrderShop_Shop_ShopId",
-                        column: x => x.ShopId,
-                        principalTable: "Shop",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "OrderShoppingCart",
-                columns: table => new
-                {
-                    OrderId = table.Column<int>(type: "int", nullable: false),
-                    ShoppingCartId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OrderShoppingCart", x => new { x.OrderId, x.ShoppingCartId });
-                    table.ForeignKey(
-                        name: "FK_OrderShoppingCart_Order_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Order",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_OrderShoppingCart_ShoppingCart_ShoppingCartId",
-                        column: x => x.ShoppingCartId,
-                        principalTable: "ShoppingCart",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_CustomerSave_CustomerId",
                 table: "CustomerSave",
@@ -228,11 +195,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 name: "IX_Order_CustomerId",
                 table: "Order",
                 column: "CustomerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Order_ShippingId",
-                table: "Order",
-                column: "ShippingId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderHistories_CustomerId",
@@ -245,14 +207,21 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 column: "ShopId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderShop_ShopId",
-                table: "OrderShop",
+                name: "IX_OrderItem_OrderId",
+                table: "OrderItem",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderItem_ShopId",
+                table: "OrderItem",
                 column: "ShopId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderShoppingCart_ShoppingCartId",
-                table: "OrderShoppingCart",
-                column: "ShoppingCartId");
+                name: "IX_shipping_OrderId",
+                table: "shipping",
+                column: "OrderId",
+                unique: true,
+                filter: "[OrderId] IS NOT NULL");
         }
 
         /// <inheritdoc />
@@ -265,10 +234,10 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 name: "OrderHistoryShop");
 
             migrationBuilder.DropTable(
-                name: "OrderShop");
+                name: "OrderItem");
 
             migrationBuilder.DropTable(
-                name: "OrderShoppingCart");
+                name: "shipping");
 
             migrationBuilder.DropTable(
                 name: "OrderHistories");
@@ -280,13 +249,7 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 name: "Order");
 
             migrationBuilder.DropTable(
-                name: "ShoppingCart");
-
-            migrationBuilder.DropTable(
                 name: "Customer");
-
-            migrationBuilder.DropTable(
-                name: "shipping");
         }
     }
 }

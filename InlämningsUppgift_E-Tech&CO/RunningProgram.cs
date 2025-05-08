@@ -18,6 +18,7 @@ internal class RunningProgram
     static string categoryName = ""; // Sätter denna här så att jag kan komma åt den i mina metoder       
     static List<Product> cartProducts = new List<Product>();
     static List<string> cartProductsInString = new List<string>();
+    static string loggedinName = "";
     public static void RunProgram()
     {
         bool running = true;
@@ -26,7 +27,6 @@ internal class RunningProgram
         {
             using (var db = new MyDbContext())
             {
-                string loggedinName = "";
                 int menu = 0;
                 bool validInput = false;
                 do
@@ -80,9 +80,11 @@ internal class RunningProgram
 
                             Console.Write("Please enter Username: ");
                             string userName = Console.ReadLine()!;
-
+                            int totalCustomers = db.Customer.Count();
+                            int customerCount = 0;
                             foreach (var customer in db.Customer)
                             {
+                                customerCount++;
                                 if (customer.UserName == userName)
                                 {
                                     Console.Write("Please enter Password: ");
@@ -101,14 +103,13 @@ internal class RunningProgram
                                         Thread.Sleep(1500);
                                     }
                                 }
-                                else
+                                else if (customerCount == totalCustomers)
                                 {
                                     Console.WriteLine("No username found");
                                     Thread.Sleep(1500);
                                 }
-                            }
-                            ;
-
+                            };
+                            
                             db.SaveChanges();
                             break;
                         }
@@ -118,6 +119,7 @@ internal class RunningProgram
                             {
                                 customer.LoggedIn = false;
                             }
+                            loggedinName = "";
                             db.SaveChanges();
                             break;
                         }
@@ -283,6 +285,7 @@ internal class RunningProgram
                     case 6:
                         running = false;
                         Console.WriteLine("Good bye, see you later!");
+                        Thread.Sleep(1000);
                         break;
                 }
             }
@@ -359,82 +362,97 @@ internal class RunningProgram
                     }
                     Console.WriteLine("---------------------------");
                 }
-
-                Console.WriteLine("\nWich Product do you want to buy?");
-                Console.WriteLine("\nPress B to back");
-
-                GUI.DrawWindowForCart("Shopping Cart", 20, 26, cartProductsInString); // Före
-                Console.SetCursorPosition(0, 31);
-
-
-                string orderAdd = Console.ReadLine()!.ToLower();
-                if (orderAdd == "b")
-                    break;
-
-                if (orderAdd == "c")
+                if (loggedinName == "")
                 {
-                    foreach (var product in cartProducts)
-                    {
-                        var itemToBuy = db.Shop.Where(n => n.Name == product.Name)
-                        .SingleOrDefault();
-                        itemToBuy.Quantity += product.Amount;
-                    }
-                    cartProductsInString.Clear();
-                    cartProducts.Clear();
+                    Console.WriteLine("\nPress B to back");
+                    Console.WriteLine("Need to login to buy stuff");
+                    string back = Console.ReadLine().ToLower();
+                    if (back == "b")
+                        break;
                 }
                 else
                 {
-                    Console.WriteLine("How many of these?");
-                    string amountAdd = Console.ReadLine()!.ToLower();
-                    int amount = 0;
+                    Console.WriteLine("\nWich Product do you want to buy?");
+                    Console.WriteLine("\nPress B to back");
+
+                    GUI.DrawWindowForCart("Shopping Cart", 20, 26, cartProductsInString); // Före
+                    Console.SetCursorPosition(0, 31);
 
 
-                    if (int.TryParse(orderAdd, out addToOrder) && !string.IsNullOrWhiteSpace(orderAdd) && int.TryParse(amountAdd, out amount) && !string.IsNullOrWhiteSpace(amountAdd) && amount > 0)
+                    string orderAdd = Console.ReadLine()!.ToLower();
+                    if (orderAdd == "b")
+                        break;
+
+                    if (orderAdd == "c")
                     {
-                        var itemToBuy = db.Shop.Where(s => s.Id == addToOrder)
-                                                .SingleOrDefault();
-
-                        if (amount <= itemToBuy.Quantity)
+                        foreach (var product in cartProducts)
                         {
-                            bool nameCheck = false;
-                            if (!cartProducts.IsNullOrEmpty())
+                            var itemToBuy = db.Shop.Where(n => n.Name == product.Name)
+                            .SingleOrDefault();
+                            itemToBuy.Quantity += product.Amount;
+                        }
+                        cartProductsInString.Clear();
+                        cartProducts.Clear();
+                    }
+                    else
+                    {
+                        Console.WriteLine("How many of these?");
+                        string amountAdd = Console.ReadLine()!.ToLower();
+                        int amount = 0;
+
+
+                        if (int.TryParse(orderAdd, out addToOrder) && !string.IsNullOrWhiteSpace(orderAdd) && int.TryParse(amountAdd, out amount) && !string.IsNullOrWhiteSpace(amountAdd) && amount > 0)
+                        {
+                            var itemToBuy = db.Shop.Where(s => s.Id == addToOrder)
+                                                    .SingleOrDefault();
+
+                            if (amount <= itemToBuy.Quantity)
                             {
-                                foreach (var item in cartProducts)
+                                bool nameCheck = false;
+                                if (!cartProducts.IsNullOrEmpty())
                                 {
-                                    if (item.Name == itemToBuy.Name)
+                                    foreach (var item in cartProducts)
                                     {
-                                        item.Amount += amount;
-                                        nameCheck = true;
+                                        if (item.Name == itemToBuy.Name)
+                                        {
+                                            item.Amount += amount;
+                                            nameCheck = true;
+                                        }
+                                    }
+                                    if (!nameCheck)
+                                    {
+                                        cartProducts.Add(new Product(itemToBuy.Name, amount, itemToBuy.Price));
+                                        productList.Add(new Product(itemToBuy.Name, amount, itemToBuy.Price));
                                     }
                                 }
-                                if (!nameCheck)
+                                else
                                 {
                                     cartProducts.Add(new Product(itemToBuy.Name, amount, itemToBuy.Price));
                                     productList.Add(new Product(itemToBuy.Name, amount, itemToBuy.Price));
                                 }
-                            }
-                            else
-                            {
-                                cartProducts.Add(new Product(itemToBuy.Name, amount, itemToBuy.Price));
-                                productList.Add(new Product(itemToBuy.Name, amount, itemToBuy.Price));
+
+                                cartProductsInString.Clear();
+
+                                foreach (var product in cartProducts)
+                                {
+                                    cartProductsInString.Add(new string($"Name: {product.Name.PadRight(23)}\t Amount: {product.Amount}, Price: {(product.Price * product.Amount)}"));
+                                }
+                                cartProductsInString.Add("Press C for cancel order".PadRight(4));
+                                itemToBuy.Quantity -= amount;
                             }
 
-                            cartProductsInString.Clear();
-
-                            foreach (var product in cartProducts)
-                            {
-                                cartProductsInString.Add(new string($"Name: {product.Name.PadRight(23)}\t Amount: {product.Amount}, Price: {(product.Price * product.Amount)}"));
-                            }
-                            cartProductsInString.Add("Press C for cancel order".PadRight(4));
-                            itemToBuy.Quantity -= amount;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Must be numbers and greater then 0");
+                            Thread.Sleep(700);
                         }
 
+                        GUI.DrawWindow("Shopping Cart", 20, 26, cartProductsInString); // Efter
+
                     }
-
-                    GUI.DrawWindow("Shopping Cart", 20, 26, cartProductsInString); // Efter
-
+                    db.SaveChanges();
                 }
-                db.SaveChanges();
             }
         }
     }

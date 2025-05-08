@@ -58,18 +58,21 @@ internal class Admin
 
                     var categorySearch = db.Shop.GroupBy(c => new { c.Category, c.SubCategory });
 
-                    foreach (var cat in categorySearch)
+                    if (userInput > 0 && userInput < 7)
                     {
-                        Console.WriteLine($"Category: {cat.Key.Category}");
-                        Console.WriteLine($"  SubCategory: {cat.Key.SubCategory}");
-                        Console.WriteLine("-----------------------");
-                        foreach (var item in cat)
+                        foreach (var cat in categorySearch)
                         {
-                            Console.WriteLine($"ID:{item.Id} \t Name: {item.Name}\t in Stock: {item.Quantity}, Price: {item.Price}");
+                            Console.WriteLine($"Category: {cat.Key.Category}");
+                            Console.WriteLine($"  SubCategory: {cat.Key.SubCategory}");
+                            Console.WriteLine("-----------------------");
+                            foreach (var item in cat)
+                            {
+                                Console.WriteLine($"ID:{item.Id} \t Name: {item.Name}\t in Stock: {item.Quantity}, Price: {item.Price}");
+                            }
+                            Console.WriteLine();
                         }
                         Console.WriteLine();
                     }
-                    Console.WriteLine();
                     switch (userInput)
                     {
                         case 1:
@@ -244,10 +247,22 @@ internal class Admin
                             db.SaveChanges();
                             break;
                         case 8:
+                            Console.Clear();
                             int updateCustomerInformation = 0;
                             while (updateCustomerInformation <= 0)
                             {
+                                var allCustomers = db.Customer.OrderBy(x => x.Id);
 
+                                foreach (var customer in allCustomers)
+                                {
+                                    Console.WriteLine($"ID. {customer.Id} Name: {customer.Name}");
+                                }
+                                Console.WriteLine("---------------------------------");
+                                Console.WriteLine("\nB to back");
+                                Console.WriteLine("Wich Person do you want to update/delete");
+                                string personString = Console.ReadLine().ToLower();
+                                if (personString == "b")
+                                    break;
                             }
                             db.SaveChanges();
                             break;
