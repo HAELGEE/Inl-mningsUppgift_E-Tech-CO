@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace InlämningsUppgift_E_Tech_CO;
+namespace InlämningsUppgift_E_Tech_CO.Models;
 public class Product
 {
     public Product(string? name, int? amount, double? price)
@@ -17,4 +17,5 @@ public class Product
     public string? Name { get; set; }
     public int? Amount { get; set; }
     public double? Price { get; set; }
+    
 }

@@ -1,4 +1,8 @@
 ﻿using InlämningsUppgift_E_Tech_CO.Models;
+using Microsoft.EntityFrameworkCore.Metadata;
+using System.Runtime.Intrinsics.Arm;
+using System;
+using Microsoft.VisualBasic;
 
 namespace InlämningsUppgift_E_Tech_CO
 {
@@ -28,6 +32,26 @@ namespace InlämningsUppgift_E_Tech_CO
         {
             DateTime date = DateTime.Now;
             return date.ToString();
+        }
+
+        public static void GetDatabaseStuff()
+        {
+            using (var db = new MyDbContext())
+            {
+
+                db.Shop.Add(new Shop
+                {
+                    //Category = category,
+                    //Name = productName,
+                    //Quantity = stock,
+                    //ProductInformation = information,
+                    //SubCategory = subCategory,
+                    //Price = productPrice
+                });
+
+                db.SaveChanges();
+
+            }
         }
     }
 }

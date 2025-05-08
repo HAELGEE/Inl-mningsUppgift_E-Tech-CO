@@ -4,6 +4,7 @@ using InlämningsUppgift_E_Tech_CO.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InlämningsUppgift_E_Tech_CO.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250508140822_fuckLife")]
+    partial class fuckLife
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -250,6 +253,21 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.ToTable("OrderHistoryShop");
                 });
 
+            modelBuilder.Entity("OrderShop", b =>
+                {
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrderId", "ShopId");
+
+                    b.HasIndex("ShopId");
+
+                    b.ToTable("OrderShop");
+                });
+
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.CustomerSave", b =>
                 {
                     b.HasOne("InlämningsUppgift_E_Tech_CO.Models.Customer", "Customer")
@@ -280,13 +298,13 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.OrderItem", b =>
                 {
                     b.HasOne("InlämningsUppgift_E_Tech_CO.Models.Order", "Order")
-                        .WithMany("OrderItem")
+                        .WithMany()
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("InlämningsUppgift_E_Tech_CO.Models.Shop", "Shop")
-                        .WithMany("OrderItem")
+                        .WithMany()
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -320,6 +338,21 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("OrderShop", b =>
+                {
+                    b.HasOne("InlämningsUppgift_E_Tech_CO.Models.Order", null)
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InlämningsUppgift_E_Tech_CO.Models.Shop", null)
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Customer", b =>
                 {
                     b.Navigation("Order");
@@ -331,14 +364,7 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
 
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Order", b =>
                 {
-                    b.Navigation("OrderItem");
-
                     b.Navigation("Shipping");
-                });
-
-            modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Shop", b =>
-                {
-                    b.Navigation("OrderItem");
                 });
 #pragma warning restore 612, 618
         }
