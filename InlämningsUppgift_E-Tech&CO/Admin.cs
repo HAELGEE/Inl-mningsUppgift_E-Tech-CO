@@ -78,7 +78,7 @@ internal class Admin
                     switch (userInput)
                     {
                         case 1:
-                            Console.WriteLine("Press [q] to Quit");
+                            Console.WriteLine("Press [B] to back");
                             Console.Write("Wich Category do you want to add this item to?: ");
                             string category = Console.ReadLine()!;
                             Console.Write("Wich Subcategory do you want to add this item to?: ");
@@ -94,7 +94,7 @@ internal class Admin
                             Console.Write("Enter information about the product: ");
                             string information = Console.ReadLine()!;
 
-                            if (category == "q" || subCategory == "q" || productName == "q" || productName == "q" || information == "q")
+                            if (category == "b" || subCategory == "b" || productName == "b" || productName == "b" || information == "b")
                                 break;
 
                             db.Shop.Add(new Shop
@@ -114,10 +114,10 @@ internal class Admin
                             int deleteId = 0;
                             while (deleteId <= 0)
                             {
-                                Console.Write("Wich product do you want to delete? or [Q]uit: ");
+                                Console.Write("Wich product do you want to delete? or [B]ack: ");
                                 string deleteCheck = Console.ReadLine()!;
 
-                                if (deleteCheck == "q")
+                                if (deleteCheck == "b")
                                     break;
 
                                 if (int.TryParse(deleteCheck, out deleteId) && deleteId > 0 && !string.IsNullOrWhiteSpace(deleteCheck))
@@ -131,12 +131,12 @@ internal class Admin
 
                         case 3:
                             int updateStock = 0;
-                            while (updateStock <= 0)
+                            while (updateStock == 0)
                             {
-                                Console.Write("Wich product do u want to alter the stock? or [Q]uit: ");
+                                Console.Write("Wich product do u want to alter the stock? or [B]ack: ");
                                 string updateCheck = Console.ReadLine()!;
 
-                                if (updateCheck == "q")
+                                if (updateCheck == "b")
                                     break;
 
                                 if (int.TryParse(updateCheck, out updateStock) && updateStock > 0 && !string.IsNullOrWhiteSpace(updateCheck))
@@ -164,10 +164,10 @@ internal class Admin
                             int updatePrice = 0;
                             while (updatePrice <= 0)
                             {
-                                Console.Write("Wich product do u want to change price on? or [Q]uit: ");
+                                Console.Write("Wich product do u want to change price on? or [B]ack: ");
                                 string priceCheck = Console.ReadLine()!;
 
-                                if (priceCheck == "q")
+                                if (priceCheck == "b")
                                     break;
 
                                 var updateItem = db.Shop.Where(x => x.Id == updatePrice).SingleOrDefault();
@@ -185,10 +185,10 @@ internal class Admin
                             int updateCategory = 0;
                             while (updateCategory <= 0)
                             {
-                                Console.Write($"Wich Product do you want to change category/subcategory on? or [Q]uit: ");
+                                Console.Write($"Wich Product do you want to change category/subcategory on? or [B]ack: ");
                                 string catSubCheck = Console.ReadLine()!.ToLower();
 
-                                if (catSubCheck == "q")
+                                if (catSubCheck == "b")
                                     break;
 
                                 if (int.TryParse(catSubCheck, out updateCategory) && updateCategory > 0 && !string.IsNullOrWhiteSpace(catSubCheck))
@@ -213,10 +213,10 @@ internal class Admin
                             int updateProductInformation = 0;
                             while (updateProductInformation <= 0)
                             {
-                                Console.Write($"Wich product do you want to alter the information about? or [Q]uit: ");
+                                Console.Write($"Wich product do you want to alter the information about? or [B]ack: ");
                                 string productAlter = Console.ReadLine()!.ToLower();
 
-                                if (productAlter == "q")
+                                if (productAlter == "b")
                                     break;
 
                                 if(int.TryParse(productAlter, out updateProductInformation) && updateProductInformation > 0 && !string.IsNullOrWhiteSpace(productAlter))
@@ -229,10 +229,10 @@ internal class Admin
                                     Console.ForegroundColor = ConsoleColor.Blue;
                                     Console.WriteLine(productInfo.ProductInformation + "\n");
                                     Console.ResetColor();
-                                    Console.WriteLine("What do tou want to update the information to? or [Q]uit: ");
+                                    Console.WriteLine("What do tou want to update the information to? or [B]ack: ");
                                     string checkProductInfo = Console.ReadLine()!.ToLower();
 
-                                    if (checkProductInfo == "q")
+                                    if (checkProductInfo == "b")
                                         break;
 
                                     productInfo.ProductInformation = checkProductInfo;
