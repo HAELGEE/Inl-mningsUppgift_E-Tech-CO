@@ -109,8 +109,9 @@ internal class RunningProgram
                                     Console.WriteLine("No username found");
                                     Thread.Sleep(1500);
                                 }
-                            };
-                            
+                            }
+                            ;
+
                             db.SaveChanges();
                             break;
                         }
@@ -199,7 +200,7 @@ internal class RunningProgram
                                 break;
                             }
                         }
-                        if(loggedinName == "")
+                        if (loggedinName == "")
                         {
                             Console.WriteLine("Need to be logged in to see Profile");
                             Thread.Sleep(1000);
@@ -327,7 +328,7 @@ internal class RunningProgram
         {
             int addToOrder = 0;
 
-            var itemsSubcategory = db.Shop  .Where(cn => cn.Category == categoryName)
+            var itemsSubcategory = db.Shop.Where(cn => cn.Category == categoryName)
                                             .OrderBy(cn => cn.Id)
                                             .ThenBy(cn => cn.SubCategory)
                                             .GroupBy(sc => sc.SubCategory);
@@ -370,6 +371,7 @@ internal class RunningProgram
                     }
                     Console.WriteLine("---------------------------");
                 }
+
                 if (loggedinName == "")
                 {
                     Console.WriteLine("\nPress B to back");
@@ -391,7 +393,8 @@ internal class RunningProgram
                     if (orderAdd == "b")
                         break;
 
-                    //string stringCheck = "bc0123456789"; // Kontroll emot någon av dessa för att komma rätt samt slippa en massa if-satser
+                    // Denna är till för att få hur många artiklar det ligger i Lager så jag har något att gå på
+                    var idCounter = db.Shop.OrderBy(x => x.Id).ToList(); 
 
                     if (orderAdd == "c")
                     {
@@ -405,7 +408,7 @@ internal class RunningProgram
                         cartProducts.Clear();
                         totalAmount = 0;
                     }
-                    else if ("bc123456789101112131415161718".Contains(orderAdd))    // Här kollas stängen emot input
+                    else if (int.TryParse(orderAdd, out addToOrder) && addToOrder > 0 && addToOrder <= idCounter.Count())    // Här kollas antalet artiklar
                     {
                         Console.WriteLine("How many of these?");
                         string amountAdd = Console.ReadLine()!.ToLower();
@@ -458,7 +461,7 @@ internal class RunningProgram
                                 Console.WriteLine("Cant buy more then there is in stock");
                                 Thread.Sleep(1000);
                             }
-                        }                        
+                        }
 
                         GUI.DrawWindowForCart("Shopping Cart", totalAmount, 20, 26, cartProductsInString); // Efter
 
@@ -468,7 +471,7 @@ internal class RunningProgram
                         Console.WriteLine("Invalid input");
                         Thread.Sleep(1000);
                     }
-                        db.SaveChanges();
+                    db.SaveChanges();
                 }
             }
         }
