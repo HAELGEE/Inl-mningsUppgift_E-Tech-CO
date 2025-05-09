@@ -56,7 +56,9 @@ internal class Admin
 
                     Console.Clear();
 
-                    var categorySearch = db.Shop.GroupBy(c => new { c.Category, c.SubCategory });
+                    var categorySearch = db.Shop.OrderBy(i => i.Id)
+                                                .GroupBy(c => new { c.Category, c.SubCategory });
+                    
 
                     if (userInput > 0 && userInput < 7)
                     {

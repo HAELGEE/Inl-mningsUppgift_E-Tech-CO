@@ -198,6 +198,11 @@ internal class RunningProgram
                                 break;
                             }
                         }
+                        if(loggedinName == "")
+                        {
+                            Console.WriteLine("Need to be logged in to see Profile");
+                            Thread.Sleep(1000);
+                        }
                         break;
 
                     case 4:
@@ -321,7 +326,9 @@ internal class RunningProgram
         {
             int addToOrder = 0;
 
-            var itemsSubcategory = db.Shop.Where(cn => cn.Category == categoryName)
+            var itemsSubcategory = db.Shop  .Where(cn => cn.Category == categoryName)
+                                            .OrderBy(cn => cn.Id)
+                                            .ThenBy(cn => cn.SubCategory)
                                             .GroupBy(sc => sc.SubCategory);
 
             while (true)
@@ -383,6 +390,8 @@ internal class RunningProgram
                     if (orderAdd == "b")
                         break;
 
+                    string stringCheck = "bc0123456789"; // Kontroll emot någon av dessa för att komma rätt
+
                     if (orderAdd == "c")
                     {
                         foreach (var product in cartProducts)
@@ -394,7 +403,7 @@ internal class RunningProgram
                         cartProductsInString.Clear();
                         cartProducts.Clear();
                     }
-                    else
+                    else if (stringCheck.Contains(orderAdd))
                     {
                         Console.WriteLine("How many of these?");
                         string amountAdd = Console.ReadLine()!.ToLower();
@@ -437,10 +446,14 @@ internal class RunningProgram
                                 {
                                     cartProductsInString.Add(new string($"Name: {product.Name.PadRight(23)}\t Amount: {product.Amount}, Price: {(product.Price * product.Amount)}"));
                                 }
-                                cartProductsInString.Add("Press C for cancel order".PadRight(4));
+                                cartProductsInString.Add("Press C for cancel order");
                                 itemToBuy.Quantity -= amount;
                             }
-
+                            else
+                            {
+                                Console.WriteLine("Cant buy more then there is in stock");
+                                Thread.Sleep(1000);
+                            }
                         }
                         else
                         {
@@ -448,10 +461,15 @@ internal class RunningProgram
                             Thread.Sleep(700);
                         }
 
-                        GUI.DrawWindow("Shopping Cart", 20, 26, cartProductsInString); // Efter
+                        GUI.DrawWindowForCart("Shopping Cart", 20, 26, cartProductsInString); // Efter
 
                     }
-                    db.SaveChanges();
+                    else
+                    {
+                        Console.WriteLine("Invalid input");
+                        Thread.Sleep(1000);
+                    }
+                        db.SaveChanges();
                 }
             }
         }

@@ -86,8 +86,7 @@ class GUI
             maxRows = j;
         }
         Console.SetCursorPosition(fromLeft, fromTop + maxRows + 2);
-        Console.Write('└' + new String('─', width + 6) + '┘');
-
+        Console.Write('└' + new String('─', width + 6) + '┘');        
     }
 }
 
