@@ -19,6 +19,7 @@ internal class RunningProgram
     static List<Product> cartProducts = new List<Product>();
     static List<string> cartProductsInString = new List<string>();
     static string loggedinName = "";
+    static double totalAmount = 0;
     public static void RunProgram()
     {
         bool running = true;
@@ -241,7 +242,7 @@ internal class RunningProgram
 
                                 if (customerLogedIn)
                                 {
-                                    GUI.DrawWindowForCart("Shopping Cart", 20, 26, cartProductsInString);
+                                    GUI.DrawWindowForCart("Shopping Cart", totalAmount, 20, 26, cartProductsInString);
                                 }
                                 Console.SetCursorPosition(0, 9);
                                 string numberCheck = Console.ReadLine()!.ToLower();
@@ -382,7 +383,7 @@ internal class RunningProgram
                     Console.WriteLine("\nWich Product do you want to buy?");
                     Console.WriteLine("\nPress B to back");
 
-                    GUI.DrawWindowForCart("Shopping Cart", 20, 26, cartProductsInString); // Före
+                    GUI.DrawWindowForCart("Shopping Cart", totalAmount, 20, 26, cartProductsInString); // Före
                     Console.SetCursorPosition(0, 31);
 
 
@@ -390,7 +391,7 @@ internal class RunningProgram
                     if (orderAdd == "b")
                         break;
 
-                    string stringCheck = "bc0123456789"; // Kontroll emot någon av dessa för att komma rätt
+                    //string stringCheck = "bc0123456789"; // Kontroll emot någon av dessa för att komma rätt samt slippa en massa if-satser
 
                     if (orderAdd == "c")
                     {
@@ -402,8 +403,9 @@ internal class RunningProgram
                         }
                         cartProductsInString.Clear();
                         cartProducts.Clear();
+                        totalAmount = 0;
                     }
-                    else if (stringCheck.Contains(orderAdd))
+                    else if ("bc123456789101112131415161718".Contains(orderAdd))    // Här kollas stängen emot input
                     {
                         Console.WriteLine("How many of these?");
                         string amountAdd = Console.ReadLine()!.ToLower();
@@ -441,9 +443,11 @@ internal class RunningProgram
                                 }
 
                                 cartProductsInString.Clear();
+                                totalAmount = 0;
 
                                 foreach (var product in cartProducts)
                                 {
+                                    totalAmount += Convert.ToDouble(product.Amount * product.Price);
                                     cartProductsInString.Add(new string($"Name: {product.Name.PadRight(23)}\t Amount: {product.Amount}, Price: {(product.Price * product.Amount)}"));
                                 }
                                 cartProductsInString.Add("Press C for cancel order");
@@ -454,14 +458,9 @@ internal class RunningProgram
                                 Console.WriteLine("Cant buy more then there is in stock");
                                 Thread.Sleep(1000);
                             }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Must be numbers and greater then 0");
-                            Thread.Sleep(700);
-                        }
+                        }                        
 
-                        GUI.DrawWindowForCart("Shopping Cart", 20, 26, cartProductsInString); // Efter
+                        GUI.DrawWindowForCart("Shopping Cart", totalAmount, 20, 26, cartProductsInString); // Efter
 
                     }
                     else
