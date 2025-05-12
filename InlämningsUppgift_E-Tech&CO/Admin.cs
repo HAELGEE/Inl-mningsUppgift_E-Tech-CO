@@ -28,26 +28,27 @@ internal class Admin
                 bool validInput = false;
                 int userInput = 0;
                 // Testade göra en do while-loop här för att se vilken som blev bäst att använda
-               do
+                do
                 {
                     Console.Clear();
 
-                    Console.WriteLine($"What do you want to do?");                  
-                    Console.WriteLine($"1.  Add Item to shop");                     
-                    Console.WriteLine($"2.  Remove Item in shop");                  
-                    Console.WriteLine($"3.  Increase/Decrease stock for items");    
-                    Console.WriteLine($"4.  Change price for item");                
-                    Console.WriteLine($"5.  Change Category/subcategory");         
-                    Console.WriteLine($"6.  Product info");                        
-                    Console.WriteLine($"7.  All customers & Change Customer");     
-                    Console.WriteLine($"8.  Look Orderhistory");                    // Inte riktigt klar, får det inte utskrivet (finns inga ordrar än)
-                    Console.WriteLine($"B to Back");                                
+                    Console.WriteLine($"What do you want to do?");
+                    Console.WriteLine($"1.  Add Item to shop");
+                    Console.WriteLine($"2.  Remove Item in shop");
+                    Console.WriteLine($"3.  Increase/Decrease stock for items");
+                    Console.WriteLine($"4.  Change price for item");
+                    Console.WriteLine($"5.  Change Category/subcategory");
+                    Console.WriteLine($"6.  Change Name on Product");               // DENNA ÄR EJ KLAR
+                    Console.WriteLine($"7.  Product info");
+                    Console.WriteLine($"8.  All customers & Change Customer");
+                    Console.WriteLine($"9.  Look Orderhistory");                    // Inte riktigt klar, får det inte utskrivet (finns inga ordrar än)
+                    Console.WriteLine($"B to Back");
                     string input = Console.ReadLine()!;
 
                     if (BackOption(input))
                         break;
 
-                    if (int.TryParse(input, out userInput) && userInput >= 1 && userInput <= 8)
+                    if (int.TryParse(input, out userInput) && userInput >= 1 && userInput <= 9)
                         validInput = true;
                     else
                     {
@@ -62,7 +63,7 @@ internal class Admin
                 var categorySearch = await db.Shop.OrderBy(i => i.Id)
                                             .GroupBy(c => new { c.Category, c.SubCategory })
                                             .ToListAsync();
-                
+
 
 
                 if (userInput > 0 && userInput < 7)
@@ -80,7 +81,7 @@ internal class Admin
                     }
                     Console.WriteLine();
                 }
-                switch(userInput)
+                switch (userInput)
                 {
                     case 1:
                         Console.WriteLine("Press [B] to back");
@@ -186,6 +187,7 @@ internal class Admin
                         }
                         db.SaveChanges();
                         break;
+
                     case 5:
                         int updateCategory = 0;
                         while (updateCategory <= 0)
@@ -214,7 +216,13 @@ internal class Admin
                         }
                         db.SaveChanges();
                         break;
+
                     case 6:
+
+                        db.SaveChanges();
+                        break;
+
+                    case 7:
                         int updateProductInformation = 0;
                         while (updateProductInformation <= 0)
                         {
@@ -247,7 +255,7 @@ internal class Admin
                         }
                         db.SaveChanges();
                         break;
-                    case 7:
+                    case 8:
                         Console.Clear();
                         int updateCustomerInformation = 0;
                         while (updateCustomerInformation <= 0)
@@ -378,7 +386,7 @@ internal class Admin
                                                 }
                                                 else
                                                     Console.WriteLine("Invalid Input");
-                                                    break;
+                                                break;
 
                                             case 5:
                                                 Console.Clear();
@@ -420,7 +428,7 @@ internal class Admin
                         db.SaveChanges();
                         break;
 
-                    case 8:
+                    case 9:
                         Console.Clear();
 
                         var allOrders = await db.OrderHistories.Join(db.Shop, order => order.Id, shop => shop.Id, (order, shop) => new
