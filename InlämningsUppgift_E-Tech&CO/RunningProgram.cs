@@ -80,36 +80,48 @@ internal class RunningProgram
 
                             Console.Write("Please enter Username: ");
                             string userName = Console.ReadLine()!;
-                            int totalCustomers = db.Customer.Count();
-                            int customerCount = 0;
-                            await foreach(var customer in db.Customer)
+
+                            bool foundCustomer = false;
+                            await foreach (var customer in db.Customer)
                             {
-                                customerCount++;
+
                                 if (customer.UserName == userName)
                                 {
-                                    Console.Write("Please enter Password: ");
-                                    string loginPassword = Console.ReadLine()!;
-
-                                    if (customer.Password == loginPassword)
-                                    {
-                                        Console.WriteLine("You are now logged in!");
-                                        customer.LoggedIn = true;
-                                        customer.Logins = customer.Logins + 1;
-                                        Thread.Sleep(1500);
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Incorret password!");
-                                        Thread.Sleep(1500);
-                                    }
+                                    foundCustomer = true;
                                 }
-                                else if (customerCount == totalCustomers)
+                                
+                            };
+                            
+                            if (foundCustomer)
+                            {
+                                await foreach (var customer in db.Customer)
                                 {
-                                    Console.WriteLine("No username found");
-                                    Thread.Sleep(1500);
+                                    if(customer.UserName == userName)
+                                    {
+                                        Console.Write("Please enter Password: ");
+                                        string loginPassword = Console.ReadLine()!;
+
+                                        if (customer.Password == loginPassword)
+                                        {
+                                            Console.WriteLine("You are now logged in!");
+                                            customer.LoggedIn = true;
+                                            customer.Logins = customer.Logins + 1;
+                                            Thread.Sleep(1500);
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("Incorret password!");
+                                            Thread.Sleep(1500);
+                                        }
+                                    }
                                 }
+                                
                             }
-                            ;
+                            else
+                            {
+                                Console.WriteLine("No username found");
+                                Thread.Sleep(1500);
+                            }
 
                             db.SaveChanges();
                             break;
@@ -181,7 +193,7 @@ internal class RunningProgram
                                     GUI.DrawWindow("Update Profile", 38, 10, new List<string>() {
                                                 $"1. To change Password",
                                                 $"2. To see OrderHistory",
-                                                $"3. To see total money spent",                                                
+                                                $"3. To see total money spent",
                                                 $"B to back"
                                             });
                                     int updateNumber = 0;
@@ -394,7 +406,7 @@ internal class RunningProgram
                         break;
 
                     // Denna är till för att få hur många artiklar det ligger i Lager så jag har något att gå på
-                    var idCounter = await db.Shop.OrderBy(x => x.Id).ToListAsync(); 
+                    var idCounter = await db.Shop.OrderBy(x => x.Id).ToListAsync();
 
                     if (orderAdd == "c")
                     {
@@ -402,7 +414,7 @@ internal class RunningProgram
                         {
                             var itemToBuy = db.Shop.Where(n => n.Name == product.Name)
                             .SingleOrDefault();
-                            itemToBuy.Quantity += product.Amount;
+                            itemToBuy!.Quantity += product.Amount;
                         }
                         cartProductsInString.Clear();
                         cartProducts.Clear();
