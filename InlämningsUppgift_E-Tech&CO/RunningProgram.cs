@@ -174,7 +174,8 @@ internal class RunningProgram
                                                 $"2. Lastname: {customer.LastName}",
                                                 $"3. Age: {customer.Age}",
                                                 $"4. Username: {customer.UserName}",
-                                                $"5. Total orders: {customer.OrderHistory.Count()}"
+                                                $"5. Total orders: {customer.OrderHistory.Count()}",
+                                                $"6. Total Logins: {customer.Logins}"
                                             });
 
                                     GUI.DrawWindow("Update Profile", 38, 10, new List<string>() {
