@@ -20,7 +20,7 @@ internal class RunningProgram
     static List<string> cartProductsInString = new List<string>();
     static string loggedinName = "";
     static double totalAmount = 0;
-    public static void RunProgram()
+    public static async Task RunProgram()
     {
         bool running = true;
 
@@ -36,7 +36,7 @@ internal class RunningProgram
                     WelcomeMessage();       // Skrivet ut ett välkomstmeddelande
                     CompanyName();          // Skriver ut Företagsnamnet
 
-                    foreach (var customer in db.Customer)
+                    await foreach (var customer in db.Customer)
                     {
                         if (customer.LoggedIn)
                             loggedinName = customer.Name!;
@@ -73,7 +73,6 @@ internal class RunningProgram
 
                 switch (menu)
                 {
-
                     case 1:
                         if (loggedinName == "")
                         {
@@ -83,7 +82,7 @@ internal class RunningProgram
                             string userName = Console.ReadLine()!;
                             int totalCustomers = db.Customer.Count();
                             int customerCount = 0;
-                            foreach (var customer in db.Customer)
+                            await foreach(var customer in db.Customer)
                             {
                                 customerCount++;
                                 if (customer.UserName == userName)
@@ -117,7 +116,7 @@ internal class RunningProgram
                         }
                         else
                         {
-                            foreach (var customer in db.Customer)
+                            await foreach (var customer in db.Customer)
                             {
                                 customer.LoggedIn = false;
                             }
@@ -164,7 +163,7 @@ internal class RunningProgram
                     case 3:
                         Console.Clear();
 
-                        foreach (var customer in db.Customer)
+                        await foreach (var customer in db.Customer)
                         {
                             if (customer.LoggedIn)
                             {
@@ -181,7 +180,7 @@ internal class RunningProgram
                                     GUI.DrawWindow("Update Profile", 38, 10, new List<string>() {
                                                 $"1. To change Password",
                                                 $"2. To see OrderHistory",
-                                                $"3. To see total money spent",
+                                                $"3. To see total money spent",                                                
                                                 $"B to back"
                                             });
                                     int updateNumber = 0;
@@ -217,7 +216,7 @@ internal class RunningProgram
                         var items = db.Shop.GroupBy(x => x.Category);
 
                         bool customerLogedIn = false;
-                        foreach (var customer in db.Customer)
+                        await foreach (var customer in db.Customer)
                         {
                             if (customer.LoggedIn)
                                 customerLogedIn = true;
@@ -275,7 +274,7 @@ internal class RunningProgram
                             Console.Clear();
                             if (shopMore)
                             {
-                                GettingProducts();
+                                await GettingProducts();
                             }
                         }
                         //}
@@ -285,7 +284,7 @@ internal class RunningProgram
                     case 5:
                         Console.Clear();
 
-                        Admin.AdminConsol();
+                        await Admin.AdminConsol();
 
                         break;
 
@@ -322,7 +321,7 @@ internal class RunningProgram
         Console.ResetColor();
     }
 
-    static void GettingProducts()
+    static async Task GettingProducts()
     {
         using (var db = new MyDbContext())
         {
@@ -376,7 +375,7 @@ internal class RunningProgram
                 {
                     Console.WriteLine("\nPress B to back");
                     Console.WriteLine("Need to login to buy stuff");
-                    string back = Console.ReadLine().ToLower();
+                    string back = Console.ReadLine()!.ToLower();
                     if (back == "b")
                         break;
                 }
@@ -394,7 +393,7 @@ internal class RunningProgram
                         break;
 
                     // Denna är till för att få hur många artiklar det ligger i Lager så jag har något att gå på
-                    var idCounter = db.Shop.OrderBy(x => x.Id).ToList(); 
+                    var idCounter = await db.Shop.OrderBy(x => x.Id).ToListAsync(); 
 
                     if (orderAdd == "c")
                     {
@@ -451,9 +450,9 @@ internal class RunningProgram
                                 foreach (var product in cartProducts)
                                 {
                                     totalAmount += Convert.ToDouble(product.Amount * product.Price);
-                                    cartProductsInString.Add(new string($"Name: {product.Name.PadRight(23)}\t Amount: {product.Amount}, Price: {(product.Price * product.Amount)}"));
+                                    cartProductsInString.Add(new string($"Name: {product.Name.PadRight(50)}\t Amount: {product.Amount}, Price: {(product.Price * product.Amount)}"));
                                 }
-                                cartProductsInString.Add("Press C for cancel order");
+                                cartProductsInString.Add($"Press C to cancel order\t"); // Jag har bara med \t PGA att min shopping ruta blir konstig om jag Inte har den med, den räknas in som 1.
                                 itemToBuy.Quantity -= amount;
                             }
                             else

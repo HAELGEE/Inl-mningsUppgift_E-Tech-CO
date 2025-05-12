@@ -3,7 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -11,7 +14,7 @@ using System.Threading.Tasks;
 namespace InlämningsUppgift_E_Tech_CO;
 internal class Admin
 {
-    public static void AdminConsol()
+    public static async Task AdminConsol()
     {
         using (var db = new MyDbContext())
         {
@@ -22,276 +25,432 @@ internal class Admin
 
             if (passwordCheck == "apa")
             {
-                bool adminRunning = true;
-                while (adminRunning)
+                bool validInput = false;
+                int userInput = 0;
+                // Testade göra en do while-loop här för att se vilken som blev bäst att använda
+               do
                 {
-                    bool validInput = false;
-                    int userInput = 0;
-                    do
-                    {
-                        Console.Clear();
-
-                        Console.WriteLine($"What do you want to do?");                  // klar
-                        Console.WriteLine($"1.  Add Item to shop");                     // klar (nästan)
-                        Console.WriteLine($"2.  Remove Item in shop");                  // klar
-                        Console.WriteLine($"3.  Increase/Decrease stock for items");    // klar
-                        Console.WriteLine($"4.  Change price for item");                // klar
-                        Console.WriteLine($"5.  Change Category/subcategory");          // klar
-                        Console.WriteLine($"6.  Product info");                         // klar
-                        Console.WriteLine($"7.  Provider");
-                        Console.WriteLine($"8.  Change customer information");
-                        Console.WriteLine($"9.  Look Orderhistory");                    // Inte riktigt klar, får det inte utskrivet
-                        Console.WriteLine($"10. Back");                                 // klar
-                        string input = Console.ReadLine()!;
-
-                        if (int.TryParse(input, out userInput) && userInput >= 1 && userInput <= 11)
-                            validInput = true;
-                        else
-                        {
-                            Console.WriteLine("Must be numbers from 1-11 ");
-                            Thread.Sleep(1000);
-                        }
-
-                    } while (!validInput);
-
                     Console.Clear();
 
-                    var categorySearch = db.Shop.OrderBy(i => i.Id)
-                                                .GroupBy(c => new { c.Category, c.SubCategory });
-                    
+                    Console.WriteLine($"What do you want to do?");                  
+                    Console.WriteLine($"1.  Add Item to shop");                     
+                    Console.WriteLine($"2.  Remove Item in shop");                  
+                    Console.WriteLine($"3.  Increase/Decrease stock for items");    
+                    Console.WriteLine($"4.  Change price for item");                
+                    Console.WriteLine($"5.  Change Category/subcategory");         
+                    Console.WriteLine($"6.  Product info");                        
+                    Console.WriteLine($"7.  All customers & Change Customer");     
+                    Console.WriteLine($"8.  Look Orderhistory");                    // Inte riktigt klar, får det inte utskrivet (finns inga ordrar än)
+                    Console.WriteLine($"B to Back");                                
+                    string input = Console.ReadLine()!;
 
-                    if (userInput > 0 && userInput < 7)
+                    if (BackOption(input))
+                        break;
+
+                    if (int.TryParse(input, out userInput) && userInput >= 1 && userInput <= 8)
+                        validInput = true;
+                    else
                     {
-                        foreach (var cat in categorySearch)
+                        Console.WriteLine("Invalid Input");
+                        Thread.Sleep(1000);
+                    }
+
+                } while (!validInput);
+
+                Console.Clear();
+
+                var categorySearch = await db.Shop.OrderBy(i => i.Id)
+                                            .GroupBy(c => new { c.Category, c.SubCategory })
+                                            .ToListAsync();
+                
+
+
+                if (userInput > 0 && userInput < 7)
+                {
+                    foreach (var cat in categorySearch)
+                    {
+                        Console.WriteLine($"Category: {cat.Key.Category}");
+                        Console.WriteLine($"  SubCategory: {cat.Key.SubCategory}");
+                        Console.WriteLine("-----------------------");
+                        foreach (var item in cat)
                         {
-                            Console.WriteLine($"Category: {cat.Key.Category}");
-                            Console.WriteLine($"  SubCategory: {cat.Key.SubCategory}");
-                            Console.WriteLine("-----------------------");
-                            foreach (var item in cat)
-                            {
-                                Console.WriteLine($"ID:{item.Id} \t Name: {item.Name}\t in Stock: {item.Quantity}, Price: {item.Price}");
-                            }
-                            Console.WriteLine();
+                            Console.WriteLine($"ID:{item.Id} \t Name: {item.Name}\t in Stock: {item.Quantity}, Price: {item.Price}");
                         }
                         Console.WriteLine();
                     }
-                    switch (userInput)
-                    {
-                        case 1:
-                            Console.WriteLine("Press [B] to back");
-                            Console.Write("Wich Category do you want to add this item to?: ");
-                            string category = Console.ReadLine()!;
-                            Console.Write("Wich Subcategory do you want to add this item to?: ");
-                            string subCategory = Console.ReadLine()!;
-                            Console.Write("What is the name of the product?: ");
-                            string productName = Console.ReadLine()!;
-                            Console.Write("How much is the price?: ");
+                    Console.WriteLine();
+                }
+                switch(userInput)
+                {
+                    case 1:
+                        Console.WriteLine("Press [B] to back");
+                        Console.Write("Wich Category do you want to add this item to?: ");
+                        string category = Console.ReadLine()!;
+                        Console.Write("Wich Subcategory/product maker do you want to add this item to?: ");
+                        string subCategory = Console.ReadLine()!;
+                        Console.Write("What is the name of the product?: ");
+                        string productName = Console.ReadLine()!;
+                        Console.Write("Price on Product?: ");
 
-                            double productPrice = double.Parse(Console.ReadLine()!);
-                            Console.Write("How many in stock?: ");
-                            int stock = int.Parse(Console.ReadLine()!);
+                        double productPrice = double.Parse(Console.ReadLine()!);
+                        Console.Write("How many in stock?: ");
+                        int stock = int.Parse(Console.ReadLine()!);
 
-                            Console.Write("Enter information about the product: ");
-                            string information = Console.ReadLine()!;
+                        Console.Write("Enter information about the product: ");
+                        string information = Console.ReadLine()!;
 
-                            if (category == "b" || subCategory == "b" || productName == "b" || productName == "b" || information == "b")
+                        if (category == "b" || subCategory == "b" || productName == "b" || productName == "b" || information == "b")
+                            break;
+
+                        db.Shop.Add(new Shop
+                        {
+                            Category = category,
+                            SubCategory = subCategory,
+                            Name = productName,
+                            Price = productPrice,
+                            Quantity = stock,
+                            ProductInformation = information
+                        });
+
+                        db.SaveChanges();
+                        break;
+
+                    case 2:
+                        int deleteId = 0;
+                        while (deleteId <= 0)
+                        {
+                            Console.Write("Wich product do you want to delete? or [B]ack: ");
+                            string deleteCheck = Console.ReadLine()!;
+
+                            if (BackOption(deleteCheck))
                                 break;
 
-                            db.Shop.Add(new Shop
+                            if (int.TryParse(deleteCheck, out deleteId) && deleteId > 0 && !string.IsNullOrWhiteSpace(deleteCheck))
                             {
-                                Category = category,
-                                SubCategory = subCategory,
-                                Name = productName,
-                                Price = productPrice,
-                                Quantity = stock,
-                                ProductInformation = information
-                            });
-
-                            db.SaveChanges();
-                            break;
-
-                        case 2:
-                            int deleteId = 0;
-                            while (deleteId <= 0)
-                            {
-                                Console.Write("Wich product do you want to delete? or [B]ack: ");
-                                string deleteCheck = Console.ReadLine()!;
-
-                                if (deleteCheck == "b")
-                                    break;
-
-                                if (int.TryParse(deleteCheck, out deleteId) && deleteId > 0 && !string.IsNullOrWhiteSpace(deleteCheck))
-                                {
-                                    var deleteItem = db.Shop.Where(x => x.Id == deleteId);
-                                }
+                                var deleteItem = db.Shop.Where(x => x.Id == deleteId);
                             }
+                        }
 
-                            db.SaveChanges();
-                            break;
+                        db.SaveChanges();
+                        break;
 
-                        case 3:
-                            int updateStock = 0;
-                            while (updateStock == 0)
+                    case 3:
+                        int updateStock = 0;
+                        while (updateStock == 0)
+                        {
+                            Console.Write("Wich product do u want to alter the stock? or [B]ack: ");
+                            string updateCheck = Console.ReadLine()!;
+
+                            if (BackOption(updateCheck))
+                                break;
+
+                            if (int.TryParse(updateCheck, out updateStock) && updateStock > 0 && !string.IsNullOrWhiteSpace(updateCheck))
                             {
-                                Console.Write("Wich product do u want to alter the stock? or [B]ack: ");
-                                string updateCheck = Console.ReadLine()!;
-
-                                if (updateCheck == "b")
-                                    break;
-
-                                if (int.TryParse(updateCheck, out updateStock) && updateStock > 0 && !string.IsNullOrWhiteSpace(updateCheck))
+                                var updateItem = db.Shop.Where(x => x.Id == updateStock).SingleOrDefault();
+                                updateStock = 0;
+                                while (updateStock == 0)
                                 {
-                                    var updateItem = db.Shop.Where(x => x.Id == updateStock).SingleOrDefault();
-                                    updateStock = 0;
-                                    while (updateStock == 0)
+                                    Console.Write($"How much do you want to alter?: ");
+                                    string alterCheck = Console.ReadLine()!;
+                                    if (int.TryParse(alterCheck, out updateStock) && updateStock != 0)
                                     {
-                                        Console.Write($"How much do you want to alter?: ");
-                                        string alterCheck = Console.ReadLine()!;
-                                        if (int.TryParse(alterCheck, out updateStock) && updateStock != 0)
-                                        {
-                                            if (updateItem.Quantity > 0)
-                                                updateItem.Quantity = updateItem.Quantity + updateStock;
-                                            else
-                                                Console.WriteLine("You cant have negative in your balance");
-                                        }
+                                        if (updateItem.Quantity > 0)
+                                            updateItem.Quantity = updateItem.Quantity + updateStock;
+                                        else
+                                            Console.WriteLine("You cant have negative in your balance");
                                     }
                                 }
                             }
+                        }
 
-                            db.SaveChanges();
-                            break;
-                        case 4:
-                            int updatePrice = 0;
-                            while (updatePrice <= 0)
+                        db.SaveChanges();
+                        break;
+                    case 4:
+                        int updatePrice = 0;
+                        while (updatePrice <= 0)
+                        {
+                            Console.Write("Wich product do u want to change price on? or [B]ack: ");
+                            string priceCheck = Console.ReadLine()!;
+
+                            if (BackOption(priceCheck))
+                                break;
+
+                            var updateItem = db.Shop.Where(x => x.Id == updatePrice).SingleOrDefault();
+                            if (int.TryParse(priceCheck, out updatePrice) && updatePrice > 0 && !string.IsNullOrWhiteSpace(priceCheck))
                             {
-                                Console.Write("Wich product do u want to change price on? or [B]ack: ");
-                                string priceCheck = Console.ReadLine()!;
+                                if (updateItem.Price > 0)
+                                    updateItem.Price = updateItem.Price + updatePrice;
+                                else
+                                    Console.WriteLine("Cant be negative in price");
+                            }
+                        }
+                        db.SaveChanges();
+                        break;
+                    case 5:
+                        int updateCategory = 0;
+                        while (updateCategory <= 0)
+                        {
+                            Console.Write($"Wich Product do you want to change category/subcategory on? or [B]ack: ");
+                            string catSubCheck = Console.ReadLine()!;
 
-                                if (priceCheck == "b")
-                                    break;
+                            if (BackOption(catSubCheck))
+                                break;
 
-                                var updateItem = db.Shop.Where(x => x.Id == updatePrice).SingleOrDefault();
-                                if (int.TryParse(priceCheck, out updatePrice) && updatePrice > 0 && !string.IsNullOrWhiteSpace(priceCheck))
+                            if (int.TryParse(catSubCheck, out updateCategory) && updateCategory > 0 && !string.IsNullOrWhiteSpace(catSubCheck))
+                            {
+                                var categoryAndSub = db.Shop.Where(x => x.Id == updateCategory).SingleOrDefault();
+
+                                Console.Write($"Wich Category do u want to change to?: ");
+                                string categoryChange = Console.ReadLine()!;
+                                Console.Write($"Wich Subcategory do u want to change to?: ");
+                                string subCategoryChange = Console.ReadLine()!;
+
+                                if (categoryChange != "" && subCategoryChange != "")
                                 {
-                                    if (updateItem.Price > 0)
-                                        updateItem.Price = updateItem.Price + updatePrice;
-                                    else
-                                        Console.WriteLine("Cant be negative in price");
+                                    categoryAndSub.Category = categoryChange;
+                                    categoryAndSub.SubCategory = subCategoryChange;
                                 }
                             }
-                            db.SaveChanges();
-                            break;
-                        case 5:
-                            int updateCategory = 0;
-                            while (updateCategory <= 0)
-                            {
-                                Console.Write($"Wich Product do you want to change category/subcategory on? or [B]ack: ");
-                                string catSubCheck = Console.ReadLine()!.ToLower();
+                        }
+                        db.SaveChanges();
+                        break;
+                    case 6:
+                        int updateProductInformation = 0;
+                        while (updateProductInformation <= 0)
+                        {
 
-                                if (catSubCheck == "b")
+
+                            Console.Write($"Wich product do you want to alter the information about? or [B]ack: ");
+                            string productAlter = Console.ReadLine()!;
+
+                            if (BackOption(productAlter))
+                                break;
+
+                            if (int.TryParse(productAlter, out updateProductInformation) && updateProductInformation > 0 && !string.IsNullOrWhiteSpace(productAlter))
+                            {
+                                Console.Clear();
+
+                                var productInfo = db.Shop.Where(x => x.Id == updateProductInformation).SingleOrDefault();
+                                Console.WriteLine($"Product: {productInfo.Name}");
+                                Console.Write($"Information about the product: ");
+                                Console.ForegroundColor = ConsoleColor.Blue;
+                                Console.WriteLine(productInfo.ProductInformation + "\n");
+                                Console.ResetColor();
+                                Console.WriteLine("What do tou want to update the information to? or [B]ack: ");
+                                string checkProductInfo = Console.ReadLine()!;
+
+                                if (BackOption(checkProductInfo))
                                     break;
 
-                                if (int.TryParse(catSubCheck, out updateCategory) && updateCategory > 0 && !string.IsNullOrWhiteSpace(catSubCheck))
-                                {
-                                    var categoryAndSub = db.Shop.Where(x => x.Id == updateCategory).SingleOrDefault();
-
-                                    Console.Write($"Wich Category do u want to change to?: ");
-                                    string categoryChange = Console.ReadLine()!;
-                                    Console.Write($"Wich Subcategory do u want to change to?: ");
-                                    string subCategoryChange = Console.ReadLine()!;
-
-                                    if (categoryChange != "" && subCategoryChange != "")
-                                    {
-                                        categoryAndSub.Category = categoryChange;
-                                        categoryAndSub.SubCategory = subCategoryChange;
-                                    }
-                                }
+                                productInfo.ProductInformation = checkProductInfo;
                             }
-                            db.SaveChanges();
-                            break;
-                        case 6:
-                            int updateProductInformation = 0;
-                            while (updateProductInformation <= 0)
+                        }
+                        db.SaveChanges();
+                        break;
+                    case 7:
+                        Console.Clear();
+                        int updateCustomerInformation = 0;
+                        while (updateCustomerInformation <= 0)
+                        {
+                            var allCustomers = db.Customer.OrderBy(x => x.Id);
+
+                            if (allCustomers.Count() == 0)
+                                Console.WriteLine("No users found");
+                            else
                             {
-                                Console.Write($"Wich product do you want to alter the information about? or [B]ack: ");
-                                string productAlter = Console.ReadLine()!.ToLower();
-
-                                if (productAlter == "b")
-                                    break;
-
-                                if(int.TryParse(productAlter, out updateProductInformation) && updateProductInformation > 0 && !string.IsNullOrWhiteSpace(productAlter))
-                                {
-                                    Console.Clear();
-
-                                    var productInfo = db.Shop.Where(x => x.Id == updateProductInformation).SingleOrDefault();
-                                    Console.WriteLine($"Product: {productInfo.Name}");
-                                    Console.Write($"Information about the product: ");
-                                    Console.ForegroundColor = ConsoleColor.Blue;
-                                    Console.WriteLine(productInfo.ProductInformation + "\n");
-                                    Console.ResetColor();
-                                    Console.WriteLine("What do tou want to update the information to? or [B]ack: ");
-                                    string checkProductInfo = Console.ReadLine()!.ToLower();
-
-                                    if (checkProductInfo == "b")
-                                        break;
-
-                                    productInfo.ProductInformation = checkProductInfo;
-                                }
-                            }
-                            db.SaveChanges();
-                            break;
-                        case 7:
-                            int updateProvider = 0;
-                            while (updateProvider <= 0)
-                            {
-
-                            }
-                            db.SaveChanges();
-                            break;
-                        case 8:
-                            Console.Clear();
-                            int updateCustomerInformation = 0;
-                            while (updateCustomerInformation <= 0)
-                            {
-                                var allCustomers = db.Customer.OrderBy(x => x.Id);
-
                                 foreach (var customer in allCustomers)
                                 {
                                     Console.WriteLine($"ID. {customer.Id} Name: {customer.Name}");
                                 }
-                                Console.WriteLine("---------------------------------");
-                                Console.WriteLine("\nB to back");
-                                Console.WriteLine("Wich Person do you want to update/delete");
-                                string personString = Console.ReadLine().ToLower();
-                                if (personString == "b")
-                                    break;
                             }
-                            db.SaveChanges();
-                            break;
-                        case 9:
-                            Console.Clear();
+                            Console.WriteLine("---------------------------------");
+                            Console.WriteLine("\nB to back");
+                            Console.WriteLine("Wich Person do you want to update/delete");
+                            string personString = Console.ReadLine()!;
+                            if (BackOption(personString))
+                                break;
 
-                            var allOrders = db.OrderHistories   .Join(db.Shop, order => order.Id, shop => shop.Id, (order, shop) => new
-                                                                {
-                                                                   OrderHistory = order,
-                                                                   Shop = shop,
-                                                                }).ToList()
-                                                                .OrderBy(x => x.OrderHistory.Id);
-                            
+                            if (int.TryParse(personString, out updateCustomerInformation) && updateCustomerInformation > -1 && !string.IsNullOrWhiteSpace(personString))
+                            {
+                                var customer = db.Customer.Where(x => x.Id == updateCustomerInformation).FirstOrDefault();
+
+                                bool idCheck = false;
+                                foreach (var person in allCustomers)
+                                {
+                                    if (updateCustomerInformation == person.Id)
+                                        idCheck = true;
+                                }
+
+                                if (!idCheck)
+                                {
+                                    Console.WriteLine("No user found with that ID");
+                                    Thread.Sleep(1000);
+                                    break;
+                                }
+                                string updateCustomerString = "";
+                                while (updateCustomerString.ToLower() != "b")
+                                {
+                                    Console.Clear();
+                                    Console.Write("What do you want to do with ");
+                                    Console.ForegroundColor = ConsoleColor.Green;
+                                    Console.WriteLine("Customer:");
+                                    Console.ForegroundColor = ConsoleColor.DarkCyan;
+                                    Console.WriteLine($"Name: {customer.Name}   Lastname: {customer.LastName}   Age: {customer.Age}   Username: {customer.UserName}   Password: {customer.Password}\n");
+                                    Console.ResetColor();
+                                    Console.WriteLine("1. Delete Customer");
+                                    Console.WriteLine("2. Update Customer Name");
+                                    Console.WriteLine("3. Update Customer Lastname");
+                                    Console.WriteLine("4. Update Customer Age");
+                                    Console.WriteLine("5. Update Customer Username");
+                                    Console.WriteLine("6. Update Customer Password");
+                                    Console.WriteLine("B to back");
+                                    updateCustomerString = Console.ReadLine()!;
+                                    if (BackOption(updateCustomerString))
+                                        break;
+
+
+                                    int number = 0;
+                                    if (int.TryParse(updateCustomerString, out number) && !string.IsNullOrWhiteSpace(updateCustomerString) && number > 0)
+                                    {
+                                        switch (number)
+                                        {
+                                            case 1:
+                                                Console.Clear();
+                                                Console.WriteLine($"Do you still want to delete customer {customer.Name} - {customer.LastName} ?");
+                                                Console.WriteLine("Press Y for Yes or press anykey to back");
+                                                string inputCheck = Console.ReadLine()!;
+                                                if (inputCheck.ToLower() == "y")
+                                                {
+                                                    var deleteCustomer = db.Customer.Where(x => x.Id == updateCustomerInformation)
+                                                                                    .ExecuteDelete();
+
+                                                    Console.ForegroundColor = ConsoleColor.Red;
+                                                    Console.WriteLine("\nCustomer is now deleted from Database");
+                                                    Console.ResetColor();
+                                                    Thread.Sleep(1000);
+                                                    db.SaveChanges();
+                                                }
+
+                                                break;
+
+                                            case 2:
+                                                Console.Clear();
+                                                Console.WriteLine($"Current Customer Name: {customer.Name}");
+                                                Console.WriteLine("What do you want to update the Customer Name to?");
+                                                string nameUpdate = Console.ReadLine()!;
+                                                customer.Name = nameUpdate;
+
+                                                Console.ForegroundColor = ConsoleColor.Green;
+                                                Console.WriteLine("Name updated");
+                                                Console.ResetColor();
+                                                Thread.Sleep(1000);
+                                                db.SaveChanges();
+                                                break;
+
+                                            case 3:
+                                                Console.Clear();
+                                                Console.WriteLine($"Current Customer lastname: {customer.LastName}");
+                                                Console.WriteLine("What do you want to update the Customer Lastname to?");
+                                                string lastnameUpdate = Console.ReadLine()!;
+                                                customer.LastName = lastnameUpdate;
+
+                                                Console.ForegroundColor = ConsoleColor.Green;
+                                                Console.WriteLine("Lastname updated");
+                                                Console.ResetColor();
+                                                Thread.Sleep(1000);
+                                                db.SaveChanges();
+                                                break;
+
+                                            case 4:
+                                                Console.Clear();
+                                                Console.WriteLine($"Current Customer Age: {customer.Age}");
+                                                Console.WriteLine("What do you want to update the Customer Age to?");
+                                                string ageUpdate = Console.ReadLine()!;
+                                                int age = 0;
+                                                if (int.TryParse(ageUpdate, out age) && age > 0 && !string.IsNullOrWhiteSpace(ageUpdate))
+                                                {
+                                                    customer.Age = age;
+                                                    Console.ForegroundColor = ConsoleColor.Green;
+                                                    Console.WriteLine("Age updated");
+                                                    Console.ResetColor();
+                                                    Thread.Sleep(1000);
+                                                    db.SaveChanges();
+                                                }
+                                                else
+                                                    Console.WriteLine("Invalid Input");
+                                                    break;
+
+                                            case 5:
+                                                Console.Clear();
+                                                Console.WriteLine($"Current Customer Username: {customer.UserName}");
+                                                Console.WriteLine("What do you want to update the Customer Lastname to?");
+                                                string usernamUpdate = Console.ReadLine()!;
+                                                customer.UserName = usernamUpdate;
+
+                                                Console.ForegroundColor = ConsoleColor.Green;
+                                                Console.WriteLine("Username updated");
+                                                Console.ResetColor();
+                                                Thread.Sleep(1000);
+                                                db.SaveChanges();
+                                                break;
+
+                                            case 6:
+                                                Console.Clear();
+                                                Console.WriteLine($"Current Customer Password: {customer.Password}");
+                                                Console.WriteLine("What do you want to update the Customer Lastname to?");
+                                                string passwordUpdate = Console.ReadLine()!;
+                                                customer.Password = passwordUpdate;
+
+                                                Console.ForegroundColor = ConsoleColor.Green;
+                                                Console.WriteLine("Password updated");
+                                                Console.ResetColor();
+                                                Thread.Sleep(1000);
+                                                db.SaveChanges();
+                                                break;
+                                        }
+                                    }
+                                    else
+                                        Console.WriteLine("Invalid Input");
+                                }
+                            }
+                            else
+                                Console.WriteLine("Invalid Input");
+
+                        }
+                        db.SaveChanges();
+                        break;
+
+                    case 8:
+                        Console.Clear();
+
+                        var allOrders = await db.OrderHistories.Join(db.Shop, order => order.Id, shop => shop.Id, (order, shop) => new
+                        {
+                            OrderHistory = order,
+                            Shop = shop,
+                        })
+                          .OrderBy(x => x.OrderHistory.Id)
+                          .ToListAsync();
+
+                        if (allOrders.Count() == 0)
+                            Console.WriteLine("The orderlist is empty at the moment");
+                        else
                             foreach (var orders in allOrders)
                             {
                                 Console.WriteLine($"ID: {orders.OrderHistory.Id}\t {orders.Shop.Name} \t {orders.Shop.Sold}");
                             }
 
-                            Console.ReadKey();
-                            break;
-
-                        case 10:
-                            adminRunning = false;
-                            break;
-                    }
+                        Console.ReadKey();
+                        break;
                 }
+
             }
         }
+    }
+    static bool BackOption(string input)
+    {
+        if (input.ToLower() == "b") //  för att backa
+            return true;
+
+        return false;
     }
 }

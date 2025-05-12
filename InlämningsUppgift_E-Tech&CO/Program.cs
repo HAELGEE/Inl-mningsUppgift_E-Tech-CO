@@ -8,11 +8,11 @@ namespace InlämningsUppgift_E_Tech_CO
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             SetLogin();
             Console.CursorVisible = false;
-            RunningProgram.RunProgram();
+            await RunningProgram.RunProgram();
         }
 
         static void SetLogin()
@@ -32,26 +32,6 @@ namespace InlämningsUppgift_E_Tech_CO
         {
             DateTime date = DateTime.Now;
             return date.ToString();
-        }
-
-        public static void GetDatabaseStuff()
-        {
-            using (var db = new MyDbContext())
-            {
-
-                db.Shop.Add(new Shop
-                {
-                    //Category = category,
-                    //Name = productName,
-                    //Quantity = stock,
-                    //ProductInformation = information,
-                    //SubCategory = subCategory,
-                    //Price = productPrice
-                });
-
-                db.SaveChanges();
-
-            }
         }
     }
 }
