@@ -454,7 +454,7 @@ internal class Admin
             }
         }
     }
-    static bool BackOption(string input)
+    static public bool BackOption(string input)
     {
         if (input.ToLower() == "b") //  för att backa
             return true;

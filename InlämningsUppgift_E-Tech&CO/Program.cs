@@ -12,7 +12,7 @@ namespace InlämningsUppgift_E_Tech_CO
         {
             SetLogin();
             Console.CursorVisible = false;
-            await RunningProgram.RunProgram();
+            await RunProgram.RunningProgram();
         }
 
         static void SetLogin()

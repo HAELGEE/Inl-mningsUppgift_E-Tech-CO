@@ -13,14 +13,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace InlämningsUppgift_E_Tech_CO;
-internal class RunningProgram
+internal class RunProgram
 {
     static string categoryName = ""; // Sätter denna här så att jag kan komma åt den i mina metoder       
     static List<Product> cartProducts = new List<Product>();
     static List<string> cartProductsInString = new List<string>();
     static string loggedinName = "";
     static double totalAmount = 0;
-    public static async Task RunProgram()
+    public static async Task RunningProgram()
     {
         bool running = true;
 
@@ -40,7 +40,6 @@ internal class RunningProgram
                     {
                         if (customer.LoggedIn)
                             loggedinName = customer.Name!;
-
                     }
 
                     Console.WriteLine($"What do you want to do?");
@@ -139,26 +138,35 @@ internal class RunningProgram
 
                     case 2:
                         Console.Clear();
-
+                        Console.WriteLine("Type B to Back\n");
                         Console.Write("Please enter ur Firstname: ");
                         string newFirstName = Console.ReadLine()!;
+                        if (Admin.BackOption(newFirstName))
+                            break;
                         Console.Write("Please enter ur Lastname: ");
                         string newLastname = Console.ReadLine()!;
-
+                        if (Admin.BackOption(newLastname))
+                            break;
                         int newAge = 0;
                         while (newAge <= 0)
                         {
                             Console.Write("Please enter ur Age: ");
                             string inputCheck = Console.ReadLine()!;
-
+                            if (Admin.BackOption(inputCheck))
+                                break;
                             if (int.TryParse(inputCheck, out newAge) && !string.IsNullOrWhiteSpace(inputCheck) && newAge < 0)
                                 Console.WriteLine("Must be numbers");
+                            
                         }
 
                         Console.Write("Please enter UserName: ");
                         string newUserName = Console.ReadLine()!;
+                        if (Admin.BackOption(newUserName))
+                            break;
                         Console.Write("Please enter ur Password: ");
                         string newPassword = Console.ReadLine()!;
+                        if (Admin.BackOption(newPassword))
+                            break;
 
                         db.Customer.Add(new Customer
                         (
@@ -168,8 +176,15 @@ internal class RunningProgram
                             newUserName,
                             newPassword
                         ));
+                        db.SaveChanges(); // måste spara användaren Innan man kan göra det som kommer under
 
-                        db.SaveChanges();
+                        foreach (var customer in db.Customer)
+                        {
+                            if (customer.LoggedIn)
+                                customer.Logins++;
+                        }
+                        db.SaveChanges(); // Då det är skapat så man automatiskt blir inloggad vid registrering så skall den även spara inloggnings räknaren
+
                         break;
 
                     case 3:
