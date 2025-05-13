@@ -155,7 +155,7 @@ internal class Admin
                                     string alterCheck = Console.ReadLine()!;
                                     if (int.TryParse(alterCheck, out updateStock) && updateStock != 0)
                                     {
-                                        if (updateItem.Quantity > 0)
+                                        if (updateItem.Quantity >= 0)
                                             updateItem.Quantity = updateItem.Quantity + updateStock;
                                         else
                                             Console.WriteLine("You cant have negative in your balance");
@@ -218,6 +218,23 @@ internal class Admin
                         break;
 
                     case 6:
+                        int updateProductName = 0;
+                        while (updateProductName <= 0)
+                        {
+                            var productNameUpdate = db.Shop.Where(x => x.Id == updateProductName).SingleOrDefault();
+                            Console.Write($"Wich Product do you want to change Name on? or [B]ack: ");
+                            string propductNameCheck = Console.ReadLine()!;
+
+                            if (BackOption(propductNameCheck))
+                                break;
+
+                            if (int.TryParse(propductNameCheck, out updateProductName) && updateProductName > 0 && !string.IsNullOrWhiteSpace(propductNameCheck))
+                            {
+                                Console.WriteLine("What do you want to update the name to?:");
+                                string productNameInfo = Console.ReadLine()!;
+                                productNameUpdate.Name = productNameInfo;
+                            }
+                        }
 
                         db.SaveChanges();
                         break;

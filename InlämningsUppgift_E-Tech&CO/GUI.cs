@@ -83,7 +83,7 @@ class GUI
         for (int j = 0; j < graphics.Length; j++)
         {
             Console.SetCursorPosition(fromLeft, fromTop + j + 1);
-            Console.WriteLine('│' + " " + graphics[j] + new String(' ', width - graphics[j].Length + 4) + '│');
+            Console.WriteLine('│' + " " + graphics[j] + new String(' ', width - graphics[j].Length + 5) + '│');
             maxRows = j;
         }
         Console.SetCursorPosition(fromLeft, fromTop + maxRows + 2);

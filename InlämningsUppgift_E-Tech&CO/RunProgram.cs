@@ -478,9 +478,9 @@ internal class RunProgram
                                 foreach (var product in cartProducts)
                                 {
                                     totalAmount += Convert.ToDouble(product.Amount * product.Price);
-                                    cartProductsInString.Add(new string($"Name: {product.Name.PadRight(50)}\t Amount: {product.Amount}, Price: {(product.Price * product.Amount)}"));
+                                    cartProductsInString.Add(new string($"Name: {product.Name.PadRight(51)}\t Amount: {product.Amount}, Price: {(product.Price * product.Amount)}"));
                                 }
-                                cartProductsInString.Add($"Press C to cancel order\t"); // Jag har bara med \t PGA att min shopping ruta blir konstig om jag Inte har den med, den räknas in som 1.
+                                cartProductsInString.Add($"Press C to cancel order");
                                 itemToBuy.Quantity -= amount;
                             }
                             else
