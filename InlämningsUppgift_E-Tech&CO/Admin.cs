@@ -221,16 +221,17 @@ internal class Admin
                         int updateProductName = 0;
                         while (updateProductName <= 0)
                         {
-                            var productNameUpdate = db.Shop.Where(x => x.Id == updateProductName).SingleOrDefault();
                             Console.Write($"Wich Product do you want to change Name on? or [B]ack: ");
                             string propductNameCheck = Console.ReadLine()!;
 
                             if (BackOption(propductNameCheck))
                                 break;
 
+
                             if (int.TryParse(propductNameCheck, out updateProductName) && updateProductName > 0 && !string.IsNullOrWhiteSpace(propductNameCheck))
                             {
-                                Console.WriteLine("What do you want to update the name to?:");
+                                var productNameUpdate = db.Shop.Where(x => x.Id == updateProductName).SingleOrDefault();
+                                Console.Write("What do you want to update the name to?: ");
                                 string productNameInfo = Console.ReadLine()!;
                                 productNameUpdate.Name = productNameInfo;
                             }
