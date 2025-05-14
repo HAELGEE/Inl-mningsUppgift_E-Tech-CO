@@ -88,14 +88,15 @@ internal class RunProgram
                                 {
                                     foundCustomer = true;
                                 }
-                                
-                            };
-                            
+
+                            }
+                            ;
+
                             if (foundCustomer)
                             {
                                 await foreach (var customer in db.Customer)
                                 {
-                                    if(customer.UserName == userName)
+                                    if (customer.UserName == userName)
                                     {
                                         Console.Write("Please enter Password: ");
                                         string loginPassword = Console.ReadLine()!;
@@ -114,7 +115,7 @@ internal class RunProgram
                                         }
                                     }
                                 }
-                                
+
                             }
                             else
                             {
@@ -156,7 +157,7 @@ internal class RunProgram
                                 break;
                             if (int.TryParse(inputCheck, out newAge) && !string.IsNullOrWhiteSpace(inputCheck) && newAge < 0)
                                 Console.WriteLine("Must be numbers");
-                            
+
                         }
 
                         Console.Write("Please enter UserName: ");
@@ -305,7 +306,7 @@ internal class RunProgram
                                 await GettingProducts();
                             }
                         }
-                        //}
+
                         db.SaveChanges();
                         break;
 
@@ -351,59 +352,21 @@ internal class RunProgram
 
     static async Task GettingProducts()
     {
-        using (var db = new MyDbContext())
+        int addToOrder = 0;
+
+        while (true)
         {
-            int addToOrder = 0;
-
-            var itemsSubcategory = db.Shop.Where(cn => cn.Category == categoryName)
-                                            .OrderBy(cn => cn.Id)
-                                            .ThenBy(cn => cn.SubCategory)
-                                            .GroupBy(sc => sc.SubCategory);
-
-            while (true)
+            using (var db = new MyDbContext())
             {
-                Console.Clear();
                 List<Product> productList = new List<Product>();
+                ShopItems();
 
-                // Denna loopen skriver ut listan så man ser vad man kan köpa
-                foreach (var sub in itemsSubcategory)
-                {
-
-                    Console.WriteLine($"Category: {sub.Key}\n----------------------");
-                    foreach (var item in sub)
-                    {
-                        Console.Write($"{item.Id}. Name: {item.Name} Total in stock: ");
-
-                        if (item.Quantity > 0)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine($"{item.Quantity}");
-                        }
-                        else
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine($"{item.Quantity}");
-                        }
-                        Console.ResetColor();
-
-                        Console.Write($"Product info:");
-
-                        Console.ForegroundColor = ConsoleColor.Blue;
-                        Console.Write($" {item.ProductInformation} ");
-                        Console.ResetColor();
-                        Console.Write("Price: ");
-                        Console.ForegroundColor = ConsoleColor.Magenta;
-                        Console.WriteLine($"{item.Price:C}");
-                        Console.ResetColor();
-                    }
-                    Console.WriteLine("---------------------------");
-                }
 
                 if (loggedinName == "")
                 {
                     Console.WriteLine("\nPress B to back");
                     Console.WriteLine("Need to login to buy stuff");
-                    string back = Console.ReadLine()!.ToLower();
+                    string back = Console.ReadLine()!;
                     if (back == "b")
                         break;
                 }
@@ -417,13 +380,13 @@ internal class RunProgram
 
 
                     string orderAdd = Console.ReadLine()!.ToLower();
-                    if (orderAdd == "b")
+                    if (orderAdd.ToLower() == "b")
                         break;
 
                     // Denna är till för att få hur många artiklar det ligger i Lager så jag har något att gå på
                     var idCounter = await db.Shop.OrderBy(x => x.Id).ToListAsync();
 
-                    if (orderAdd == "c")
+                    if (orderAdd.ToLower() == "c")
                     {
                         foreach (var product in cartProducts)
                         {
@@ -434,6 +397,10 @@ internal class RunProgram
                         cartProductsInString.Clear();
                         cartProducts.Clear();
                         totalAmount = 0;
+                    }
+                    else if (orderAdd.ToLower() == "o")
+                    {
+                        Order();
                     }
                     else if (int.TryParse(orderAdd, out addToOrder) && addToOrder > 0 && addToOrder <= idCounter.Count())    // Här kollas antalet artiklar
                     {
@@ -479,9 +446,12 @@ internal class RunProgram
                                 {
                                     totalAmount += Convert.ToDouble(product.Amount * product.Price);
                                     cartProductsInString.Add(new string($"Name: {product.Name.PadRight(51)}\t Amount: {product.Amount}, Price: {(product.Price * product.Amount)}"));
+                                    if (product.Name == itemToBuy.Name)
+                                        itemToBuy.Quantity -= product.Amount;
                                 }
-                                cartProductsInString.Add($"Press C to cancel order");
-                                itemToBuy.Quantity -= amount;
+                                cartProductsInString.Add($"---------------------------------------------------");
+                                cartProductsInString.Add($"Press C to cancel order or press O to enter Order");
+                                //itemToBuy.Quantity -= amount;
                             }
                             else
                             {
@@ -498,10 +468,311 @@ internal class RunProgram
                         Console.WriteLine("Invalid input");
                         Thread.Sleep(1000);
                     }
-                    db.SaveChanges();
                 }
+                db.SaveChanges();
             }
         }
     }
 
+    static async Task ShopItems()
+    {
+        using (var db = new MyDbContext())
+        {
+            var itemsSubcategory = db.Shop.Where(cn => cn.Category == categoryName)
+                                                .OrderBy(cn => cn.Id)
+                                                .ThenBy(cn => cn.SubCategory)
+                                                .GroupBy(sc => sc.SubCategory);
+
+            Console.Clear();
+
+            // Denna loopen skriver ut listan så man ser vad man kan köpa
+            foreach (var sub in itemsSubcategory)
+            {
+
+                Console.WriteLine($"Category: {sub.Key}\n----------------------");
+                foreach (var item in sub)
+                {
+                    Console.Write($"{item.Id}. Name: {item.Name} Total in stock: ");
+
+                    if (item.Quantity > 0)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"{item.Quantity}");
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"{item.Quantity}");
+                    }
+                    Console.ResetColor();
+
+                    Console.Write($"Product info:");
+
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.Write($" {item.ProductInformation} ");
+                    Console.ResetColor();
+                    Console.Write("Price: ");
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                    Console.WriteLine($"{item.Price:C}");
+                    Console.ResetColor();
+                }
+                Console.WriteLine("---------------------------");
+            }
+        }
+    }
+    static void Order()
+    {
+        while (true)
+        {
+            using (var db = new MyDbContext())
+            {
+                Console.Clear();
+                int orderCheckNumber = 0;
+                string nameCheck = "";
+
+
+                double? totalprice = 0;
+
+                Console.WriteLine("-- Cart --------------------------");
+                for (int i = 0; i < cartProducts.Count; i++)
+                {
+                    Console.WriteLine($"Product Name: {cartProducts[i].Name.PadRight(48)}\t Amount: {cartProducts[i].Amount}\t Price: {cartProducts[i].Price:C}");
+                    totalprice += (cartProducts[i].Price * cartProducts[i].Amount);
+                }
+                if (cartProducts.Count == 0)
+                    Console.WriteLine("Cart is empty");
+                else
+                {
+                    Console.Write($"\nTotal Price: ");
+
+                    Console.ForegroundColor = ConsoleColor.DarkCyan;
+                    Console.Write($"{totalprice:C}");
+                    Console.ResetColor();
+
+                    Console.Write(" wich ");
+
+                    Console.ForegroundColor = ConsoleColor.DarkCyan;
+                    Console.Write($"{totalprice * 0.25:C}");
+                    Console.ResetColor();
+
+                    Console.WriteLine(" is Tax");
+                }
+                Console.WriteLine("----------------------------------\n");
+
+                Console.WriteLine("What do you want to do?");
+                Console.WriteLine("1. To Change the amount of Product in cart");
+                Console.WriteLine("2. To Delete a Product from cart");
+                Console.WriteLine("3. Buy items");
+                Console.WriteLine("4. Abort Order");
+                Console.WriteLine("B to Back");
+                string orderCheck = Console.ReadLine()!;
+
+                if (Admin.BackOption(orderCheck))
+                    break;
+
+                if (int.TryParse(orderCheck, out orderCheckNumber) && !string.IsNullOrWhiteSpace(orderCheck) && orderCheckNumber > 0 && orderCheckNumber < 5)
+                {
+                    switch (orderCheckNumber)
+                    {
+                        // Update amount of products
+                        case 1:
+                            int numberInList = 0;
+                            while (true)
+                            {
+                                Console.Clear();
+
+                                Console.WriteLine("Wich product do you want to alter the amount of:");
+                                Console.WriteLine("--------------------------");
+                                for (int i = 0; i < cartProducts.Count; i++)
+                                {
+                                    Console.WriteLine($"Id.{i + 1} {cartProducts[i].Name.PadRight(48)} Amount: {cartProducts[i].Amount}");
+                                }
+                                Console.WriteLine("--------------------------\n");
+                                Console.WriteLine("B to Back");
+                                string productCheck = Console.ReadLine()!;
+
+                                if (productCheck.ToLower() == "b")
+                                    break;
+
+                                if (int.TryParse(productCheck, out numberInList) && !string.IsNullOrWhiteSpace(productCheck) && numberInList > 0 && numberInList <= cartProducts.Count)
+                                {
+                                    for (int i = 0; i < cartProducts.Count; i++)
+                                    {
+                                        if (i == numberInList - 1)
+                                            nameCheck = cartProducts[i].Name;
+                                    }
+                                    while (true)
+                                    {
+
+                                        int numberToIncDec = 0;
+                                        Console.Clear();
+
+                                        var singleProduct = db.Shop.Where(x => x.Name == nameCheck).SingleOrDefault();
+                                        foreach (var item in cartProducts)
+                                        {
+                                            if (item.Name.Contains(singleProduct.Name))
+                                            {
+                                                Console.Write("Amount: ");
+                                                Console.ForegroundColor = ConsoleColor.DarkCyan;
+                                                Console.Write($"{item.Amount}");
+                                                Console.ResetColor();
+                                                Console.Write($" - Left in stock: ");
+                                                if (singleProduct.Quantity != 0)
+                                                {
+                                                    Console.ForegroundColor = ConsoleColor.DarkCyan;
+                                                    Console.Write($"{singleProduct.Quantity}");
+                                                }
+                                                else
+                                                {
+                                                    Console.ForegroundColor = ConsoleColor.Red;
+                                                    Console.Write($"{singleProduct.Quantity}");
+                                                }
+                                                Console.ResetColor();
+                                                Console.WriteLine($"\tName: {item.Name}");
+                                            }
+                                        }
+                                        Console.WriteLine("1. To Increase amount of Product");
+                                        Console.WriteLine("2. To Decrease amount of Product");
+                                        Console.WriteLine("B to back");
+                                        string stringIncDec = Console.ReadLine()!;
+
+                                        if (stringIncDec.ToLower() == "b")
+                                            break;
+
+                                        if (int.TryParse(stringIncDec, out numberToIncDec) && !string.IsNullOrWhiteSpace(stringIncDec) && numberToIncDec > 0 && numberToIncDec < 3)
+                                        {
+                                            bool isTrue = true;
+                                            switch (numberToIncDec)
+                                            {
+                                                case 1:
+                                                    foreach (var item in cartProducts)
+                                                    {
+                                                        if (item.Name.Contains(singleProduct.Name) && item.Amount - 1 <= singleProduct.Quantity)
+                                                        {
+                                                            item.Amount++;
+                                                            singleProduct.Quantity--;
+                                                            isTrue = false;
+                                                        }
+
+                                                    }
+                                                    if (isTrue)
+                                                    {
+                                                        Console.ForegroundColor = ConsoleColor.Red;
+                                                        Console.WriteLine("No more Product in stock to add");
+                                                        Thread.Sleep(1000);
+                                                        Console.ResetColor();
+                                                    }
+                                                    break;
+
+                                                case 2:
+                                                    foreach (var item in cartProducts)
+                                                    {
+                                                        if (item.Name.Contains(singleProduct.Name) && item.Amount > 0)
+                                                        {
+                                                            item.Amount--;
+                                                            singleProduct.Quantity++;
+                                                            isTrue = false;
+                                                        }
+                                                    }
+                                                    if (isTrue)
+                                                    {
+                                                        Console.ForegroundColor = ConsoleColor.Red;
+                                                        Console.WriteLine("Cant be less then 0");
+                                                        Thread.Sleep(1000);
+                                                        Console.ResetColor();
+                                                    }
+                                                    break;
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Invalid Input");
+                                    Thread.Sleep(1000);
+                                }
+                            }
+                            db.SaveChanges();
+                            break;
+
+                        // Delete Product in Cart
+                        case 2:
+                            while (true)
+                            {
+                                Console.Clear();
+                                int numberToDelete = 0;
+
+                                Console.WriteLine("Wich product do you want to delete:");
+                                Console.WriteLine("--------------------------");
+                                for (int i = 0; i < cartProducts.Count; i++)
+                                {
+                                    Console.WriteLine($"Id.{i + 1} {cartProducts[i].Name.PadRight(48)} Amount: {cartProducts[i].Amount}");
+                                }
+                                Console.WriteLine("--------------------------\n");
+                                Console.WriteLine("B to Back");
+                                string productToDelete = Console.ReadLine()!;
+
+                                if (productToDelete.ToLower() == "b")
+                                    break;
+
+                                if (int.TryParse(productToDelete, out numberToDelete) && !string.IsNullOrWhiteSpace(productToDelete) && numberToDelete > 0 && numberToDelete <= cartProducts.Count)
+                                {
+                                    string productNameCheck = "";
+                                    bool productDelete = false;
+                                    for (int i = 0; i < cartProducts.Count; i++)
+                                    {
+                                        if (i == numberToDelete - 1)
+                                        {
+                                            productNameCheck = cartProducts[i].Name;
+                                            productDelete = true;
+                                        }
+                                    }
+                                    var singleProduct = db.Shop.Where(x => x.Name == productNameCheck).SingleOrDefault();
+
+                                    if (productDelete)
+                                    {
+                                        singleProduct.Quantity += cartProducts[numberToDelete - 1].Amount;
+                                        cartProducts.RemoveAt(numberToDelete - 1);
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Invalid input");
+                                    Thread.Sleep(1000);
+                                }
+
+                            }
+                            db.SaveChanges();
+                            break;
+                        // Buy all stuff in cart
+                        case 3:
+
+                            break;
+
+                        // Abort Order
+                        case 4:
+                            foreach (var product in cartProducts)
+                            {
+                                var itemToBuy = db.Shop.Where(n => n.Name == product.Name)
+                                .SingleOrDefault();
+                                itemToBuy!.Quantity += product.Amount;
+                            }
+                            cartProductsInString.Clear();
+                            cartProducts.Clear();
+                            totalAmount = 0;
+
+                            db.SaveChanges();
+                            break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid Input");
+                    Thread.Sleep(1000);
+                }
+
+                db.SaveChanges();
+            }
+        }
+    }
 }

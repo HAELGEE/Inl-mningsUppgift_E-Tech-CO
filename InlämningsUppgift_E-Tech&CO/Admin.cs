@@ -38,10 +38,10 @@ internal class Admin
                     Console.WriteLine($"3.  Increase/Decrease stock for items");
                     Console.WriteLine($"4.  Change price for item");
                     Console.WriteLine($"5.  Change Category/subcategory");
-                    Console.WriteLine($"6.  Change Name on Product");               // DENNA ÄR EJ KLAR
+                    Console.WriteLine($"6.  Change Name on Product");               
                     Console.WriteLine($"7.  Product info");
                     Console.WriteLine($"8.  All customers & Change Customer");
-                    Console.WriteLine($"9.  Look Orderhistory");                    // Inte riktigt klar, får det inte utskrivet (finns inga ordrar än)
+                    Console.WriteLine($"9.  Look Orderhistories");                    // Inte riktigt klar, får det inte utskrivet (finns inga ordrar än)
                     Console.WriteLine($"B to Back");
                     string input = Console.ReadLine()!;
 
