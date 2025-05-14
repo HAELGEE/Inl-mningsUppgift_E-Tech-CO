@@ -1,5 +1,10 @@
 
 
 
-Fixa så man kan "casha" ut sina varor
-Fixa så att en användare kan ändra profil saker
+Fixa så man kan "casha" ut sina varor i Metoden Order
+
+Fixa 
+$"2. To see OrderHistory",
+$"3. To see total money spent",
+
+I profil Sektionen

@@ -188,6 +188,7 @@ internal class RunProgram
 
                         break;
 
+                    //Profile
                     case 3:
                         Console.Clear();
 
@@ -220,9 +221,38 @@ internal class RunProgram
                                     if (profileCheck == "b")
                                         break;
 
-                                    if (int.TryParse(profileCheck, out updateNumber) && !string.IsNullOrWhiteSpace(profileCheck))
+                                    if (int.TryParse(profileCheck, out updateNumber) && !string.IsNullOrWhiteSpace(profileCheck) && updateNumber > 0 && updateNumber < 4)
                                     {
+                                        switch (updateNumber)
+                                        {
+                                            case 1:
+                                                Console.WriteLine($"Current password: {customer.Password}");
+                                                Console.Write("What do you want to change your Password to?: ");
+                                                string passwordUpdate = Console.ReadLine()!;
 
+                                                if (!string.IsNullOrWhiteSpace(passwordUpdate))
+                                                {
+                                                    customer.Password = passwordUpdate;
+                                                    Console.ForegroundColor = ConsoleColor.Green;
+                                                    Console.WriteLine("Password Changed");
+                                                    Thread.Sleep(1000);
+                                                }
+                                                else
+                                                {
+                                                    Console.ForegroundColor = ConsoleColor.Green;
+                                                    Console.WriteLine("Invalid Input");
+                                                    Console.ResetColor();
+                                                }
+                                                break;
+
+                                            case 2:
+
+                                                break;
+
+                                            case 3:
+
+                                                break;
+                                        }
                                     }
                                 }
                                 break;
