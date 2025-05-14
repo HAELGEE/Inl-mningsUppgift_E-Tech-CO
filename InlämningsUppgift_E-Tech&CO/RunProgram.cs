@@ -504,7 +504,7 @@ internal class RunProgram
         }
     }
 
-    static async Task ShopItems()
+    static void ShopItems()
     {
         using (var db = new MyDbContext())
         {
