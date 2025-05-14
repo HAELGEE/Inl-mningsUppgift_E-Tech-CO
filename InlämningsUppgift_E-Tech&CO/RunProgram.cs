@@ -198,6 +198,7 @@ internal class RunProgram
                             {
                                 while (true)
                                 {
+                                    Console.Clear();
                                     GUI.DrawWindow("Profile", 5, 10, new List<string>() {
                                                 $"1. Firstname: {customer.Name}",
                                                 $"2. Lastname: {customer.LastName}",
@@ -255,6 +256,7 @@ internal class RunProgram
                                         }
                                     }
                                 }
+                                db.SaveChanges();
                                 break;
                             }
                         }
