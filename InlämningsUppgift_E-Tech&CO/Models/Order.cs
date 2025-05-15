@@ -7,17 +7,16 @@ using System.Threading.Tasks;
 namespace InlämningsUppgift_E_Tech_CO.Models;
 internal class Order
 {
-    public Order(string? name)
-    {
-        Name = name;        
+    public Order()
+    {               
         Date = Program.GetDate();
     }
     public int Id { get; set; }
     public string? Name { get; set; }    
     public string? Date { get; set; }    
     public int? CustomerId { get; set; } // En kund kan har flera orderhistorik, En order kan bara ha En kund
+    public string? Shipping {  get; set; }
     public virtual Customer? Customer { get; set; }
-    public virtual Shipping? Shipping { get; set; }
     public virtual ICollection<OrderItem> OrderItem { get; set; } = new List<OrderItem>();
     public string? PaymentChoice { get; set; }
     public double? TotalAmountPrice { get; set; }

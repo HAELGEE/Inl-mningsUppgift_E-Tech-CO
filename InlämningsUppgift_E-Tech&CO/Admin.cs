@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -38,7 +39,7 @@ internal class Admin
                     Console.WriteLine($"3.  Increase/Decrease stock for items");
                     Console.WriteLine($"4.  Change price for item");
                     Console.WriteLine($"5.  Change Category/subcategory");
-                    Console.WriteLine($"6.  Change Name on Product");               
+                    Console.WriteLine($"6.  Change Name on Product");
                     Console.WriteLine($"7.  Product info");
                     Console.WriteLine($"8.  All customers & Change Customer");
                     Console.WriteLine($"9.  Look Orderhistories");                    // Inte riktigt klar, får det inte utskrivet (finns inga ordrar än)
@@ -449,15 +450,30 @@ internal class Admin
                     case 9:
                         Console.Clear();
 
-                        
+                        var allOrders = db.Order.Include(a => a.Customer)                            
+                            .GroupBy(x => x.Customer.UserName);
 
-                        //if (allOrders.Count() == 0)
-                        //    Console.WriteLine("The orderlist is empty at the moment");
-                        //else
-                        //    foreach (var orders in allOrders)
-                        //    {
-                        //        Console.WriteLine($"ID: {orders.OrderHistory.Id}\t {orders.Shop.Name} \t {orders.Shop.Sold}");
-                        //    }
+
+
+                        if (allOrders.Count() == 0)
+                            Console.WriteLine("The orderlist is empty at the moment");
+                        else
+                        {
+                            Console.Clear();
+                            foreach (var orders in allOrders)
+                            {                                
+                                Console.WriteLine(orders.Key);
+                                foreach (var item in orders)
+                                {
+                                    Console.WriteLine($"OrderID: {item.Id}\t Order created: {item.Date} \t Payment: {item.PaymentChoice} \t Collected: ");
+                                    Console.WriteLine("Products:");
+                                    foreach (var product in item.Products)
+                                    {
+                                        Console.WriteLine($"Name: {product.Name.PadRight(48)} Amount: {product.Amount} - Price: {product.Price}");
+                                    }
+                                }
+                            }
+                        }
 
                         Console.ReadKey();
                         break;
