@@ -10,3 +10,5 @@ $"3. To see total money spent",
 
 -- I profil Sektionen ----
 
+I admin, när man kollar ordrar så får man inte ut Produkterna, Listan är tom
+

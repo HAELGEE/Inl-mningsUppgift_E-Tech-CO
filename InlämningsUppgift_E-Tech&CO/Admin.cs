@@ -450,7 +450,8 @@ internal class Admin
                     case 9:
                         Console.Clear();
 
-                        var allOrders = db.Order.Include(a => a.Customer)                            
+                        var allOrders = db.Order.Include(a => a.Customer)
+                            .Include(a => a.Products)
                             .GroupBy(x => x.Customer.UserName);
 
 
@@ -461,16 +462,18 @@ internal class Admin
                         {
                             Console.Clear();
                             foreach (var orders in allOrders)
-                            {                                
-                                Console.WriteLine(orders.Key);
+                            {      
+                                Console.WriteLine($"UserName: {orders.Key}");
+                                Console.WriteLine("-------------------------------");
                                 foreach (var item in orders)
                                 {
-                                    Console.WriteLine($"OrderID: {item.Id}\t Order created: {item.Date} \t Payment: {item.PaymentChoice} \t Collected: ");
-                                    Console.WriteLine("Products:");
+                                    Console.WriteLine($"OrderID: {item.Id}  Order created: {item.Date}  Payment: {item.PaymentChoice.PadRight(17)}\tCollected: {item.Shipping}");
+                                    Console.WriteLine("Products:");                                   
                                     foreach (var product in item.Products)
                                     {
                                         Console.WriteLine($"Name: {product.Name.PadRight(48)} Amount: {product.Amount} - Price: {product.Price}");
                                     }
+                                    Console.WriteLine("-------------------------------\n");                                    
                                 }
                             }
                         }
@@ -482,7 +485,8 @@ internal class Admin
             }
         }
     }
-    static public bool BackOption(string input)
+    
+    public static bool BackOption(string input)
     {
         if (input.ToLower() == "b") //  för att backa
             return true;
