@@ -12,5 +12,5 @@ internal class OrderItem
     public virtual Order Order { get; set; }
     public int ShopId { get; set; }
     public virtual Shop Shop { get; set; }
-    public int? Quantity { get; set; }
+    public int? Quantity { get; set; }    
 }

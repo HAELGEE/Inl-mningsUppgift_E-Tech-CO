@@ -449,7 +449,7 @@ internal class Admin
                     case 9:
                         Console.Clear();
 
-                        var allOrders = await db.OrderHistories.Join(db.Shop, order => order.Id, shop => shop.Id, (order, shop) => new
+                        var allOrders = await db.Order.Join(db.Shop, order => order.Id, shop => shop.Id, (order, shop) => new
                         {
                             OrderHistory = order,
                             Shop = shop,

@@ -204,7 +204,7 @@ internal class RunProgram
                                                 $"2. Lastname: {customer.LastName}",
                                                 $"3. Age: {customer.Age}",
                                                 $"4. Username: {customer.UserName}",
-                                                $"5. Total orders: {customer.OrderHistory.Count()}",
+                                                $"5. Total orders: {customer.Order.Count()}",
                                                 $"6. Total Logins: {customer.Logins}"
                                             });
 
@@ -487,7 +487,6 @@ internal class RunProgram
                                 }
                                 cartProductsInString.Add($"---------------------------------------------------");
                                 cartProductsInString.Add($"Press C to cancel order or press O to enter Order");
-                                //itemToBuy.Quantity -= amount;
                             }
                             else
                             {
@@ -683,7 +682,7 @@ internal class RunProgram
                                                 case 1:
                                                     foreach (var item in cartProducts)
                                                     {
-                                                        if (item.Name.Contains(singleProduct.Name) && item.Amount - 1 <= singleProduct.Quantity)
+                                                        if (item.Name.Contains(singleProduct.Name) && 0 < singleProduct.Quantity)
                                                         {
                                                             item.Amount++;
                                                             singleProduct.Quantity--;
@@ -719,6 +718,18 @@ internal class RunProgram
                                                     }
                                                     break;
                                             }
+
+                                            cartProductsInString.Clear();
+                                            totalAmount = 0;
+
+                                            foreach (var product in cartProducts)
+                                            {
+                                                totalAmount += Convert.ToDouble(product.Amount * product.Price);
+                                                cartProductsInString.Add(new string($"Name: {product.Name.PadRight(51)}\t Amount: {product.Amount}, Price: {(product.Price * product.Amount)}"));
+                                            }
+                                            cartProductsInString.Add($"---------------------------------------------------");
+                                            cartProductsInString.Add($"Press C to cancel order or press O to enter Order");
+
                                         }
                                     }
                                 }
@@ -782,7 +793,172 @@ internal class RunProgram
                             break;
                         // Buy all stuff in cart
                         case 3:
+                            Console.Clear();
 
+                            var order = db.Order.SingleOrDefault();
+
+                            double? totalPriceCheckout = 0;
+                            while (true)
+                            {
+                                Console.WriteLine("You are about to buy these Products");
+                                Console.WriteLine("-----------------------------------------------------------");
+                                foreach (var item in cartProducts)
+                                {
+                                    totalPriceCheckout += (item.Amount * item.Price);
+                                    Console.WriteLine($"{item.Name.PadRight(48)} - Amount: {item.Amount} - Price/Unit: {item.Price:C} - Price*Amount: {item.Price * item.Amount:C}");
+                                }
+                                Console.WriteLine($"Total Price: {totalPriceCheckout:C}");
+                                Console.WriteLine("-----------------------------------------------------------\n");
+
+                                Console.WriteLine($"1. to Buy \nB to back"); //Oneliner
+                                string checkOutCheck = Console.ReadLine()!;
+                                int numberCheck = 0;
+                                if (checkOutCheck.ToLower() == "b")
+                                    break;
+
+                                if (int.TryParse(checkOutCheck, out numberCheck) && !string.IsNullOrWhiteSpace(checkOutCheck) && numberCheck > 0 && numberCheck < 2)
+                                {
+                                    while (true)
+                                    {
+                                        string orderCollection = "";
+                                        Console.Clear();
+                                        Console.WriteLine("Please chose one option below");
+                                        Console.WriteLine("1. Collect in Store");
+                                        Console.WriteLine("2. Shipping to Adress");
+                                        Console.WriteLine("B to back");
+                                        string stringOption = Console.ReadLine()!;
+                                        int intOption = 0;
+
+                                        if (Admin.BackOption(stringOption))
+                                            break;
+
+                                        if (int.TryParse(stringOption, out intOption) && !string.IsNullOrWhiteSpace(stringOption) && intOption > 0 && intOption < 3)
+                                        {
+                                            string payOption = "";
+                                            switch (intOption)
+                                            {
+                                                case 1:
+                                                    orderCollection = "Collect in Store";
+                                                    Console.WriteLine("Option 'Collect in Store' is chosen");
+                                                    Console.WriteLine("1. Pay in Store");
+                                                    Console.WriteLine("2. Pay with Swish");
+                                                    Console.WriteLine("B to Back");
+                                                    string stringPayOptionStore = Console.ReadLine()!;
+                                                    int intPayOptionStore = 0;
+                                                    if (Admin.BackOption(stringPayOptionStore))
+                                                        break;
+
+                                                    if (int.TryParse(stringPayOptionStore, out intPayOptionStore) && !string.IsNullOrWhiteSpace(stringPayOptionStore) && intPayOptionStore > 0 && intPayOptionStore < 3)
+                                                    {
+
+                                                        while (true)
+                                                        {
+                                                            if (intPayOptionStore == 1)
+                                                            {
+                                                                Console.WriteLine("\nOption 'Pay in Store' is Chosen");
+                                                                payOption = "Pay in Store";
+                                                            }
+                                                            else
+                                                            {
+                                                                Console.WriteLine("\nOption 'Pay with Swish' is Chosen");
+                                                                payOption = "Pay with Swish";
+                                                            }
+
+                                                            Console.WriteLine("-----------------------------\n");
+                                                            Console.WriteLine("B to back");
+                                                            Console.Write("Please enter Firstname followed by Lastname: ");
+                                                            string name = Console.ReadLine()!;
+                                                            if (Admin.BackOption(name))
+                                                                break;
+
+                                                            if (!string.IsNullOrWhiteSpace(name))
+                                                            {
+                                                                var newOrder = new Order(name)
+                                                                {
+                                                                    PaymentChoice = payOption,
+                                                                    Shipping = new Shipping() { ShippingType = orderCollection },
+                                                                    TotalAmountPrice = totalPriceCheckout,
+                                                                    Products = cartProducts
+                                                                };
+                                                            }
+
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        Console.WriteLine("Invalid Input");
+                                                        Thread.Sleep(1000);
+                                                    }
+                                                    db.SaveChanges();
+                                                    break;
+
+                                                case 2:
+                                                    orderCollection = "Shipping to Adress";
+                                                    Console.WriteLine("Option 'Shipping to Adress' is chosen");
+                                                    Console.WriteLine("1. Pay with Creditcard");
+                                                    Console.WriteLine("2. Pay with Swish");
+                                                    Console.WriteLine("B to Back");
+                                                    string stringPayOptionShipping = Console.ReadLine()!;
+                                                    int intPayOptionShipping = 0;
+                                                    if (Admin.BackOption(stringPayOptionShipping))
+                                                        break;
+
+                                                    if (int.TryParse(stringPayOptionShipping, out intPayOptionShipping) && !string.IsNullOrWhiteSpace(stringPayOptionShipping) && intPayOptionShipping > 0 && intPayOptionShipping < 3)
+                                                    {
+                                                        while (true)
+                                                        {
+                                                            if (intPayOptionShipping == 1)
+                                                            {
+                                                                Console.WriteLine("\nOption 'Pay with Creditcard' is Chosen");
+                                                                payOption = "Pay with Creditcard";
+                                                            }
+                                                            else
+                                                            {
+                                                                Console.WriteLine("\nOption 'Pay with Swish' is Chosen");
+                                                                payOption = "Pay with Swish";
+                                                            }
+
+                                                            Console.WriteLine("-----------------------------\n");
+                                                            Console.WriteLine("B to back");
+                                                            Console.Write("Please enter Shipping adress: ");
+                                                            string adress = Console.ReadLine()!;
+                                                            if (Admin.BackOption(adress))
+                                                                break;
+
+                                                            Console.Write("\nPlease enter City: ");
+                                                            string city = Console.ReadLine()!;
+                                                            if (Admin.BackOption(city))
+                                                                break;
+
+                                                            Console.Write("\nPlease enter ZipCode: ");
+                                                            string stringZipcode = Console.ReadLine()!;
+                                                            int intZipcode = 0;
+                                                            if (Admin.BackOption(stringZipcode))
+                                                                break;
+                                                            if (int.TryParse(stringZipcode, out intZipcode) && !string.IsNullOrWhiteSpace(stringZipcode) && intZipcode >= 0)
+                                                            {
+
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        Console.WriteLine("Invalid Input");
+                                                        Thread.Sleep(1000);
+                                                    }
+                                                    db.SaveChanges();
+                                                    break;
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Invalid Input");
+                                    Thread.Sleep(1000);
+                                }
+                            }
+                            db.SaveChanges();
                             break;
 
                         // Abort Order

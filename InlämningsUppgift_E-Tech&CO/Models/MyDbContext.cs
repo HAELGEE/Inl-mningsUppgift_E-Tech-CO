@@ -12,7 +12,6 @@ internal class MyDbContext : DbContext
     public DbSet<Order> Order { get; set; }
     public DbSet<Shop> Shop { get; set; }
     public DbSet<CustomerSave> CustomerSave { get; set; }   
-    public DbSet<OrderHistory> OrderHistories { get; set; }
     public DbSet<Shipping> shipping {  get; set; }
     public DbSet<OrderItem> OrderItem { get; set; }   
 

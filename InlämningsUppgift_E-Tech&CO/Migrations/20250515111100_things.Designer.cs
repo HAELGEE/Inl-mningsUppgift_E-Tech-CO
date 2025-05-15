@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InlämningsUppgift_E_Tech_CO.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20250508183746_first")]
-    partial class first
+    [Migration("20250515111100_things")]
+    partial class things
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -106,11 +106,8 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Property<string>("PaymentChoice")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double?>("PriceAtPurchase")
+                    b.Property<double?>("TotalAmountPrice")
                         .HasColumnType("float");
-
-                    b.Property<int?>("TotalAmountPrice")
-                        .HasColumnType("int");
 
                     b.Property<int?>("TotalItems")
                         .HasColumnType("int");
@@ -218,6 +215,9 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("OrderHistoryId")
+                        .HasColumnType("int");
+
                     b.Property<double?>("Price")
                         .HasColumnType("float");
 
@@ -235,22 +235,9 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("OrderHistoryId");
+
                     b.ToTable("Shop");
-                });
-
-            modelBuilder.Entity("OrderHistoryShop", b =>
-                {
-                    b.Property<int>("OrderHistoryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ShopId")
-                        .HasColumnType("int");
-
-                    b.HasKey("OrderHistoryId", "ShopId");
-
-                    b.HasIndex("ShopId");
-
-                    b.ToTable("OrderHistoryShop");
                 });
 
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.CustomerSave", b =>
@@ -308,19 +295,11 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("OrderHistoryShop", b =>
+            modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Shop", b =>
                 {
                     b.HasOne("InlämningsUppgift_E_Tech_CO.Models.OrderHistory", null)
-                        .WithMany()
-                        .HasForeignKey("OrderHistoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("InlämningsUppgift_E_Tech_CO.Models.Shop", null)
-                        .WithMany()
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Shop")
+                        .HasForeignKey("OrderHistoryId");
                 });
 
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Customer", b =>
@@ -337,6 +316,11 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Navigation("OrderItem");
 
                     b.Navigation("Shipping");
+                });
+
+            modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.OrderHistory", b =>
+                {
+                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Shop", b =>

@@ -31,6 +31,5 @@ internal class Customer
     public int? Age { get; set; }
     public int? Logins { get; set; }
     public List<CustomerSave> Saves { get; set; } = new List<CustomerSave>();
-    public virtual ICollection<OrderHistory> OrderHistory { get; set; } = new List<OrderHistory>(); // En kund kan har flera orderhistorik
     public virtual ICollection<Order> Order { get; set; } = new List<Order>(); // En kund kan har flera orderhistorik
 }
