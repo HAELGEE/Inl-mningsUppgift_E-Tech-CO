@@ -471,7 +471,7 @@ internal class Admin
                                     Console.WriteLine("Products:");                                   
                                     foreach (var product in item.Products)
                                     {
-                                        Console.WriteLine($"Name: {product.Name.PadRight(48)} Amount: {product.Amount} - Price: {product.Price}");
+                                        Console.WriteLine($"Name: {product.Name.PadRight(48)} Amount: {product.Amount} - Price: {product.Price:C}");
                                     }
                                     Console.WriteLine("-------------------------------\n");                                    
                                 }

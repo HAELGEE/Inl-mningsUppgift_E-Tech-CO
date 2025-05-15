@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InlämningsUppgift_E_Tech_CO.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20250515113651_First")]
-    partial class First
+    [Migration("20250515155315_update3")]
+    partial class update3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -94,6 +94,12 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Adress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("CustomerId")
                         .HasColumnType("int");
 
@@ -106,10 +112,19 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Property<string>("PaymentChoice")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Shipping")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ShippingFee")
+                        .HasColumnType("int");
+
                     b.Property<double?>("TotalAmountPrice")
                         .HasColumnType("float");
 
                     b.Property<int?>("TotalItems")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Zipcode")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -173,38 +188,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.HasIndex("OrderId");
 
                     b.ToTable("Product");
-                });
-
-            modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Shipping", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PhoneNumber")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ShippingType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId")
-                        .IsUnique()
-                        .HasFilter("[OrderId] IS NOT NULL");
-
-                    b.ToTable("shipping");
                 });
 
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Shop", b =>
@@ -285,15 +268,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                         .HasForeignKey("OrderId");
                 });
 
-            modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Shipping", b =>
-                {
-                    b.HasOne("InlämningsUppgift_E_Tech_CO.Models.Order", "Order")
-                        .WithOne("Shipping")
-                        .HasForeignKey("InlämningsUppgift_E_Tech_CO.Models.Shipping", "OrderId");
-
-                    b.Navigation("Order");
-                });
-
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Customer", b =>
                 {
                     b.Navigation("Order");
@@ -306,8 +280,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Navigation("OrderItem");
 
                     b.Navigation("Products");
-
-                    b.Navigation("Shipping");
                 });
 
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Shop", b =>

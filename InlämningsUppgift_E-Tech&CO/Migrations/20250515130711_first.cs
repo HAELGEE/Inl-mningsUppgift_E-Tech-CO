@@ -5,7 +5,7 @@
 namespace InlämningsUppgift_E_Tech_CO.Migrations
 {
     /// <inheritdoc />
-    public partial class First : Migration
+    public partial class first : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -78,6 +78,7 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Date = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CustomerId = table.Column<int>(type: "int", nullable: true),
+                    Shipping = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PaymentChoice = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TotalAmountPrice = table.Column<double>(type: "float", nullable: true),
                     TotalItems = table.Column<int>(type: "int", nullable: true)
@@ -141,28 +142,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                         principalColumn: "Id");
                 });
 
-            migrationBuilder.CreateTable(
-                name: "shipping",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ShippingType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<int>(type: "int", nullable: true),
-                    OrderId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_shipping", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_shipping_Order_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Order",
-                        principalColumn: "Id");
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_CustomerSave_CustomerId",
                 table: "CustomerSave",
@@ -187,13 +166,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 name: "IX_Product_OrderId",
                 table: "Product",
                 column: "OrderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_shipping_OrderId",
-                table: "shipping",
-                column: "OrderId",
-                unique: true,
-                filter: "[OrderId] IS NOT NULL");
         }
 
         /// <inheritdoc />
@@ -207,9 +179,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
 
             migrationBuilder.DropTable(
                 name: "Product");
-
-            migrationBuilder.DropTable(
-                name: "shipping");
 
             migrationBuilder.DropTable(
                 name: "Shop");

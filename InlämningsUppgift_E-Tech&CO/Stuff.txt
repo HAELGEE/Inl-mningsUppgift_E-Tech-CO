@@ -1,5 +1,7 @@
 
 
+Krashar vid Kontroll av Ordar i Profil sektionen
+
 
 Fixa så man kan "casha" ut sina varor i Metoden Order Från rad 848!
 
@@ -10,5 +12,5 @@ $"3. To see total money spent",
 
 -- I profil Sektionen ----
 
-I admin, när man kollar ordrar så får man inte ut Produkterna, Listan är tom
+Kolla om jag har skrivt in så att man inte kan skapa fler än en utav samma Användarnamn
 

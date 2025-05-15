@@ -39,7 +39,7 @@ internal class RunProgram
                     await foreach (var customer in db.Customer)
                     {
                         if (customer.LoggedIn)
-                            loggedinName = customer.Name!;
+                            loggedinName = customer.UserName!;
                     }
 
                     Console.WriteLine($"What do you want to do?");
@@ -248,9 +248,33 @@ internal class RunProgram
                                                     Console.WriteLine("Invalid Input");
                                                     Console.ResetColor();
                                                 }
+                                                db.SaveChanges();
                                                 break;
 
                                             case 2:
+                                                Console.Clear();
+                                                while (true)
+                                                {
+                                                    var oderHistory = db.Order.Include(x => x.Customer)
+                                                        .Include(x => x.Products)
+                                                        .Where(x => x.Customer.UserName == loggedinName);
+
+                                                    foreach (var item in oderHistory)
+                                                    {
+                                                        Console.WriteLine($"OrderID: {item.Id}");
+
+                                                        Console.WriteLine("-- Products --------------------------");
+                                                        foreach (var product in item.Products)
+                                                        {
+                                                            Console.WriteLine($"{product.Name.PadRight(48)} Amount: {product.Amount} Price per unit: {product.Price}");
+                                                        }
+                                                        Console.WriteLine("--------------------------------------");
+                                                    }
+                                                    Console.WriteLine("B to Back");
+                                                    string value = Console.ReadLine()!;
+                                                    if (Admin.BackOption(value))
+                                                        break;
+                                                }
 
                                                 break;
 
@@ -260,7 +284,6 @@ internal class RunProgram
                                         }
                                     }
                                 }
-                                db.SaveChanges();
                                 break;
                             }
                         }
@@ -828,7 +851,7 @@ internal class RunProgram
                                         Console.Clear();
                                         Console.WriteLine("Please chose one option below");
                                         Console.WriteLine("1. Collect in Store");
-                                        Console.WriteLine("2. Shipping to Adress");
+                                        Console.WriteLine("2. Shipping to Adress (Inc Shipping fee)");
                                         Console.WriteLine("B to back");
                                         string stringOption = Console.ReadLine()!;
                                         int intOption = 0;
@@ -839,9 +862,9 @@ internal class RunProgram
                                         if (int.TryParse(stringOption, out intOption) && !string.IsNullOrWhiteSpace(stringOption) && intOption > 0 && intOption < 3)
                                         {
                                             int customerId = 0;
-                                            foreach(var customer in db.Customer)
+                                            foreach (var customer in db.Customer)
                                             {
-                                                if(loggedinName == customer.Name)
+                                                if (loggedinName == customer.UserName)
                                                     customerId = customer.Id;
                                             }
                                             Console.Clear();
@@ -861,7 +884,6 @@ internal class RunProgram
 
                                                     if (int.TryParse(stringPayOptionStore, out intPayOptionStore) && !string.IsNullOrWhiteSpace(stringPayOptionStore) && intPayOptionStore > 0 && intPayOptionStore < 3)
                                                     {
-
                                                         while (true)
                                                         {
                                                             Console.Clear();
@@ -908,7 +930,6 @@ internal class RunProgram
                                                                 totalAmount = 0;
                                                                 return;
                                                             }
-
                                                         }
                                                     }
                                                     else
@@ -935,6 +956,8 @@ internal class RunProgram
                                                         while (true)
                                                         {
                                                             Console.Clear();
+
+
                                                             if (intPayOptionShipping == 1)
                                                             {
                                                                 Console.WriteLine("Option 'Pay with Creditcard' is Chosen");
@@ -965,7 +988,31 @@ internal class RunProgram
                                                                 break;
                                                             if (int.TryParse(stringZipcode, out intZipcode) && !string.IsNullOrWhiteSpace(stringZipcode) && intZipcode >= 0)
                                                             {
+                                                                db.Order.Add(new Order()
+                                                                {
+                                                                    CustomerId = customerId,
+                                                                    TotalItems = amountOfProducts,
+                                                                    PaymentChoice = payOption,
+                                                                    Shipping = orderCollection,
+                                                                    ShippingFee = 500,
+                                                                    TotalAmountPrice = totalPriceCheckout + 500,
+                                                                    Products = cartProducts,
+                                                                    City = city,
+                                                                    Adress = adress,
+                                                                    Zipcode = intZipcode
+                                                                });
+                                                                Console.ForegroundColor = ConsoleColor.Green;
 
+                                                                db.SaveChanges();
+
+                                                                Console.WriteLine("Sucess on buying Order");
+                                                                Console.ResetColor();
+                                                                Thread.Sleep(1000);
+
+                                                                cartProducts.Clear();
+                                                                cartProductsInString.Clear();
+                                                                totalAmount = 0;
+                                                                return;
                                                             }
                                                         }
                                                     }
