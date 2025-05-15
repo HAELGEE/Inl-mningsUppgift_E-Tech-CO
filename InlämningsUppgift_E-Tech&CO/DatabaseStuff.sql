@@ -20,3 +20,7 @@ values
 ('Screen', 'ASUS 34" Curved TUF VG34VQL3A', 55, '200Hz refresh rate, 1ms response.', 'ASUS', 5490),
 ('Screen', 'Samsung 34" Odyssey G8 34DG85', 10, '175Hz refresh rate, 1ms response.', 'Samsung', 9490),
 ('Screen', 'Samsung 34" ViewFinity S6 34C654VA', 10, '100Hz refresh rate, 5ms response.', 'Samsung', 5490);
+
+Insert into Customer(Name, LastName, UserName, Password, Age)
+values
+('Christofer', 'Hägg', 'HAELGE', 'hej', 34);
