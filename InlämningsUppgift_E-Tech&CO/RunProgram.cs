@@ -191,102 +191,119 @@ internal class RunProgram
                     //Profile
                     case 3:
                         Console.Clear();
+                        var person = db.Customer.Where(x => x.UserName == loggedinName).SingleOrDefault();
 
-                        await foreach (var customer in db.Customer)
+
+                        if (person.LoggedIn)
                         {
-                            if (customer.LoggedIn)
+                            while (true)
                             {
-                                while (true)
-                                {
-                                    Console.Clear();
-                                    GUI.DrawWindow("Profile", 5, 10, new List<string>() {
-                                                $"1. Firstname: {customer.Name}",
-                                                $"2. Lastname: {customer.LastName}",
-                                                $"3. Age: {customer.Age}",
-                                                $"4. Username: {customer.UserName}",
-                                                $"5. Total orders: {customer.Order.Count()}",
-                                                $"6. Total Logins: {customer.Logins}"
+                                Console.Clear();
+                                GUI.DrawWindow("Profile", 5, 10, new List<string>() {
+                                                $"1. Firstname: {person.Name}",
+                                                $"2. Lastname: {person.LastName}",
+                                                $"3. Age: {person.Age}",
+                                                $"4. Username: {person.UserName}",
+                                                $"5. Total orders: {person.Order.Count()}",
+                                                $"6. Total Logins: {person.Logins}"
                                             });
 
-                                    GUI.DrawWindow("Update Profile", 38, 10, new List<string>() {
+                                GUI.DrawWindow("Update Profile", 38, 10, new List<string>() {
                                                 $"1. To change Password",
                                                 $"2. To see OrderHistory",
                                                 $"3. To see total money spent",
                                                 $"B to back"
                                             });
-                                    int updateNumber = 0;
+                                int updateNumber = 0;
 
-                                    Console.SetCursorPosition(5, 18);
-                                    string profileCheck = Console.ReadLine()!.ToLower();
+                                Console.SetCursorPosition(5, 18);
+                                string profileCheck = Console.ReadLine()!.ToLower();
 
-                                    if (profileCheck == "b")
-                                        break;
+                                if (profileCheck == "b")
+                                    break;
 
-                                    if (int.TryParse(profileCheck, out updateNumber) && !string.IsNullOrWhiteSpace(profileCheck) && updateNumber > 0 && updateNumber < 4)
+                                if (int.TryParse(profileCheck, out updateNumber) && !string.IsNullOrWhiteSpace(profileCheck) && updateNumber > 0 && updateNumber < 4)
+                                {
+                                    var oderHistory = db.Order.Include(x => x.Customer)
+                                                    .Include(x => x.Products)
+                                                    .Where(x => x.Customer.UserName == loggedinName);
+                                    switch (updateNumber)
                                     {
-                                        switch (updateNumber)
-                                        {
-                                            case 1:
-                                                Console.WriteLine("\nPress B to back");
-                                                Console.WriteLine($"Current password: {customer.Password}");
-                                                Console.WriteLine("What do you want to change your Password to?: ");
-                                                string passwordUpdate = Console.ReadLine()!;
+                                        case 1:
+                                            Console.Clear();
+                                            Console.WriteLine("\nPress B to back");
+                                            Console.WriteLine($"Current password: {person.Password}");
+                                            Console.WriteLine("What do you want to change your Password to?: ");
+                                            string passwordUpdate = Console.ReadLine()!;
 
-                                                if (Admin.BackOption(passwordUpdate))
-                                                    break;
-
-                                                if (!string.IsNullOrWhiteSpace(passwordUpdate))
-                                                {
-                                                    customer.Password = passwordUpdate;
-                                                    Console.ForegroundColor = ConsoleColor.Green;
-                                                    Console.WriteLine("Password Changed");
-                                                    Thread.Sleep(1000);
-                                                }
-                                                else
-                                                {
-                                                    Console.ForegroundColor = ConsoleColor.Green;
-                                                    Console.WriteLine("Invalid Input");
-                                                    Console.ResetColor();
-                                                }
-                                                db.SaveChanges();
+                                            if (Admin.BackOption(passwordUpdate))
                                                 break;
 
-                                            case 2:
+                                            if (!string.IsNullOrWhiteSpace(passwordUpdate))
+                                            {
+                                                person.Password = passwordUpdate;
+                                                Console.ForegroundColor = ConsoleColor.Green;
+                                                Console.WriteLine("Password Changed");
+                                                Thread.Sleep(1000);
+                                            }
+                                            else
+                                            {
+                                                Console.ForegroundColor = ConsoleColor.Green;
+                                                Console.WriteLine("Invalid Input");
+                                                Console.ResetColor();
+                                            }
+                                            db.SaveChanges();
+                                            break;
+
+                                        case 2:
+                                            while (true)
+                                            {
                                                 Console.Clear();
-                                                while (true)
+                                                foreach (var item in oderHistory)
                                                 {
-                                                    var oderHistory = db.Order.Include(x => x.Customer)
-                                                        .Include(x => x.Products)
-                                                        .Where(x => x.Customer.UserName == loggedinName);
-
-                                                    foreach (var item in oderHistory)
+                                                    Console.WriteLine($"OrderID: {item.Id}");
+                                                    Console.WriteLine("-- Products --------------------------");
+                                                    foreach (var product in item.Products)
                                                     {
-                                                        Console.WriteLine($"OrderID: {item.Id}");
-
-                                                        Console.WriteLine("-- Products --------------------------");
-                                                        foreach (var product in item.Products)
-                                                        {
-                                                            Console.WriteLine($"{product.Name.PadRight(48)} Amount: {product.Amount} Price per unit: {product.Price}");
-                                                        }
-                                                        Console.WriteLine("--------------------------------------");
+                                                        Console.WriteLine($"{product.Name.PadRight(48)} Amount: {product.Amount} Price per unit: {product.Price}");
                                                     }
-                                                    Console.WriteLine("B to Back");
-                                                    string value = Console.ReadLine()!;
-                                                    if (Admin.BackOption(value))
-                                                        break;
+                                                    Console.WriteLine("--------------------------------------\n");
                                                 }
+                                                Console.WriteLine("B to Back");
+                                                string value = Console.ReadLine()!;
+                                                if (Admin.BackOption(value))
+                                                    break;
+                                            }
 
-                                                break;
+                                            break;
 
-                                            case 3:
+                                        case 3:
+                                            while (true)
+                                            {
+                                                Console.Clear();
+                                                double? moneySpent = 0;
+                                                foreach (var item in oderHistory)
+                                                {
+                                                    moneySpent += item.TotalAmountPrice;
 
-                                                break;
-                                        }
+                                                }
+                                                Console.Write($"Total money spent here: ");
+                                                Console.ForegroundColor = ConsoleColor.DarkRed;
+                                                Console.WriteLine($"{moneySpent:C}");
+                                                Console.ResetColor();
+                                                Console.WriteLine("B to back");
+                                                string backCheck = Console.ReadLine()!;
+
+                                                if(Admin.BackOption(backCheck))
+                                                    break;
+                                            }
+                                            break;
                                     }
                                 }
-                                break;
                             }
+                            break;
                         }
+
                         if (loggedinName == "")
                         {
                             Console.WriteLine("Need to be logged in to see Profile");
