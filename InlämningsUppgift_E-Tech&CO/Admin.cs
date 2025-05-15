@@ -449,21 +449,15 @@ internal class Admin
                     case 9:
                         Console.Clear();
 
-                        var allOrders = await db.Order.Join(db.Shop, order => order.Id, shop => shop.Id, (order, shop) => new
-                        {
-                            OrderHistory = order,
-                            Shop = shop,
-                        })
-                          .OrderBy(x => x.OrderHistory.Id)
-                          .ToListAsync();
+                        
 
-                        if (allOrders.Count() == 0)
-                            Console.WriteLine("The orderlist is empty at the moment");
-                        else
-                            foreach (var orders in allOrders)
-                            {
-                                Console.WriteLine($"ID: {orders.OrderHistory.Id}\t {orders.Shop.Name} \t {orders.Shop.Sold}");
-                            }
+                        //if (allOrders.Count() == 0)
+                        //    Console.WriteLine("The orderlist is empty at the moment");
+                        //else
+                        //    foreach (var orders in allOrders)
+                        //    {
+                        //        Console.WriteLine($"ID: {orders.OrderHistory.Id}\t {orders.Shop.Name} \t {orders.Shop.Sold}");
+                        //    }
 
                         Console.ReadKey();
                         break;

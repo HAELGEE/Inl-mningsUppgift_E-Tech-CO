@@ -116,30 +116,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.ToTable("Order");
                 });
 
-            modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.OrderHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Date")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("TotalAmount")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.ToTable("OrderHistories");
-                });
-
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.OrderItem", b =>
                 {
                     b.Property<int>("Id")
@@ -164,6 +140,36 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.HasIndex("ShopId");
 
                     b.ToTable("OrderItem");
+                });
+
+            modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Product", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("Amount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrderItemId")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("Price")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("Product");
                 });
 
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Shipping", b =>
@@ -212,9 +218,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("OrderHistoryId")
-                        .HasColumnType("int");
-
                     b.Property<double?>("Price")
                         .HasColumnType("float");
 
@@ -232,8 +235,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderHistoryId");
-
                     b.ToTable("Shop");
                 });
 
@@ -250,15 +251,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 {
                     b.HasOne("InlämningsUppgift_E_Tech_CO.Models.Customer", "Customer")
                         .WithMany("Order")
-                        .HasForeignKey("CustomerId");
-
-                    b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.OrderHistory", b =>
-                {
-                    b.HasOne("InlämningsUppgift_E_Tech_CO.Models.Customer", "Customer")
-                        .WithMany("OrderHistory")
                         .HasForeignKey("CustomerId");
 
                     b.Navigation("Customer");
@@ -283,6 +275,13 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Navigation("Shop");
                 });
 
+            modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Product", b =>
+                {
+                    b.HasOne("InlämningsUppgift_E_Tech_CO.Models.Order", null)
+                        .WithMany("Products")
+                        .HasForeignKey("OrderId");
+                });
+
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Shipping", b =>
                 {
                     b.HasOne("InlämningsUppgift_E_Tech_CO.Models.Order", "Order")
@@ -292,18 +291,9 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Shop", b =>
-                {
-                    b.HasOne("InlämningsUppgift_E_Tech_CO.Models.OrderHistory", null)
-                        .WithMany("Shop")
-                        .HasForeignKey("OrderHistoryId");
-                });
-
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Customer", b =>
                 {
                     b.Navigation("Order");
-
-                    b.Navigation("OrderHistory");
 
                     b.Navigation("Saves");
                 });
@@ -312,12 +302,9 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 {
                     b.Navigation("OrderItem");
 
-                    b.Navigation("Shipping");
-                });
+                    b.Navigation("Products");
 
-            modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.OrderHistory", b =>
-                {
-                    b.Navigation("Shop");
+                    b.Navigation("Shipping");
                 });
 
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Shop", b =>

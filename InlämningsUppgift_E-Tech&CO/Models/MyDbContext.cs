@@ -14,6 +14,7 @@ internal class MyDbContext : DbContext
     public DbSet<CustomerSave> CustomerSave { get; set; }   
     public DbSet<Shipping> shipping {  get; set; }
     public DbSet<OrderItem> OrderItem { get; set; }   
+    public DbSet<Product> Product { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

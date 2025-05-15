@@ -1,4 +1,4 @@
-Insert into Shop (Category, Name, Quantity, ProductInformation, SubCategory, Price)
+Insert into Shop (Category, [name], Quantity, ProductInformation, SubCategory, Price)
 values
 ('Computer', 'Samsung 9100 PRO M.2', 10, 'The latest hard drive on the market.', 'Computer Components', 2849),
 ('Computer', 'Samsung 990 EVO Plus', 33, 'A more affordable yet solid SSD.', 'Computer Components', 1549),
@@ -21,6 +21,9 @@ values
 ('Screen', 'Samsung 34" Odyssey G8 34DG85', 10, '175Hz refresh rate, 1ms response.', 'Samsung', 9490),
 ('Screen', 'Samsung 34" ViewFinity S6 34C654VA', 10, '100Hz refresh rate, 5ms response.', 'Samsung', 5490);
 
-Insert into Customer(Name, LastName, UserName, Password, Age)
+Insert into Customer([Name], LastName, UserName, [Password], Registered, LoggedIn, Age, Logins)
 values
-('Christofer', 'Hägg', 'HAELGE', 'hej', 34);
+('Christofer', 'Hägg', 'HAELGE', 'hej', GETDATE(), 1, 34, 1);
+
+go
+

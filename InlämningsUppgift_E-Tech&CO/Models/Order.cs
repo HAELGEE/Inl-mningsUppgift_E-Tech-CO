@@ -18,10 +18,11 @@ internal class Order
     public int? CustomerId { get; set; } // En kund kan har flera orderhistorik, En order kan bara ha En kund
     public virtual Customer? Customer { get; set; }
     public virtual Shipping? Shipping { get; set; }
-    public virtual ICollection<OrderItem> OrderItem { get; set; }
+    public virtual ICollection<OrderItem> OrderItem { get; set; } = new List<OrderItem>();
     public string? PaymentChoice { get; set; }
     public double? TotalAmountPrice { get; set; }
     public int? TotalItems { get; set; }
-    public ICollection<Product> Products { get; set; } = new List<Product>();
+    public List<Product> Products { get; set; } = new List<Product>();
+   
 
 }

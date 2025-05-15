@@ -878,7 +878,7 @@ internal class RunProgram
                                                                     PaymentChoice = payOption,
                                                                     Shipping = new Shipping() { ShippingType = orderCollection },
                                                                     TotalAmountPrice = totalPriceCheckout,
-                                                                    Products = cartProducts
+                                                                    //OrderItem = cartProducts
                                                                 };
                                                             }
 
