@@ -3,8 +3,9 @@
 
 Fixa så man kan "casha" ut sina varor i Metoden Order
 
-Fixa 
+--------------------------
+Fixa Efter att man kan Casha ut ordrar
 $"2. To see OrderHistory",
 $"3. To see total money spent",
 
-I profil Sektionen
+-- I profil Sektionen ----

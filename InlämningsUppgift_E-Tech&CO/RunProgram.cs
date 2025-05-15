@@ -227,9 +227,13 @@ internal class RunProgram
                                         switch (updateNumber)
                                         {
                                             case 1:
+                                                Console.WriteLine("\nPress B to back");
                                                 Console.WriteLine($"Current password: {customer.Password}");
-                                                Console.Write("What do you want to change your Password to?: ");
+                                                Console.WriteLine("What do you want to change your Password to?: ");
                                                 string passwordUpdate = Console.ReadLine()!;
+
+                                                if (Admin.BackOption(passwordUpdate))
+                                                    break;
 
                                                 if (!string.IsNullOrWhiteSpace(passwordUpdate))
                                                 {
