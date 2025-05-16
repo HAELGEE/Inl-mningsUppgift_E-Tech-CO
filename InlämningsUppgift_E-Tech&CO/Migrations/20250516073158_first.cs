@@ -18,10 +18,11 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Registered = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LoggedIn = table.Column<bool>(type: "bit", nullable: false),
+                    IsAdmin = table.Column<bool>(type: "bit", nullable: false),
                     Age = table.Column<int>(type: "int", nullable: true),
                     Logins = table.Column<int>(type: "int", nullable: true)
                 },
@@ -81,7 +82,11 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     Shipping = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PaymentChoice = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TotalAmountPrice = table.Column<double>(type: "float", nullable: true),
-                    TotalItems = table.Column<int>(type: "int", nullable: true)
+                    TotalItems = table.Column<int>(type: "int", nullable: true),
+                    Zipcode = table.Column<int>(type: "int", nullable: true),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Adress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ShippingFee = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -141,6 +146,12 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                         principalTable: "Order",
                         principalColumn: "Id");
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Customer_UserName",
+                table: "Customer",
+                column: "UserName",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_CustomerSave_CustomerId",

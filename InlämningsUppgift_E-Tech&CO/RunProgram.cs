@@ -966,6 +966,12 @@ internal class RunProgram
 
                                                                 db.SaveChanges();
 
+                                                                foreach(var item in cartProducts)
+                                                                {
+                                                                    var products = db.Shop.Where(x => x.Name == item.Name).SingleOrDefault();
+                                                                    products.Sold = item.Amount;                                                                    
+                                                                }
+
                                                                 Console.WriteLine("Sucess on buying Order");
                                                                 Console.ResetColor();
                                                                 Thread.Sleep(1000);
@@ -1049,6 +1055,12 @@ internal class RunProgram
                                                                 Console.ForegroundColor = ConsoleColor.Green;
 
                                                                 db.SaveChanges();
+
+                                                                foreach (var item in cartProducts)
+                                                                {
+                                                                    var products = db.Shop.Where(x => x.Name == item.Name).SingleOrDefault();
+                                                                    products.Sold = item.Amount;
+                                                                }
 
                                                                 Console.WriteLine("Sucess on buying Order");
                                                                 Console.ResetColor();

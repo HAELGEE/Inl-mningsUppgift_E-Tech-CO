@@ -12,8 +12,8 @@ namespace InlämningsUppgift_E_Tech_CO
         {
             using (var db = new MyDbContext())
             {
-                if(db.Customer == null)
-                    CreateCustomer();
+                if (db.Customer == null)
+                    CreateCustomer();                
                 SetLogin();
                 Console.CursorVisible = false;
                 await RunProgram.RunningProgram();
@@ -21,7 +21,7 @@ namespace InlämningsUppgift_E_Tech_CO
         }
 
         static void SetLogin()
-        {            
+        {
             // Sätter alla användares Login till false om nu programmet skulle krasha vid användning så att man inte automatiskt är inloggad
             using (var db = new MyDbContext())
             {
@@ -32,7 +32,7 @@ namespace InlämningsUppgift_E_Tech_CO
                 db.SaveChanges();
             }
         }
-        
+
         static void CreateCustomer()
         {
             using (var db = new MyDbContext())
@@ -42,8 +42,9 @@ namespace InlämningsUppgift_E_Tech_CO
                 {
                     Logins = 1
                 });
+                db.SaveChanges();
             }
-        }
+        }       
 
         public static string GetDate()
         {

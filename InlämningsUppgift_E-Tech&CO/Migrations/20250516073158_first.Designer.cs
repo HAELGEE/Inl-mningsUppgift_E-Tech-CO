@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InlämningsUppgift_E_Tech_CO.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20250515130711_first")]
+    [Migration("20250516073158_first")]
     partial class first
     {
         /// <inheritdoc />
@@ -36,6 +36,9 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Property<int?>("Age")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
@@ -55,9 +58,13 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserName")
+                        .IsUnique();
 
                     b.ToTable("Customer");
                 });
@@ -94,6 +101,12 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Adress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("CustomerId")
                         .HasColumnType("int");
 
@@ -109,10 +122,16 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Property<string>("Shipping")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ShippingFee")
+                        .HasColumnType("int");
+
                     b.Property<double?>("TotalAmountPrice")
                         .HasColumnType("float");
 
                     b.Property<int?>("TotalItems")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Zipcode")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
