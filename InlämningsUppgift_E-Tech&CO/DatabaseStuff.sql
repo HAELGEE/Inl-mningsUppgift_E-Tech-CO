@@ -7,7 +7,7 @@ values
 ('Computer', 'Asus 3940 pro', 9, 'Great for playing Tetris.', 'Laptops', 1550, 0),
 ('Computer', 'Apple MacBook Air (2025)', 69, 'Has the latest CPU and fast RAM, ideal for drawing in Paint.', 'Laptops', 300, 0),
 
-('Phone', 'Apple iPhone 16e', 5, 'Recent model with promotional offer.', 'Apple', 800, 0),
+('Phone', 'iPhone 16e', 5, 'Recent model with promotional offer.', 'Apple', 800, 0),
 ('Phone', 'iPhone 15 Pro Max', 11, 'Great for calls and casual gaming.', 'Apple', 7801, 0),
 ('Phone', 'Nothing Phone (3a)', 99, 'A unique phone with a custom OS.', 'Nothing', 4290, 0),
 ('Phone', 'Nothing Phone (2a)', 20, 'Older variant with the same great OS.', 'Nothing', 3390, 0),

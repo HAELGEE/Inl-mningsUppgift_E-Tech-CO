@@ -79,35 +79,86 @@ internal class Admin
             switch (userInput)
             {
                 case 1:
-                    Console.WriteLine("Press [B] to back");
-                    Console.Write("Wich Category do you want to add this item to?: ");
-                    string category = Console.ReadLine()!;
-                    Console.Write("Wich Subcategory/product maker do you want to add this item to?: ");
-                    string subCategory = Console.ReadLine()!;
-                    Console.Write("What is the name of the product?: ");
-                    string productName = Console.ReadLine()!;
-                    Console.Write("Price on Product?: ");
-
-                    double productPrice = double.Parse(Console.ReadLine()!);
-                    Console.Write("How many in stock?: ");
-                    int stock = int.Parse(Console.ReadLine()!);
-
-                    Console.Write("Enter information about the product: ");
-                    string information = Console.ReadLine()!;
-
-                    if (category == "b" || subCategory == "b" || productName == "b" || productName == "b" || information == "b")
-                        break;
-
-                    db.Shop.Add(new Shop
+                    while (true)
                     {
-                        Category = category,
-                        SubCategory = subCategory,
-                        Name = productName,
-                        Price = productPrice,
-                        Quantity = stock,
-                        ProductInformation = information
-                    });
+                        Console.WriteLine("Press [B] to back");
+                        Console.Write("Wich Category do you want to add this item to?: ");
+                        string category = Console.ReadLine()!;
+                        if (category.ToLower() == "b")
+                            break;
 
+                        Console.Write("Wich Subcategory/product maker do you want to add this item to?: ");
+                        string subCategory = Console.ReadLine()!;
+                        if (subCategory.ToLower() == "b")
+                            break;
+
+                        Console.Write("What is the name of the product?: ");
+                        string productName = Console.ReadLine()!;
+                        if (productName.ToLower() == "b")
+                            break;
+
+                        string productPriceString = "";
+                        double productPrice = 0;
+                        while (true)
+                        {
+                            Console.Write("Price on Product?: ");
+                            productPriceString = Console.ReadLine()!;
+
+                            if (double.TryParse(productPriceString, out productPrice) && !string.IsNullOrWhiteSpace(productPriceString) && productPrice > 0)
+                            {
+                                break;
+                            }
+                            else if (productPriceString.ToLower() == "b")
+                                break;
+                            else
+                            {
+                                Console.WriteLine("Invalid Input");
+                                Thread.Sleep(1000);
+                            }
+
+                        }
+                        if (productPriceString.ToLower() == "b")
+                            break;
+
+                        string stockString = "";
+                        int stock = 0;
+                        while (true)
+                        {
+                            Console.Write("How many in stock?: ");
+                            stockString = Console.ReadLine()!;
+
+                            if (int.TryParse(stockString, out stock) && !string.IsNullOrWhiteSpace(stockString) && stock > 0)
+                            {
+                                break;
+                            }
+                            else if (stockString.ToLower() == "b")
+                                break;
+                            else
+                            {
+                                Console.WriteLine("Invalid Input");
+                                Thread.Sleep(1000);
+                            }
+                        }
+                        if (stockString.ToLower() == "b")
+                            break;
+
+                        Console.Write("Enter information about the product: ");
+                        string information = Console.ReadLine()!;
+                        if (information.ToLower() == "b")
+                            break;
+
+
+
+                        db.Shop.Add(new Shop
+                        {
+                            Category = category,
+                            SubCategory = subCategory,
+                            Name = productName,
+                            Price = productPrice,
+                            Quantity = stock,
+                            ProductInformation = information
+                        });
+                    }
                     db.SaveChanges();
                     break;
 
@@ -521,7 +572,7 @@ internal class Admin
                     Console.ReadKey();
                     break;
 
-                    case 10:
+                case 10:
                     Console.Clear();
 
 
