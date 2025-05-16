@@ -60,8 +60,6 @@ internal class Admin
                                         .GroupBy(c => new { c.Category, c.SubCategory })
                                         .ToListAsync();
 
-
-
             if (userInput > 0 && userInput < 7)
             {
                 foreach (var cat in categorySearch)
@@ -317,7 +315,7 @@ internal class Admin
                                 Console.ForegroundColor = ConsoleColor.Green;
                                 Console.WriteLine("Customer:");
                                 Console.ForegroundColor = ConsoleColor.DarkCyan;
-                                Console.WriteLine($"Name: {customer.Name}   Lastname: {customer.LastName}   Age: {customer.Age}   Username: {customer.UserName}   Password: {customer.Password}   isAdmin: {customer.IsAdmin}\n");
+                                Console.WriteLine($"Name: {customer.Name}   Lastname: {customer.LastName}   Age: {customer.Age}   Username: {customer.UserName}   Password: {customer.Password}   isAdmin: {customer.IsAdmin}   Logins: {customer.Logins}\n");
                                 Console.ResetColor();
                                 Console.WriteLine("1. Delete Customer");
                                 Console.WriteLine("2. Update Customer Name");
@@ -339,6 +337,12 @@ internal class Admin
                                     {
                                         case 1:
                                             Console.Clear();
+                                            if (RunProgram.loggedinName == customer.UserName)
+                                            {
+                                                Console.WriteLine("Cant delete your own account");
+                                                Thread.Sleep(1500);
+                                                break;
+                                            }
                                             Console.WriteLine($"Do you still want to delete customer {customer.Name} - {customer.LastName} ?");
                                             Console.WriteLine("Press Y for Yes or press anykey to back");
                                             string inputCheck = Console.ReadLine()!;
@@ -433,17 +437,32 @@ internal class Admin
 
                                         case 7:
                                             Console.Clear();
-                                            Console.WriteLine($"Current Customer isAdmin: {customer.IsAdmin}");
-                                            Console.WriteLine("What do you want to update the Customer isAdmin to? (true/false)");
-                                            string isAdminUpdate = Console.ReadLine()!;
-                                            if (isAdminUpdate.ToLower() == "true")
-                                                customer.IsAdmin = true;
-                                            else if (isAdminUpdate.ToLower() == "false")
-                                                customer.IsAdmin = false;
-                                            else
+                                            if (RunProgram.loggedinName == customer.UserName)
                                             {
-                                                Console.WriteLine("Invalid Input");
-                                                Thread.Sleep(1000);
+                                                Console.WriteLine("You cant change Admin rights on your own account");
+                                                Thread.Sleep(1500);
+                                                break;
+                                            }
+                                            while (true)
+                                            {
+                                                Console.WriteLine($"Current Customer isAdmin: {customer.IsAdmin}");
+                                                Console.WriteLine("What do you want to update the Customer isAdmin to? (true/false)");
+                                                string isAdminUpdate = Console.ReadLine()!;
+                                                if (isAdminUpdate.ToLower() == "true")
+                                                {
+                                                    customer.IsAdmin = true;
+                                                    break;
+                                                }
+                                                else if (isAdminUpdate.ToLower() == "false")
+                                                {
+                                                    customer.IsAdmin = false;
+                                                    break;
+                                                }
+                                                else
+                                                {
+                                                    Console.WriteLine("Invalid Input");
+                                                    Thread.Sleep(1000);
+                                                }
                                             }
 
                                             Console.ForegroundColor = ConsoleColor.Green;

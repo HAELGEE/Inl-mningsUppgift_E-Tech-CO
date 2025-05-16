@@ -18,7 +18,7 @@ internal class RunProgram
     static string categoryName = ""; // Sätter denna här så att jag kan komma åt den i mina metoder       
     static List<Product> cartProducts = new List<Product>();
     static List<string> cartProductsInString = new List<string>();
-    static string loggedinName = "";
+    public static string loggedinName = "";
     static bool isAdmin = false;
     static double totalAmount = 0;
     public static async Task RunningProgram()
