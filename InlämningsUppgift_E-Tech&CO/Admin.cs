@@ -38,6 +38,7 @@ internal class Admin
                 Console.WriteLine($"7.  Product info");
                 Console.WriteLine($"8.  All customers & Change Customer");
                 Console.WriteLine($"9.  Look Orderhistories");                    // Inte riktigt klar, får det inte utskrivet (finns inga ordrar än)
+                Console.WriteLine($"10. Change top3 in menu");
                 Console.WriteLine($"B to Back");
                 string input = Console.ReadLine()!;
 
@@ -511,7 +512,6 @@ internal class Admin
                                     Console.WriteLine($"Name: {product.Name.PadRight(48)} Amount: {product.Amount} - Price: {product.Price:C}");
 
                                 }
-
                                 Console.WriteLine($"------------------------------------------------------- Total: {item.TotalAmountPrice:C} ----------\n");
                             }
                         }
@@ -519,6 +519,12 @@ internal class Admin
 
                     Console.WriteLine("");
                     Console.ReadKey();
+                    break;
+
+                    case 10:
+                    Console.Clear();
+
+
                     break;
             }
         }
