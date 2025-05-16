@@ -506,8 +506,24 @@ internal class RunProgram
                     {
                         Order();
                     }
-                    else if (int.TryParse(orderAdd, out addToOrder) && addToOrder > 0 && addToOrder <= idCounter.Count())    // Här kollas antalet artiklar
+                    else if (int.TryParse(orderAdd, out addToOrder) && addToOrder > 0 && !string.IsNullOrWhiteSpace(orderAdd))    // Här kollas antalet artiklar
                     {
+                        // Här börjar kontrollen för att se om angivet nummer av användaren vilket är ID av Produkter, finns i Databasen
+                        bool isTrue = false;
+                        foreach(var item in idCounter)
+                        {
+                            if(item.Id == addToOrder)
+                                isTrue = true;
+                        }
+                        if (!isTrue)
+                        {
+                            // Om den inte finns så skickas en varning ut och man fortsätter i samma ruta
+                            Console.WriteLine("Product not Found!");
+                            Thread.Sleep(2000);
+                            continue;
+                        }
+                        // Här slutar det
+
                         Console.WriteLine("How many of these?");
                         string amountAdd = Console.ReadLine()!.ToLower();
                         int amount = 0;
