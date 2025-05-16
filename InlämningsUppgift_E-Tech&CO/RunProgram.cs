@@ -220,7 +220,6 @@ internal class RunProgram
                         Console.Clear();
                         var person = db.Customer.Where(x => x.UserName == loggedinName).SingleOrDefault();
 
-
                         if (person.LoggedIn)
                         {
                             while (true)
@@ -231,7 +230,7 @@ internal class RunProgram
                                                 $"2. Lastname: {person.LastName}",
                                                 $"3. Age: {person.Age}",
                                                 $"4. Username: {person.UserName}",
-                                                $"5. Total orders: {person.Order.Count()}",
+                                                $"5. Total orders: {person.TotalOrders}",
                                                 $"6. Total Logins: {person.Logins}"
                                             });
 
@@ -289,12 +288,12 @@ internal class RunProgram
                                                 foreach (var item in oderHistory)
                                                 {
                                                     Console.WriteLine($"OrderID: {item.Id}");
-                                                    Console.WriteLine("-- Products --------------------------");
+                                                    Console.WriteLine("-- Products --------------------------------------------");
                                                     foreach (var product in item.Products)
                                                     {
-                                                        Console.WriteLine($"{product.Name.PadRight(48)} Amount: {product.Amount} Price per unit: {product.Price}");
+                                                        Console.WriteLine($"{product.Name.PadRight(48)} Amount: {product.Amount} Price/Unit: {product.Price:C}");
                                                     }
-                                                    Console.WriteLine("--------------------------------------\n");
+                                                    Console.WriteLine($"-------------------------------------------------- Total Price: {item.TotalAmountPrice:C} ----------\n");
                                                 }
                                                 Console.WriteLine("B to Back");
                                                 string value = Console.ReadLine()!;
@@ -880,6 +879,7 @@ internal class RunProgram
                             Console.Clear();
 
                             var order = db.Order.ToList();
+                            var person = db.Customer.Where(x => x.UserName == loggedinName).SingleOrDefault();
 
                             int? amountOfProducts = 0;
                             double? totalPriceCheckout = 0;
@@ -996,6 +996,9 @@ internal class RunProgram
                                                                     }
                                                                 }
 
+                                                                person.TotalOrders++;
+                                                                db.SaveChanges();
+
                                                                 Console.WriteLine("Sucess on buying Order");
                                                                 Console.ResetColor();
                                                                 Thread.Sleep(1000);
@@ -1093,6 +1096,9 @@ internal class RunProgram
                                                                         }
                                                                     }
                                                                 }
+
+                                                                person.TotalOrders++;
+                                                                db.SaveChanges();
 
                                                                 Console.WriteLine("Sucess on buying Order");
                                                                 Console.ResetColor();

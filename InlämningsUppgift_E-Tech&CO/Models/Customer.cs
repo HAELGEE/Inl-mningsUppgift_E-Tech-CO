@@ -34,4 +34,5 @@ internal class Customer
     public int? Logins { get; set; }
     public List<CustomerSave> Saves { get; set; } = new List<CustomerSave>();
     public virtual ICollection<Order> Order { get; set; } = new List<Order>(); // En kund kan har flera orderhistorik
+    public int TotalOrders { get; set; }
 }
