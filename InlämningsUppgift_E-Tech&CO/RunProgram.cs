@@ -1064,10 +1064,18 @@ internal class RunProgram
 
                                                                 db.SaveChanges();
 
+                                                                var products = db.Shop.ToList();
+
                                                                 foreach (var item in cartProducts)
                                                                 {
-                                                                    var products = db.Shop.Where(x => x.Name == item.Name).SingleOrDefault();
-                                                                    products.Sold = item.Amount;
+                                                                    foreach (var prod in products)
+                                                                    {
+                                                                        if (item.Name == prod.Name)
+                                                                        {
+                                                                            prod.Sold += item.Amount;
+                                                                            db.SaveChanges();
+                                                                        }
+                                                                    }
                                                                 }
 
                                                                 Console.WriteLine("Sucess on buying Order");
