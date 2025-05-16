@@ -149,18 +149,18 @@ internal class RunProgram
                     case 2:
                         Console.Clear();
                         Console.WriteLine("Type B to Back\n");
-                        Console.Write("Please enter ur Firstname: ");
+                        Console.Write("Please enter your Firstname: ");
                         string newFirstName = Console.ReadLine()!;
                         if (Admin.BackOption(newFirstName))
                             break;
-                        Console.Write("Please enter ur Lastname: ");
+                        Console.Write("Please enter your Lastname: ");
                         string newLastname = Console.ReadLine()!;
                         if (Admin.BackOption(newLastname))
                             break;
                         int newAge = 0;
                         while (newAge <= 0)
                         {
-                            Console.Write("Please enter ur Age: ");
+                            Console.Write("Please enter your Age: ");
                             string inputCheck = Console.ReadLine()!;
                             if (Admin.BackOption(inputCheck))
                                 break;
@@ -190,7 +190,7 @@ internal class RunProgram
                             }
                         }
 
-                        Console.Write("Please enter ur Password: ");
+                        Console.Write("Please enter your Password: ");
                         string newPassword = Console.ReadLine()!;
                         if (Admin.BackOption(newPassword))
                             break;
