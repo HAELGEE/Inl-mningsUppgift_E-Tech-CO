@@ -317,7 +317,7 @@ internal class Admin
                                 Console.ForegroundColor = ConsoleColor.Green;
                                 Console.WriteLine("Customer:");
                                 Console.ForegroundColor = ConsoleColor.DarkCyan;
-                                Console.WriteLine($"Name: {customer.Name}   Lastname: {customer.LastName}   Age: {customer.Age}   Username: {customer.UserName}   Password: {customer.Password}\n");
+                                Console.WriteLine($"Name: {customer.Name}   Lastname: {customer.LastName}   Age: {customer.Age}   Username: {customer.UserName}   Password: {customer.Password}   isAdmin: {customer.IsAdmin}\n");
                                 Console.ResetColor();
                                 Console.WriteLine("1. Delete Customer");
                                 Console.WriteLine("2. Update Customer Name");
@@ -325,6 +325,7 @@ internal class Admin
                                 Console.WriteLine("4. Update Customer Age");
                                 Console.WriteLine("5. Update Customer Username");
                                 Console.WriteLine("6. Update Customer Password");
+                                Console.WriteLine("7. Update Customer Admin");
                                 Console.WriteLine("B to back");
                                 updateCustomerString = Console.ReadLine()!;
                                 if (BackOption(updateCustomerString))
@@ -425,6 +426,28 @@ internal class Admin
 
                                             Console.ForegroundColor = ConsoleColor.Green;
                                             Console.WriteLine("Password updated");
+                                            Console.ResetColor();
+                                            Thread.Sleep(1000);
+                                            db.SaveChanges();
+                                            break;
+
+                                        case 7:
+                                            Console.Clear();
+                                            Console.WriteLine($"Current Customer isAdmin: {customer.IsAdmin}");
+                                            Console.WriteLine("What do you want to update the Customer isAdmin to? (true/false)");
+                                            string isAdminUpdate = Console.ReadLine()!;
+                                            if (isAdminUpdate.ToLower() == "true")
+                                                customer.IsAdmin = true;
+                                            else if (isAdminUpdate.ToLower() == "false")
+                                                customer.IsAdmin = false;
+                                            else
+                                            {
+                                                Console.WriteLine("Invalid Input");
+                                                Thread.Sleep(1000);
+                                            }
+
+                                            Console.ForegroundColor = ConsoleColor.Green;
+                                            Console.WriteLine("isAdmin updated");
                                             Console.ResetColor();
                                             Thread.Sleep(1000);
                                             db.SaveChanges();
