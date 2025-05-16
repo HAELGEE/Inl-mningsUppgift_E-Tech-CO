@@ -475,6 +475,7 @@ internal class Admin
                         }
                     }
 
+                    Console.WriteLine("");
                     Console.ReadKey();
                     break;
             }
