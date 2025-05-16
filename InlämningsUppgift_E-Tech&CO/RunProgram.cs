@@ -39,15 +39,16 @@ internal class RunProgram
 
                     var adminCheck = await db.Customer.Where(x => x.IsAdmin == true).ToListAsync();
 
+
                     await foreach (var customer in db.Customer)
                     {
-                        if (customer.LoggedIn)                        
-                            loggedinName = customer.UserName!;    
+                        if (customer.LoggedIn)
+                            loggedinName = customer.UserName!;
                     }
 
-                    foreach(var admin in adminCheck)
+                    foreach (var admin in adminCheck)
                     {
-                        if(admin.IsAdmin == true && loggedinName == admin.UserName)
+                        if (admin.IsAdmin == true && loggedinName == admin.UserName)
                             isAdmin = true;
                     }
 
@@ -63,16 +64,16 @@ internal class RunProgram
                     Console.WriteLine($"4. Enter Shop");
                     Console.WriteLine($"5. Quit");
                     if (!loggedinName.IsNullOrEmpty() && isAdmin)
-                        Console.WriteLine($"6. Admin\n");
+                        Console.WriteLine($"6. Admin");
                     if (!loggedinName.IsNullOrEmpty())
                     {
-                        Console.Write($"You are currently logged in as ");
+                        Console.Write($"\nYou are currently logged in as ");
                         Console.ForegroundColor = ConsoleColor.DarkCyan;
                         Console.WriteLine(loggedinName);
                         Console.ResetColor();
                     }
                     else
-                        Console.WriteLine("You are currently not logged in");
+                        Console.WriteLine("\nYou are currently not logged in");
 
                     string input = Console.ReadLine()!;
 
@@ -168,14 +169,31 @@ internal class RunProgram
 
                         }
 
-                        Console.Write("Please enter UserName: ");
-                        string newUserName = Console.ReadLine()!;
-                        if (Admin.BackOption(newUserName))
-                            break;
+                        string newUserName = "";
+                        while (true)
+                        {
+                            try
+                            {
+                                Console.Write("Please enter UserName: ");
+                                newUserName = Console.ReadLine()!;
+                                if (Admin.BackOption(newUserName))
+                                    break;
+
+                                break;
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("There username is already taken\n");
+                                Console.ResetColor();
+                                Thread.Sleep(1500);
+                            }
+                        }
+
                         Console.Write("Please enter ur Password: ");
                         string newPassword = Console.ReadLine()!;
                         if (Admin.BackOption(newPassword))
-                            break;                        
+                            break;
 
                         db.Customer.Add(new Customer
                         (
@@ -303,7 +321,7 @@ internal class RunProgram
                                                 Console.WriteLine("B to back");
                                                 string backCheck = Console.ReadLine()!;
 
-                                                if(Admin.BackOption(backCheck))
+                                                if (Admin.BackOption(backCheck))
                                                     break;
                                             }
                                             break;
@@ -399,7 +417,7 @@ internal class RunProgram
                         running = false;
                         Console.WriteLine("Good bye, see you later!");
                         Thread.Sleep(1000);
-                        
+
                         break;
 
                     case 6:
@@ -857,7 +875,7 @@ internal class RunProgram
                                 {
                                     amountOfProducts += item.Amount;
                                     totalPriceCheckout += (item.Amount * item.Price);
-                                    Console.WriteLine($"{item.Name.PadRight(48)} - Amount: {item.Amount} - Price/Unit: {item.Price:C} - Price*Amount: {item.Price * item.Amount:C}");
+                                    Console.WriteLine($"{item.Name.PadRight(48)} Amount: {item.Amount} - Price/Unit: {item.Price:C} - Price*Amount: {item.Price * item.Amount:C}");
                                 }
                                 Console.WriteLine($"Total Price: {totalPriceCheckout:C}");
                                 Console.WriteLine("-----------------------------------------------------------\n");

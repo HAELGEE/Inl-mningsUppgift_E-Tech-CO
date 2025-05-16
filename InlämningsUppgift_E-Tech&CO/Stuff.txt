@@ -1,16 +1,9 @@
 
 
-Krashar vid Kontroll av Ordar i Profil sektionen
 
 
-Fixa så man kan "casha" ut sina varor i Metoden Order Från rad 848!
 
---------------------------
-Fixa Efter att man kan Casha ut ordrar
-$"2. To see OrderHistory",
-$"3. To see total money spent",
+Fixa så man kan skriva och söka efter vad man vill leta efter i admin
 
--- I profil Sektionen ----
 
-Kolla om jag har skrivt in så att man inte kan skapa fler än en utav samma Användarnamn
 

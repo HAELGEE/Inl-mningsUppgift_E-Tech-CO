@@ -19,4 +19,12 @@ internal class MyDbContext : DbContext
     {
         optionsBuilder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=E-Tech&CO;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
     }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Customer>()
+            .HasIndex(c => c.UserName)
+            .IsUnique();
+        base.OnModelCreating(modelBuilder); 
+    }
 }
