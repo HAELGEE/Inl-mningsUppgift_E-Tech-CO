@@ -975,9 +975,7 @@ internal class RunProgram
                                                                         if (item.Name == prod.Name)
                                                                         {
                                                                             prod.Sold += item.Amount;
-                                                                            db.SaveChanges();
-                                                                            Console.WriteLine($"SOLD: {prod.Sold}");
-                                                                            Console.ReadKey();
+                                                                            db.SaveChanges();                                                                           
                                                                         }
                                                                     }
                                                                 }
