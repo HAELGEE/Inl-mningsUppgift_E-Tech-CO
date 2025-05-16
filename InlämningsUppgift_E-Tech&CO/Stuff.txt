@@ -5,5 +5,5 @@
 
 Fixa så man kan skriva och söka efter vad man vill leta efter i admin
 
-En admin skall kunna sätta andra till admin
+
 

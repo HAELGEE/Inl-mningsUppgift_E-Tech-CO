@@ -211,7 +211,7 @@ internal class RunProgram
                             if (customer.LoggedIn)
                                 customer.Logins++;
                         }
-                        db.SaveChanges(); // Då det är skapat så man automatiskt blir inloggad vid registrering så skall den även spara inloggnings räknaren
+                        db.SaveChanges(); // Då användaren är skapad, så  skall man automatiskt blir inloggad vid registrering så skall även inloggningsräknaren ökas
 
                         break;
 
