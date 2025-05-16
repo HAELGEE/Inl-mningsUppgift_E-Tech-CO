@@ -12,8 +12,11 @@ namespace InlämningsUppgift_E_Tech_CO
         {
             using (var db = new MyDbContext())
             {
-                if (db.Customer == null)
-                    CreateCustomer();                
+                if (db.Customer.Count() == 0)
+                {
+                    CreateCustomer();
+                    db.SaveChanges();                    
+                }
                 SetLogin();
                 Console.CursorVisible = false;
                 await RunProgram.RunningProgram();
