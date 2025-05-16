@@ -19,6 +19,7 @@ internal class RunProgram
     static List<Product> cartProducts = new List<Product>();
     static List<string> cartProductsInString = new List<string>();
     static string loggedinName = "";
+    static bool isAdmin = false;
     static double totalAmount = 0;
     public static async Task RunningProgram()
     {
@@ -36,11 +37,21 @@ internal class RunProgram
                     WelcomeMessage();       // Skrivet ut ett välkomstmeddelande
                     CompanyName();          // Skriver ut Företagsnamnet
 
+                    var adminCheck = await db.Customer.Where(x => x.IsAdmin == true).ToListAsync();
+
                     await foreach (var customer in db.Customer)
                     {
-                        if (customer.LoggedIn)
-                            loggedinName = customer.UserName!;
+                        if (customer.LoggedIn)                        
+                            loggedinName = customer.UserName!;    
                     }
+
+                    foreach(var admin in adminCheck)
+                    {
+                        if(admin.IsAdmin == true && loggedinName == admin.UserName)
+                            isAdmin = true;
+                    }
+
+
 
                     Console.WriteLine($"What do you want to do?");
                     if (loggedinName == "")
@@ -50,8 +61,9 @@ internal class RunProgram
                     Console.WriteLine($"2. Register");
                     Console.WriteLine($"3. Profile");
                     Console.WriteLine($"4. Enter Shop");
-                    Console.WriteLine($"5. Admin");
-                    Console.WriteLine($"6. Quit\n");
+                    Console.WriteLine($"5. Quit");
+                    if (!loggedinName.IsNullOrEmpty() && isAdmin)
+                        Console.WriteLine($"6. Admin\n");
                     if (!loggedinName.IsNullOrEmpty())
                     {
                         Console.Write($"You are currently logged in as ");
@@ -83,14 +95,11 @@ internal class RunProgram
                             bool foundCustomer = false;
                             await foreach (var customer in db.Customer)
                             {
-
                                 if (customer.UserName == userName)
                                 {
                                     foundCustomer = true;
                                 }
-
                             }
-                            ;
 
                             if (foundCustomer)
                             {
@@ -115,7 +124,6 @@ internal class RunProgram
                                         }
                                     }
                                 }
-
                             }
                             else
                             {
@@ -167,7 +175,7 @@ internal class RunProgram
                         Console.Write("Please enter ur Password: ");
                         string newPassword = Console.ReadLine()!;
                         if (Admin.BackOption(newPassword))
-                            break;
+                            break;                        
 
                         db.Customer.Add(new Customer
                         (
@@ -175,7 +183,8 @@ internal class RunProgram
                             newLastname,
                             newAge,
                             newUserName,
-                            newPassword
+                            newPassword,
+                            false
                         ));
                         db.SaveChanges(); // måste spara användaren Innan man kan göra det som kommer under
 
@@ -387,16 +396,17 @@ internal class RunProgram
                         break;
 
                     case 5:
+                        running = false;
+                        Console.WriteLine("Good bye, see you later!");
+                        Thread.Sleep(1000);
+                        
+                        break;
+
+                    case 6:
                         Console.Clear();
 
                         await Admin.AdminConsol();
 
-                        break;
-
-                    case 6:
-                        running = false;
-                        Console.WriteLine("Good bye, see you later!");
-                        Thread.Sleep(1000);
                         break;
                 }
             }
