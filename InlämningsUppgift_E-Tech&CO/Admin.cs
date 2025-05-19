@@ -39,13 +39,14 @@ internal class Admin
                 Console.WriteLine($"8.  All customers & Change Customer");
                 Console.WriteLine($"9.  Look Orderhistories");                    // Inte riktigt klar, får det inte utskrivet (finns inga ordrar än)
                 Console.WriteLine($"10. Change top3 in menu");
+                Console.WriteLine($"11. Free Search");
                 Console.WriteLine($"B to Back");
                 string input = Console.ReadLine()!;
 
                 if (BackOption(input))
                     break;
 
-                if (int.TryParse(input, out userInput) && userInput >= 1 && userInput <= 9)
+                if (int.TryParse(input, out userInput) && userInput >= 1 && userInput <= 11)
                     validInput = true;
                 else
                 {
@@ -76,6 +77,9 @@ internal class Admin
                 }
                 Console.WriteLine();
             }
+
+
+
             switch (userInput)
             {
                 case 1:
@@ -543,8 +547,6 @@ internal class Admin
                         .Include(a => a.Products)
                         .GroupBy(x => x.Customer.UserName);
 
-
-
                     if (allOrders.Count() == 0)
                         Console.WriteLine("The orderlist is empty at the moment");
                     else
@@ -576,6 +578,73 @@ internal class Admin
                     Console.Clear();
 
 
+                    break;
+
+                case 11:
+                    Console.Clear();
+
+                    while (true)
+                    {
+                        Console.Write("Type what you want to seach for: ");
+                        string stringInput = Console.ReadLine()!;
+
+                        if (stringInput.ToLower() == "b")
+                            break;
+
+                        if (!string.IsNullOrWhiteSpace(stringInput))
+                        {
+                            var search = db.Order.Include(a => a.Customer)
+                                .Include(a => a.Products)
+                                .Where(x =>
+                                EF.Functions.Like(x.Name, $"%{stringInput}%") ||
+                                EF.Functions.Like(x.Date, $"%{stringInput}%") ||
+                                EF.Functions.Like(x.Id.ToString(), $"%{stringInput}%") ||
+                                EF.Functions.Like(x.Zipcode.ToString(), $"%{stringInput}%") ||
+                                EF.Functions.Like(x.ShippingFee.ToString(), $"%{stringInput}%") ||
+                                EF.Functions.Like(x.City, $"%{stringInput}%") ||
+                                EF.Functions.Like(x.PaymentChoice, $"%{stringInput}%") ||
+                                EF.Functions.Like(x.Adress, $"%{stringInput}%") ||
+                                EF.Functions.Like(x.Shipping, $"%{stringInput}%") ||
+                                EF.Functions.Like(x.Customer.Name, $"%{stringInput}%") ||
+                                EF.Functions.Like(x.Customer.LastName, $"%{stringInput}%") ||
+                                EF.Functions.Like(x.Customer.UserName, $"%{stringInput}%") ||
+                                EF.Functions.Like(x.Customer.Id.ToString(), $"%{stringInput}%") ||
+                                EF.Functions.Like(x.Customer.LoggedIn.ToString(), $"%{stringInput}%") ||
+                                EF.Functions.Like(x.Customer.Age.ToString(), $"%{stringInput}%") ||
+                                EF.Functions.Like(x.Customer.IsAdmin.ToString(), $"%{stringInput}%") ||
+                                x.Products.Any(p => EF.Functions.Like(p.Id.ToString(), $"%{stringInput}%")) ||
+                                x.Products.Any(p => EF.Functions.Like(p.Name, $"%{stringInput}%")) ||
+                                x.Products.Any(p => EF.Functions.Like(p.Price.ToString(), $"%{stringInput}%")) ||
+                                x.Products.Any(p => EF.Functions.Like(p.Amount.ToString(), $"%{stringInput}%")) ||
+                                x.Products.Any(p => EF.Functions.Like(p.OrderId.ToString(), $"%{stringInput}%"))
+                                )
+                                .GroupBy(x => x.Customer.Id).ToList();
+
+                            foreach (var key in search)
+                            {
+                                Console.WriteLine(key.Key);
+                                foreach (var item in key)
+                                {
+                                    Console.WriteLine("Customer");
+                                    Console.WriteLine($"CustomerId: {item.Customer.Id} Name: {item.Customer.Name} Lastname: {item.Customer.LastName} Username: {item.Customer.UserName} Age: {item.Customer.Age} LoggedIn: {item.Customer.LoggedIn} isAdmin: {item.Customer.IsAdmin}");
+                                    Console.WriteLine("Order");
+                                    Console.WriteLine($"OrderId: {item.Id} City: {item.City} Adress: {item.Adress} ZipCode: {item.Zipcode} Payments: {item.PaymentChoice} Shipping: {item.Shipping}");
+                                    Console.WriteLine("Products");
+                                    foreach (var product in item.Products)
+                                    {
+                                        Console.WriteLine($"Productid: {product.Id} Name: {product.Name} Price: {product.Price} OrderId: {product.OrderId}");
+                                    }
+
+                                    Console.WriteLine();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Nothing found");
+                            Thread.Sleep(1000);
+                        }
+                    }
                     break;
             }
         }
