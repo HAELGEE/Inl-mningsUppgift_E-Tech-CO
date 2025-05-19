@@ -577,6 +577,46 @@ internal class Admin
                 case 10:
                     Console.Clear();
 
+                    while (true)
+                    {
+                        Console.WriteLine("What do you want to show on top3?");
+                        Console.WriteLine("1. Best selling products");
+                        Console.WriteLine("2. Best Selling SubCategory/Maker");
+                        Console.WriteLine("B to Back");
+                        string stringTop = Console.ReadLine()!;
+                        int intTop = 0;
+
+                        if (stringTop.ToLower() == "b")
+                            break;
+
+                        var saveTop = db.Shop.SingleOrDefault();
+
+                        if (int.TryParse(stringTop, out intTop) && intTop == 1)
+                        {
+                            var topSellers = db.Shop.OrderByDescending(x => x.Sold)
+                                .Take(3).ToList();
+
+                            foreach(var sell in topSellers)
+                            {
+                                saveTop.Top3.Add(new string($"Product Name: {sell.Name.PadRight(48)} Sold: {sell.Sold} Price: {sell.Price}"));
+                            }
+
+                            db.SaveChanges();
+                        }
+                        else if (int.TryParse(stringTop, out intTop) && intTop == 2)
+                        {
+                            var topSubcategory = db.Shop.OrderByDescending (x => x.SubCategory)
+                                .Take(3).ToList();
+
+
+                            db.SaveChanges();
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid Input");
+                            Thread.Sleep(1500);
+                        }
+                    }
 
                     break;
 

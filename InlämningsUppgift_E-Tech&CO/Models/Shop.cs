@@ -21,5 +21,6 @@ internal class Shop
     public double? Price { get; set; }
     public string? ProductInformation { get; set; }
     public virtual ICollection<OrderItem> OrderItem { get; set; }
+    public List<string> Top3 { get; set; } = new List<string>();
 
 }
