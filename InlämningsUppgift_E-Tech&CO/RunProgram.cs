@@ -51,8 +51,40 @@ internal class RunProgram
                         if (admin.IsAdmin == true && loggedinName == admin.UserName)
                             isAdmin = true;
                     }
+                    List<string> top3List = new List<string>();
 
+                    var top3 = db.Shop.Where(x => x.IsActive == true)
+                        .Take(3).ToList();
 
+                    var top3Category = db.Shop.Where(x => x.IsActiveCategory != null)
+                        .OrderByDescending(x => x.IsActiveCategory)
+                        .Take(1).SingleOrDefault();
+
+                    if (top3Category.IsActiveCategory == 1)
+                    {
+                        int i = 1;
+                        foreach (var item in top3)
+                        {
+                            top3List.Add($"Nr {i}. Product Name: {item.Name.PadRight(33)} Sold: {item.Sold} Price: {item.Price:C}");
+                            i++;
+                        }
+                    }
+                    else if (top3Category.IsActiveCategory == 2)
+                    {
+                        int i = 1;
+                        foreach (var item in top3)
+                        {
+                            top3List.Add($"Nr {i}. Subcategory/Maker: {item.SubCategory}");
+                            i++;
+                        }
+                    }
+                    else
+                        top3List.Add($"The List is empty at the moment");
+
+                    GUI.DrawWindow("Top3", 40, 13, top3List);
+
+                    Console.CursorLeft = 0;
+                    Console.CursorTop = 13;
 
                     Console.WriteLine($"What do you want to do?");
                     if (loggedinName == "")
@@ -220,7 +252,7 @@ internal class RunProgram
                         Console.Clear();
                         var person = db.Customer.Where(x => x.UserName == loggedinName).SingleOrDefault();
 
-                        if (person.LoggedIn)
+                        if (!string.IsNullOrWhiteSpace(loggedinName))
                         {
                             while (true)
                             {
@@ -234,7 +266,7 @@ internal class RunProgram
                                                 $"6. Total Logins: {person.Logins}"
                                             });
 
-                                GUI.DrawWindow("Update Profile", 38, 10, new List<string>() {
+                                GUI.DrawWindow("Stuff", 38, 10, new List<string>() {
                                                 $"1. To change Password",
                                                 $"2. To see OrderHistory",
                                                 $"3. To see total money spent",
@@ -509,9 +541,9 @@ internal class RunProgram
                     {
                         // Här börjar kontrollen för att se om angivet nummer av användaren vilket är ID av Produkter, finns i Databasen
                         bool isTrue = false;
-                        foreach(var item in idCounter)
+                        foreach (var item in idCounter)
                         {
-                            if(item.Id == addToOrder)
+                            if (item.Id == addToOrder)
                                 isTrue = true;
                         }
                         if (!isTrue)
@@ -991,7 +1023,7 @@ internal class RunProgram
                                                                         if (item.Name == prod.Name)
                                                                         {
                                                                             prod.Sold += item.Amount;
-                                                                            db.SaveChanges();                                                                           
+                                                                            db.SaveChanges();
                                                                         }
                                                                     }
                                                                 }

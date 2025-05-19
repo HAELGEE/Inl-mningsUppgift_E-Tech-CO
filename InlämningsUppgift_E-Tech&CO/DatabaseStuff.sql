@@ -11,8 +11,8 @@ values
 ('Phone', 'iPhone 15 Pro Max', 11, 'Great for calls and casual gaming.', 'Apple', 7801, 0),
 ('Phone', 'Nothing Phone (3a)', 99, 'A unique phone with a custom OS.', 'Nothing', 4290, 0),
 ('Phone', 'Nothing Phone (2a)', 20, 'Older variant with the same great OS.', 'Nothing', 3390, 0),
-('Phone', 'Galaxy S25 Ultra', 4, 'High-end phone with premium features.', 'Samsung', 12049, 0),
-('Phone', 'Galaxy Z Fold 6', 10, 'Foldable phone with advanced functionality.', 'Samsung', 16000, 0),
+('Phone', 'Galaxy S25 Ultra', 4, 'High-end phone with premium features.', 'Samsung Phone', 12049, 0),
+('Phone', 'Galaxy Z Fold 6', 10, 'Foldable phone with advanced functionality.', 'Samsung Phone', 16000, 0),
 
 ('Screen', 'MSI 27" Gaming Screen MAG 27CQ6F', 30, 'Refresh rate: 180Hz, response time: 0.5ms.', 'MSI', 2990, 0),
 ('Screen', 'MSI 40" Gaming Screen MAG401QR', 5, 'Ultra-wide monitor. 155Hz, 1ms response.', 'MSI', 5490, 0),

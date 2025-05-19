@@ -461,6 +461,7 @@ internal class Admin
                                             }
                                             else
                                                 Console.WriteLine("Invalid Input");
+
                                             break;
 
                                         case 5:
@@ -535,7 +536,6 @@ internal class Admin
                         }
                         else
                             Console.WriteLine("Invalid Input");
-
                     }
                     db.SaveChanges();
                     break;
@@ -575,10 +575,10 @@ internal class Admin
                     break;
 
                 case 10:
-                    Console.Clear();
 
                     while (true)
                     {
+                        Console.Clear();
                         Console.WriteLine("What do you want to show on top3?");
                         Console.WriteLine("1. Best selling products");
                         Console.WriteLine("2. Best Selling SubCategory/Maker");
@@ -589,27 +589,72 @@ internal class Admin
                         if (stringTop.ToLower() == "b")
                             break;
 
-                        var saveTop = db.Shop.SingleOrDefault();
+
+
+                        var resetTop = db.Shop.OrderByDescending(x => x.IsActiveCategory)
+                            .ToList();
 
                         if (int.TryParse(stringTop, out intTop) && intTop == 1)
                         {
-                            var topSellers = db.Shop.OrderByDescending(x => x.Sold)
+                            var topSellers = db.Shop
+                                .OrderByDescending(x => x.Sold)
                                 .Take(3).ToList();
 
-                            foreach(var sell in topSellers)
+                            foreach (var reset in resetTop)
                             {
-                                saveTop.Top3.Add(new string($"Product Name: {sell.Name.PadRight(48)} Sold: {sell.Sold} Price: {sell.Price}"));
+                                reset.IsActive = false;
+                                reset.IsActiveCategory = null;
                             }
-
                             db.SaveChanges();
+
+                            foreach (var sell in topSellers)
+                            {
+                                sell.IsActive = true;
+                                sell.IsActiveCategory = 1;
+                            }
+                            db.SaveChanges();
+
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("Top3 Succefully updated");
+                            Console.ResetColor();
+                            Thread.Sleep(1500);
                         }
                         else if (int.TryParse(stringTop, out intTop) && intTop == 2)
                         {
-                            var topSubcategory = db.Shop.OrderByDescending (x => x.SubCategory)
-                                .Take(3).ToList();
-
+                            var topSubcategory = db.Shop.GroupBy(x => x.SubCategory)
+                                .Select(x => new
+                                {
+                                    SubCategory = x.Key,
+                                    TotalSold = x.Sum(z => z.Sold)
+                                })
+                                .OrderByDescending(x => x.SubCategory)
+                                .Take(3)
+                                .ToList();
 
                             db.SaveChanges();
+
+                            foreach (var reset in resetTop)
+                            {
+                                reset.IsActive = false;
+                                reset.IsActiveCategory = null;
+                            }
+                            db.SaveChanges();
+
+                            foreach (var top in topSubcategory)
+                            {
+                                var toUpdate = db.Shop.Where(x => x.SubCategory == top.SubCategory).ToList();
+                                foreach (var item in toUpdate)
+                                {
+                                    item.IsActive = true;
+                                    item.IsActiveCategory = 2;
+                                }
+                            }
+                            db.SaveChanges();
+
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("Top3 Succefully updated");
+                            Console.ResetColor();
+                            Thread.Sleep(1500);
                         }
                         else
                         {
@@ -617,14 +662,14 @@ internal class Admin
                             Thread.Sleep(1500);
                         }
                     }
-
                     break;
 
                 case 11:
-                    Console.Clear();
 
                     while (true)
                     {
+                        Console.Clear();
+                        Console.WriteLine("B to Back");
                         Console.Write("Type what you want to seach for: ");
                         string stringInput = Console.ReadLine()!;
 
@@ -646,6 +691,7 @@ internal class Admin
                                 EF.Functions.Like(x.Adress, $"%{stringInput}%") ||
                                 EF.Functions.Like(x.Shipping, $"%{stringInput}%") ||
                                 EF.Functions.Like(x.Customer.Name, $"%{stringInput}%") ||
+                                EF.Functions.Like(x.Customer.Registered, $"%{stringInput}%") ||
                                 EF.Functions.Like(x.Customer.LastName, $"%{stringInput}%") ||
                                 EF.Functions.Like(x.Customer.UserName, $"%{stringInput}%") ||
                                 EF.Functions.Like(x.Customer.Id.ToString(), $"%{stringInput}%") ||
@@ -666,7 +712,7 @@ internal class Admin
                                 foreach (var item in key)
                                 {
                                     Console.WriteLine("Customer");
-                                    Console.WriteLine($"CustomerId: {item.Customer.Id} Name: {item.Customer.Name} Lastname: {item.Customer.LastName} Username: {item.Customer.UserName} Age: {item.Customer.Age} LoggedIn: {item.Customer.LoggedIn} isAdmin: {item.Customer.IsAdmin}");
+                                    Console.WriteLine($"CustomerId: {item.Customer.Id} Name: {item.Customer.Name} Lastname: {item.Customer.LastName} Username: {item.Customer.UserName} Age: {item.Customer.Age} LoggedIn: {item.Customer.LoggedIn} isAdmin: {item.Customer.IsAdmin} Registered {item.Customer.Registered}");
                                     Console.WriteLine("Order");
                                     Console.WriteLine($"OrderId: {item.Id} City: {item.City} Adress: {item.Adress} ZipCode: {item.Zipcode} Payments: {item.PaymentChoice} Shipping: {item.Shipping}");
                                     Console.WriteLine("Products");
@@ -684,6 +730,7 @@ internal class Admin
                             Console.WriteLine("Nothing found");
                             Thread.Sleep(1000);
                         }
+                        Console.ReadKey();
                     }
                     break;
             }
