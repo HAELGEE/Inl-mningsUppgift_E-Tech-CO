@@ -17,6 +17,8 @@ internal class Admin
 {
     public static async Task AdminConsol()
     {
+        ICustomer isGuest = new GuestCustomer();
+
         using (var db = new MyDbContext())
         {
             Console.Clear();
@@ -393,7 +395,7 @@ internal class Admin
                                     {
                                         case 1:
                                             Console.Clear();
-                                            if (RunProgram.loggedinName == customer.UserName)
+                                            if (isGuest.SettingName() == customer.UserName)
                                             {
                                                 Console.WriteLine("Cant delete your own account");
                                                 Thread.Sleep(1500);
@@ -494,7 +496,7 @@ internal class Admin
 
                                         case 7:
                                             Console.Clear();
-                                            if (RunProgram.loggedinName == customer.UserName)
+                                            if (isGuest.SettingName() == customer.UserName)
                                             {
                                                 Console.WriteLine("You cant change Admin rights on your own account");
                                                 Thread.Sleep(1500);

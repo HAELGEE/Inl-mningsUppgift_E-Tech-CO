@@ -18,18 +18,18 @@ internal class RunProgram
 {
     static string categoryName = ""; // Sätter denna här så att jag kan komma åt den i mina metoder       
     static List<Product> cartProducts = new List<Product>();
-    static List<string> cartProductsInString = new List<string>();
-    public static string loggedinName = "";
-    static bool isAdmin = false;
+    static List<string> cartProductsInString = new List<string>();    
     static double totalAmount = 0;
+    static ICustomer isGuest = new GuestCustomer();
     public static async Task RunningProgram()
     {
-        bool running = true;
-
+        GuestCustomer guestCustomer = new GuestCustomer();
+        bool running = true; 
         while (running)
         {
             using (var db = new MyDbContext())
             {
+                     
                 int menu = 0;
                 bool validInput = false;
                 do
@@ -38,20 +38,7 @@ internal class RunProgram
                     WelcomeMessage();       // Skrivet ut ett välkomstmeddelande
                     CompanyName();          // Skriver ut Företagsnamnet
 
-                    var adminCheck = await db.Customer.Where(x => x.IsAdmin == true).ToListAsync();
 
-
-                    await foreach (var customer in db.Customer)
-                    {
-                        if (customer.LoggedIn)
-                            loggedinName = customer.UserName!;
-                    }
-
-                    foreach (var admin in adminCheck)
-                    {
-                        if (admin.IsAdmin == true && loggedinName == admin.UserName)
-                            isAdmin = true;
-                    }
                     List<string> top3List = new List<string>();
 
                     var top3 = db.Shop.Where(x => x.IsActive == true)
@@ -88,7 +75,7 @@ internal class RunProgram
                     Console.CursorTop = 13;
 
                     Console.WriteLine($"What do you want to do?");
-                    if (loggedinName == "")
+                    if (!isGuest.IsLoggedIn)
                         Console.WriteLine($"1. Login");
                     else
                         Console.WriteLine($"1. Logout");
@@ -96,13 +83,13 @@ internal class RunProgram
                     Console.WriteLine($"3. Profile");
                     Console.WriteLine($"4. Enter Shop");
                     Console.WriteLine($"5. Quit");
-                    if (!loggedinName.IsNullOrEmpty() && isAdmin)
+                    if (isGuest.IsLoggedIn && isGuest.IsAdmin)
                         Console.WriteLine($"6. Admin");
-                    if (!loggedinName.IsNullOrEmpty())
+                    if (isGuest.IsLoggedIn)
                     {
                         Console.Write($"\nYou are currently logged in as ");
                         Console.ForegroundColor = ConsoleColor.DarkCyan;
-                        Console.WriteLine(loggedinName);
+                        Console.WriteLine(isGuest.SettingName);
                         Console.ResetColor();
                     }
                     else
@@ -119,7 +106,7 @@ internal class RunProgram
                 switch (menu)
                 {
                     case 1:
-                        if (loggedinName == "")
+                        if (!isGuest.IsLoggedIn)
                         {
                             Console.Clear();
 
@@ -148,7 +135,7 @@ internal class RunProgram
                                         {
                                             Console.WriteLine("You are now logged in!");
                                             customer.LoggedIn = true;
-                                            customer.Logins = customer.Logins + 1;
+                                            customer.Logins = customer.Logins + 1;    
                                             Thread.Sleep(1500);
                                         }
                                         else
@@ -173,8 +160,7 @@ internal class RunProgram
                             await foreach (var customer in db.Customer)
                             {
                                 customer.LoggedIn = false;
-                            }
-                            loggedinName = "";
+                            }                            
                             db.SaveChanges();
                             break;
                         }
@@ -217,7 +203,7 @@ internal class RunProgram
                             catch (Exception ex)
                             {
                                 Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine("There username is already taken\n");
+                                Console.WriteLine("The username is already taken\n");
                                 Console.ResetColor();
                                 Thread.Sleep(1500);
                             }
@@ -251,9 +237,9 @@ internal class RunProgram
                     //Profile
                     case 3:
                         Console.Clear();
-                        var person = db.Customer.Where(x => x.UserName == loggedinName).SingleOrDefault();
+                        var person = db.Customer.Where(x => x.UserName == isGuest.SettingName).SingleOrDefault();
 
-                        if (!string.IsNullOrWhiteSpace(loggedinName))
+                        if (isGuest.IsLoggedIn)
                         {
                             while (true)
                             {
@@ -276,17 +262,17 @@ internal class RunProgram
                                             });
                                 int updateNumber = 0;
 
-                                Console.SetCursorPosition(5, 18);
-                                string profileCheck = Console.ReadLine()!.ToLower();
+                                Console.SetCursorPosition(5, 20);
+                                string profileCheck = Console.ReadLine()!;
 
-                                if (profileCheck == "b")
+                                if (profileCheck.ToLower() == "b")
                                     break;
 
                                 if (int.TryParse(profileCheck, out updateNumber) && !string.IsNullOrWhiteSpace(profileCheck) && updateNumber > 0 && updateNumber < 4)
                                 {
                                     var oderHistory = db.Order.Include(x => x.Customer)
                                                     .Include(x => x.Products)
-                                                    .Where(x => x.Customer.UserName == loggedinName);
+                                                    .Where(x => x.Customer.UserName == isGuest.SettingName);
                                     switch (updateNumber)
                                     {
                                         case 1:
@@ -364,7 +350,7 @@ internal class RunProgram
                             break;
                         }
 
-                        if (loggedinName == "")
+                        if (isGuest.IsLoggedIn)
                         {
                             Console.WriteLine("Need to be logged in to see Profile");
                             Thread.Sleep(1000);
@@ -454,7 +440,7 @@ internal class RunProgram
                                             List<Product> productList = new List<Product>();
                                             Console.Clear();
 
-                                            if (loggedinName != "")
+                                            if (isGuest.IsLoggedIn)
                                                 GUI.DrawWindowForCart("Shopping Cart", totalAmount, 20, 26, cartProductsInString);
 
                                             Console.SetCursorPosition(0, 0);
@@ -652,7 +638,7 @@ internal class RunProgram
                 ShopItems();
 
 
-                if (loggedinName == "")
+                if (isGuest.IsLoggedIn)
                 {
                     Console.WriteLine("\nPress B to back");
                     Console.WriteLine("Need to login to buy stuff");
@@ -1066,7 +1052,7 @@ internal class RunProgram
                             Console.Clear();
 
                             var order = db.Order.ToList();
-                            var person = db.Customer.Where(x => x.UserName == loggedinName).SingleOrDefault();
+                            var person = db.Customer.Where(x => x.UserName == isGuest.SettingName).SingleOrDefault();
 
                             while (true)
                             {
@@ -1117,7 +1103,7 @@ internal class RunProgram
                                             int customerId = 0;
                                             foreach (var customer in db.Customer)
                                             {
-                                                if (loggedinName == customer.UserName)
+                                                if (isGuest.SettingName == customer.UserName)
                                                     customerId = customer.Id;
                                             }
                                             Console.Clear();
