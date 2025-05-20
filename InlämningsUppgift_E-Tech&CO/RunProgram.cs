@@ -12,6 +12,7 @@ using System.Net.Http.Headers;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace InlämningsUppgift_E_Tech_CO;
 internal class RunProgram
@@ -363,7 +364,6 @@ internal class RunProgram
                         break;
 
                     case 4:
-                        Console.Clear();
 
                         var topSeller = db.Shop
                             .OrderByDescending(x => x.Sold)
@@ -371,222 +371,222 @@ internal class RunProgram
 
                         var items = db.Shop.GroupBy(x => x.Category);
 
-                        bool shopMore = true;
-                        while (shopMore)
+                        while (true)
                         {
-                            while (true)
+                            Console.Clear();
+
+                            if (isGuest.LoggedIn)
                             {
-                                int validNum = 0;
-                                int categoryNum = 0;
-                                Console.Clear();
-                                foreach (var cat in items)
-                                {
-                                    categoryNum++;
-                                    Console.WriteLine($"{categoryNum}. Category: {cat.Key}");
-                                    Console.WriteLine("----------------------");
-                                }
+                                GUI.DrawWindowForCart("Shopping Cart", totalAmount, 20, 26, cartProductsInString);
+                                Console.SetCursorPosition(0, 0);
+                            }
+
+                            int validNum = 0;
+                            int categoryNum = 0;
+                            foreach (var cat in items)
+                            {
                                 categoryNum++;
-                                Console.WriteLine($"{categoryNum}. to search for a Product by name\n");
+                                Console.WriteLine($"{categoryNum}. Category: {cat.Key}");
+                                Console.WriteLine("----------------------");
+                            }
+                            categoryNum++;
+                            Console.WriteLine($"{categoryNum}. to search for a Product by name\n");
 
-                                Console.WriteLine("Press B to back");
-                                Console.Write("Wich product do you want to enter?: ");
+                            Console.WriteLine("Press B to back");
+                            Console.Write("Which product do you want to enter?: ");
 
-                                if (isGuest.LoggedIn)
+                            string numberCheck = Console.ReadLine()!;
+
+                            if (numberCheck.ToLower() == "o")
+                            {
+                                if (cartProducts.Count > 0)
+                                    Order();
+                            }
+                            else if (numberCheck.ToLower() == "b")
+                            {
+                                break;
+                            }
+                            else if (numberCheck.ToLower() == "c")
+                            {
+                                foreach (var product in cartProducts)
                                 {
-                                    GUI.DrawWindowForCart("Shopping Cart", totalAmount, 20, 26, cartProductsInString);
+                                    var itemToBuy = db.Shop.Where(n => n.Name == product.Name)
+                                    .SingleOrDefault();
+                                    itemToBuy!.Quantity += product.Amount;
                                 }
-                                Console.SetCursorPosition(0, 10);
-                                string numberCheck = Console.ReadLine()!;
-
-                                if (numberCheck.ToLower() == "o")
+                                cartProductsInString.Clear();
+                                cartProducts.Clear();
+                                totalAmount = 0;
+                            }
+                            else if (int.TryParse(numberCheck, out validNum))
+                            {
+                                int counter = 0;
+                                string categoryName = "";
+                                foreach (var cate in items)
                                 {
-                                    if (cartProducts.Count > 0)
+                                    // Då jag inte börjar ifrån 0 med min text så får jag ta med -1 för att få det till rätt Index
+                                    if (counter == validNum - 1)
+                                        categoryName = cate.Key;
+
+                                    counter++;
+                                }
+
+                                if (!string.IsNullOrWhiteSpace(categoryName))
+                                    await GettingProducts(categoryName);
+
+                                else if (validNum == categoryNum)
+                                {
+                                    while (true)
                                     {
-                                        shopMore = false;
-                                        Order();
-                                    }
-                                }
-                                else if (numberCheck.ToLower() == "b")
-                                {
-                                    shopMore = false;
-                                    break;
-                                }
-                                else if (numberCheck.ToLower() == "c")
-                                {
-                                    shopMore = false;
+                                        List<Product> productList = new List<Product>();
+                                        Console.Clear();
 
-                                    foreach (var product in cartProducts)
-                                    {
-                                        var itemToBuy = db.Shop.Where(n => n.Name == product.Name)
-                                        .SingleOrDefault();
-                                        itemToBuy!.Quantity += product.Amount;
-                                    }
-                                    cartProductsInString.Clear();
-                                    cartProducts.Clear();
-                                    totalAmount = 0;
-                                }
-                                else if (int.TryParse(numberCheck, out validNum))
-                                {
-                                    if (validNum == 1)
-                                        categoryName = "Computer";
-                                    else if (validNum == 2)
-                                        categoryName = "Phone";
-                                    else if (validNum == 3)
-                                        categoryName = "Screen";
-                                    else if (validNum == categoryNum)
-                                    {
-                                        shopMore = false;
-                                        while (true)
+                                        if (isGuest.LoggedIn)
                                         {
-                                            List<Product> productList = new List<Product>();
-                                            Console.Clear();
-
-                                            if (isGuest.LoggedIn)
-                                                GUI.DrawWindowForCart("Shopping Cart", totalAmount, 20, 26, cartProductsInString);
-
+                                            GUI.DrawWindowForCart("Shopping Cart", totalAmount, 20, 26, cartProductsInString);
                                             Console.SetCursorPosition(0, 0);
-                                            Console.Write("Wich product do you want to see?: ");
-                                            string productName = Console.ReadLine()!;
+                                        }
+                                        Console.Write("Which product do you want to see?: ");
+                                        string productName = Console.ReadLine()!;
 
-                                            var gettingProductName = db.Shop.Where(x => EF.Functions.Like(x.Name, $"%{productName}%")).ToList();
+                                        var gettingProductName = db.Shop.Where(x => EF.Functions.Like(x.Name, $"%{productName}%")).ToList();
 
-                                            if (gettingProductName.Count() != 0)
+                                        if (gettingProductName.Count() != 0)
+                                        {
+                                            foreach (var product in gettingProductName)
                                             {
-                                                foreach (var product in gettingProductName)
+                                                Console.WriteLine($"ID: {product.Id} - In stock: {product.Quantity.ToString().PadRight(2)} - {product.Name}");
+                                            }
+                                            Console.WriteLine();
+                                            // Så man inte kan lägga i varukorgen när man inte är inloggad
+                                            if (isGuest.LoggedIn)
+                                                Console.WriteLine("Type ID number you want to add to Cart");
+
+                                            Console.WriteLine("B to Back");
+                                            string addToCart = Console.ReadLine()!;
+                                            int intToCart = 0;
+
+                                            if (addToCart.ToLower() == "b")
+                                                break;
+                                            else if (addToCart.ToLower() == "o")
+                                            {
+                                                if (cartProducts.Count > 0)
+                                                    Order();
+                                            }
+                                            else if (addToCart.ToLower() == "c")
+                                            {
+                                                foreach (var product in cartProducts)
                                                 {
-                                                    Console.WriteLine($"ID: {product.Id} - In stock: {product.Quantity.ToString().PadRight(2)} - {product.Name}");
+                                                    var itemToBuy = db.Shop.Where(n => n.Name == product.Name)
+                                                    .SingleOrDefault();
+                                                    itemToBuy!.Quantity += product.Amount;
                                                 }
-                                                Console.WriteLine();
-                                                // Så man inte kan lägga i varukorgen när man inte är inloggad
-                                                if (isGuest.LoggedIn)
-                                                    Console.WriteLine("Type ID number you want to add to Cart");
+                                                cartProductsInString.Clear();
+                                                cartProducts.Clear();
+                                                totalAmount = 0;
 
-                                                Console.WriteLine("B to Back");
-                                                string addToCart = Console.ReadLine()!;
-                                                int intToCart = 0;
-
-                                                if (addToCart.ToLower() == "b")
-                                                    break;
-                                                else if (addToCart.ToLower() == "o")
+                                            }
+                                            else if (int.TryParse(addToCart, out intToCart) && isGuest.LoggedIn)
+                                            {
+                                                var idChecker = await db.Shop.OrderBy(x => x.Id).ToListAsync();
+                                                bool idCheck = false;
+                                                foreach (var item in idChecker)
                                                 {
-                                                    if (cartProducts.Count > 0)
-                                                        Order();
+                                                    if (item.Id == intToCart)
+                                                        idCheck = true;
                                                 }
-                                                else if (addToCart.ToLower() == "c")
-                                                {
-                                                    foreach (var product in cartProducts)
-                                                    {
-                                                        var itemToBuy = db.Shop.Where(n => n.Name == product.Name)
-                                                        .SingleOrDefault();
-                                                        itemToBuy!.Quantity += product.Amount;
-                                                    }
-                                                    cartProductsInString.Clear();
-                                                    cartProducts.Clear();
-                                                    totalAmount = 0;
 
-                                                }
-                                                else if (int.TryParse(addToCart, out intToCart) && isGuest.LoggedIn)
-                                                {
-                                                    var idChecker = await db.Shop.OrderBy(x => x.Id).ToListAsync();
-                                                    bool idCheck = false;
-                                                    foreach (var item in idChecker)
-                                                    {
-                                                        if (item.Id == intToCart)
-                                                            idCheck = true;
-                                                    }
-
-                                                    if (!idCheck)
-                                                    {
-                                                        Console.WriteLine("Invalid Input");
-                                                        Thread.Sleep(1500);
-                                                    }
-                                                    else
-                                                    {
-                                                        Console.WriteLine("How many of these?");
-                                                        string stringAmountAdd = Console.ReadLine()!.ToLower();
-                                                        int intAmountAdd = 0;
-
-
-                                                        if (int.TryParse(stringAmountAdd, out intAmountAdd) && !string.IsNullOrWhiteSpace(stringAmountAdd))
-                                                        {
-                                                            var itemToBuy = db.Shop.Where(s => s.Id == intToCart)
-                                                                                    .SingleOrDefault();
-
-                                                            if (intAmountAdd <= itemToBuy.Quantity)
-                                                            {
-                                                                bool nameCheck = false;
-                                                                if (!cartProducts.IsNullOrEmpty())
-                                                                {
-                                                                    foreach (var item in cartProducts)
-                                                                    {
-                                                                        if (item.Name == itemToBuy.Name)
-                                                                        {
-                                                                            item.Amount += intAmountAdd;
-                                                                            nameCheck = true;
-                                                                        }
-                                                                    }
-                                                                    if (!nameCheck)
-                                                                    {
-                                                                        cartProducts.Add(new Product(itemToBuy.Name, intAmountAdd, itemToBuy.Price));
-                                                                        productList.Add(new Product(itemToBuy.Name, intAmountAdd, itemToBuy.Price));
-                                                                    }
-                                                                }
-                                                                else
-                                                                {
-                                                                    cartProducts.Add(new Product(itemToBuy.Name, intAmountAdd, itemToBuy.Price));
-                                                                    productList.Add(new Product(itemToBuy.Name, intAmountAdd, itemToBuy.Price));
-                                                                }
-
-                                                                cartProductsInString.Clear();
-                                                                totalAmount = 0;
-
-                                                                foreach (var product in cartProducts)
-                                                                {
-                                                                    totalAmount += Convert.ToDouble(product.Amount * product.Price);
-                                                                    cartProductsInString.Add($"Name: {product.Name.PadRight(51)}\t Amount: {product.Amount}, Price: {(product.Price * product.Amount)}");
-                                                                    if (product.Name == itemToBuy.Name)
-                                                                        itemToBuy.Quantity -= product.Amount;
-                                                                }
-                                                                cartProductsInString.Add($"---------------------------------------------------");
-                                                                cartProductsInString.Add($"Press C to cancel order or press O to enter Order");
-                                                            }
-                                                            else
-                                                            {
-                                                                Console.WriteLine("Cant buy more then there is in stock");
-                                                                Thread.Sleep(1000);
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                else
+                                                if (!idCheck)
                                                 {
                                                     Console.WriteLine("Invalid Input");
                                                     Thread.Sleep(1500);
                                                 }
+                                                else
+                                                {
+                                                    Console.WriteLine("How many of these?");
+                                                    string stringAmountAdd = Console.ReadLine()!.ToLower();
+                                                    int intAmountAdd = 0;
+
+
+                                                    if (int.TryParse(stringAmountAdd, out intAmountAdd) && !string.IsNullOrWhiteSpace(stringAmountAdd))
+                                                    {
+                                                        var itemToBuy = db.Shop.Where(s => s.Id == intToCart)
+                                                                                .SingleOrDefault();
+
+                                                        if (intAmountAdd <= itemToBuy.Quantity)
+                                                        {
+                                                            bool nameCheck = false;
+                                                            if (!cartProducts.IsNullOrEmpty())
+                                                            {
+                                                                foreach (var item in cartProducts)
+                                                                {
+                                                                    if (item.Name == itemToBuy.Name)
+                                                                    {
+                                                                        item.Amount += intAmountAdd;
+                                                                        nameCheck = true;
+                                                                    }
+                                                                }
+                                                                if (!nameCheck)
+                                                                {
+                                                                    cartProducts.Add(new Product(itemToBuy.Name, intAmountAdd, itemToBuy.Price));
+                                                                    productList.Add(new Product(itemToBuy.Name, intAmountAdd, itemToBuy.Price));
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                cartProducts.Add(new Product(itemToBuy.Name, intAmountAdd, itemToBuy.Price));
+                                                                productList.Add(new Product(itemToBuy.Name, intAmountAdd, itemToBuy.Price));
+                                                            }
+
+                                                            cartProductsInString.Clear();
+                                                            totalAmount = 0;
+
+                                                            foreach (var product in cartProducts)
+                                                            {
+                                                                totalAmount += Convert.ToDouble(product.Amount * product.Price);
+                                                                cartProductsInString.Add($"Name: {product.Name.PadRight(51)}\t Amount: {product.Amount}, Price: {(product.Price * product.Amount)}");
+                                                                if (product.Name == itemToBuy.Name)
+                                                                    itemToBuy.Quantity -= product.Amount;
+                                                            }
+                                                            cartProductsInString.Add($"---------------------------------------------------");
+                                                            cartProductsInString.Add($"Press C to cancel order or press O to enter Order");
+                                                        }
+                                                        else
+                                                        {
+                                                            Console.WriteLine("Cant buy more then there is in stock");
+                                                            Thread.Sleep(1000);
+                                                        }
+                                                    }
+                                                }
                                             }
                                             else
                                             {
-                                                Console.WriteLine("No product found with that search, Try again");
-                                                Thread.Sleep(2000);
+                                                Console.WriteLine("Invalid Input");
+                                                Thread.Sleep(1500);
                                             }
                                         }
-                                    }
-                                    else
-                                    {
-                                        Console.ForegroundColor = ConsoleColor.Red;
-                                        Console.WriteLine($"Must be a number from {categoryNum / categoryNum} to {categoryNum}");
-                                        Console.ResetColor();
-                                        Thread.Sleep(1500);
+                                        else
+                                        {
+                                            Console.WriteLine("No product found with that search, Try again");
+                                            Thread.Sleep(2000);
+                                        }
                                     }
                                 }
-
-                                Console.Clear();
-                                if (shopMore)
+                                else
                                 {
-                                    await GettingProducts();
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine($"Must be a number from {categoryNum / categoryNum} to {categoryNum}");
+                                    Console.ResetColor();
+                                    Thread.Sleep(1500);
                                 }
                             }
+                            else
+                            {
+                                Console.WriteLine("Invalid Input");
+                                Thread.Sleep(1500);
+                            }
                         }
+
                         db.SaveChanges();
                         break;
 
@@ -631,16 +631,17 @@ internal class RunProgram
         Console.ResetColor();
     }
 
-    static async Task GettingProducts()
+    static async Task GettingProducts(string categoryName)
     {
         int addToOrder = 0;
 
         while (true)
         {
+            Console.Clear();
             using (var db = new MyDbContext())
             {
                 List<Product> productList = new List<Product>();
-                ShopItems();
+                ShopItems(categoryName);
 
 
                 if (!isGuest.LoggedIn)
@@ -653,7 +654,7 @@ internal class RunProgram
                 }
                 else
                 {
-                    Console.WriteLine("\nWich Product do you want to buy?");
+                    Console.WriteLine("\nWhich Product do you want to buy?");
                     Console.WriteLine("\nPress B to back");
 
                     GUI.DrawWindowForCart("Shopping Cart", totalAmount, 20, 26, cartProductsInString); // Före
@@ -771,7 +772,7 @@ internal class RunProgram
         }
     }
 
-    static void ShopItems()
+    static void ShopItems(string categoryName)
     {
         using (var db = new MyDbContext())
         {
@@ -846,7 +847,7 @@ internal class RunProgram
                     Console.Write($"{totalprice:C}");
                     Console.ResetColor();
 
-                    Console.Write(" wich ");
+                    Console.Write(" which ");
 
                     Console.ForegroundColor = ConsoleColor.DarkCyan;
                     Console.Write($"{totalprice * 0.25:C}");
@@ -878,7 +879,7 @@ internal class RunProgram
                             {
                                 Console.Clear();
 
-                                Console.WriteLine("Wich product do you want to alter the amount of:");
+                                Console.WriteLine("Which product do you want to alter the amount of:");
                                 Console.WriteLine("--------------------------");
                                 for (int i = 0; i < cartProducts.Count; i++)
                                 {
@@ -1011,7 +1012,7 @@ internal class RunProgram
                                 Console.Clear();
                                 int numberToDelete = 0;
 
-                                Console.WriteLine("Wich product do you want to delete:");
+                                Console.WriteLine("Which product do you want to delete:");
                                 Console.WriteLine("--------------------------");
                                 for (int i = 0; i < cartProducts.Count; i++)
                                 {

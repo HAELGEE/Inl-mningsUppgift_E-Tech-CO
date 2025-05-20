@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.Design;
+using System.Data;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Reflection.Metadata.Ecma335;
@@ -33,16 +34,17 @@ internal class Admin
 
 
                 Console.WriteLine($"What do you want to do?");
-                Console.WriteLine($"1.  Add Item to shop");
-                Console.WriteLine($"2.  Remove Item in shop");
+                Console.WriteLine($"1.  Add Product to shop");
+                Console.WriteLine($"2.  Remove Product in shop");
                 Console.WriteLine($"3.  Increase/Decrease stock for items");
-                Console.WriteLine($"4.  Change price for item");
+                Console.WriteLine($"4.  Change price for Product");
                 Console.WriteLine($"5.  Change Category/subcategory");
-                Console.WriteLine($"6.  Change Name on Product");
-                Console.WriteLine($"7.  Product info");
-                Console.WriteLine($"8.  All customers & Change Customer");
-                Console.WriteLine($"9.  Look Orderhistories");                    // Inte riktigt klar, får det inte utskrivet (finns inga ordrar än)
-                Console.WriteLine($"10. Change top3 in menu");
+                Console.WriteLine($"6.  Delete Category/subcategory");
+                Console.WriteLine($"7.  Change Name on Product");
+                Console.WriteLine($"8.  Product info");
+                Console.WriteLine($"9.  All customers & Change Customer");
+                Console.WriteLine($"10.  Look Orderhistories");                    // Inte riktigt klar, får det inte utskrivet (finns inga ordrar än)
+                Console.WriteLine($"11. Change top3 in menu");
                 Console.WriteLine($"B to Back");
                 string input = Console.ReadLine()!;
 
@@ -83,12 +85,12 @@ internal class Admin
                             while (true)
                             {
                                 Console.WriteLine("Press [B] to back");
-                                Console.Write("Wich Category do you want to add this item to?: ");
+                                Console.Write("Which Category do you want to add this item to?: ");
                                 string category = Console.ReadLine()!;
                                 if (category.ToLower() == "b")
                                     break;
 
-                                Console.Write("Wich Subcategory/product maker do you want to add this item to?: ");
+                                Console.Write("Which Subcategory/product maker do you want to add this item to?: ");
                                 string subCategory = Console.ReadLine()!;
                                 if (subCategory.ToLower() == "b")
                                     break;
@@ -159,6 +161,12 @@ internal class Admin
                                     Quantity = stock,
                                     ProductInformation = information
                                 });
+
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine("Product added to Store");
+                                Console.ResetColor();
+                                Thread.Sleep(1500);
+                                break;
                             }
                             db.SaveChanges();
                             break;
@@ -167,7 +175,7 @@ internal class Admin
                             while (true)
                             {
                                 int deleteId = 0;
-                                Console.Write("Wich product do you want to delete? or [B]ack: ");
+                                Console.Write("Which product do you want to delete? or [B]ack: ");
                                 string deleteCheck = Console.ReadLine()!;
 
                                 if (BackOption(deleteCheck))
@@ -186,7 +194,7 @@ internal class Admin
                             while (true)
                             {
                                 int updateStock = 0;
-                                Console.Write("Wich product do u want to alter the stock? or [B]ack: ");
+                                Console.Write("Which product do u want to alter the stock? or [B]ack: ");
                                 string updateCheck = Console.ReadLine()!;
 
                                 if (BackOption(updateCheck))
@@ -217,7 +225,7 @@ internal class Admin
                             while (true)
                             {
                                 int updatePrice = 0;
-                                Console.Write("Wich product do u want to change price on? or [B]ack: ");
+                                Console.Write("Which product do u want to change price on? or [B]ack: ");
                                 string priceCheck = Console.ReadLine()!;
 
                                 if (BackOption(priceCheck))
@@ -239,7 +247,7 @@ internal class Admin
                             while (true)
                             {
                                 int updateCategory = 0;
-                                Console.Write($"Wich Product do you want to change category/subcategory on? or [B]ack: ");
+                                Console.Write($"Which Product do you want to change category/subcategory on? or [B]ack: ");
                                 string catSubCheck = Console.ReadLine()!;
 
                                 if (BackOption(catSubCheck))
@@ -249,9 +257,9 @@ internal class Admin
                                 {
                                     var categoryAndSub = db.Shop.Where(x => x.Id == updateCategory).SingleOrDefault();
 
-                                    Console.Write($"Wich Category do u want to change to?: ");
+                                    Console.Write($"Which Category do u want to change to?: ");
                                     string categoryChange = Console.ReadLine()!;
-                                    Console.Write($"Wich Subcategory do u want to change to?: ");
+                                    Console.Write($"Which Subcategory do u want to change to?: ");
                                     string subCategoryChange = Console.ReadLine()!;
 
                                     if (categoryChange != "" && subCategoryChange != "")
@@ -267,8 +275,85 @@ internal class Admin
                         case 6:
                             while (true)
                             {
+                                Console.Clear();
+
+                                Console.WriteLine("What do you want to Delete?");
+                                Console.WriteLine("1. To Delete a Category");
+                                Console.WriteLine("2. To Delete a Subategory");
+                                Console.WriteLine("B to Back");
+                                string stringDeleteCategory = Console.ReadLine()!;
+                                int intDeleteCategory = 0;
+
+                                if (stringDeleteCategory.ToLower() == "b")
+                                    break;
+
+                                if (int.TryParse(stringDeleteCategory, out intDeleteCategory))
+                                {
+                                    if (intDeleteCategory == 1)
+                                    {
+                                        while (true)
+                                        {
+                                            int counter = 1;
+                                            Console.Clear();
+                                            var allCategory = db.Shop.GroupBy(x => x.Category);
+
+                                            Console.WriteLine("B to back");
+                                            Console.WriteLine("Which do you want to Delete?");
+                                            foreach (var cate in allCategory)
+                                            {
+                                                Console.WriteLine($"{counter}.{cate.Key}");
+                                                counter++;
+                                            }
+                                            string inputDelete = Console.ReadLine()!;
+                                            int intInputDelete = 0;
+                                            if (inputDelete.ToLower() == "b")
+                                                break;
+
+                                            if (int.TryParse(inputDelete, out intInputDelete))
+                                            {
+                                                counter = 1;
+                                                foreach (var cate in allCategory)
+                                                {
+                                                    if (counter == intInputDelete)
+                                                    {
+                                                        var delete = db.Shop.Where(x => x.Category == cate.Key);
+                                                    }
+                                                        db.SaveChanges();
+
+                                                    counter++;
+                                                }
+                                                Console.WriteLine("Category Deleted");
+                                                Thread.Sleep(1500);
+                                            }
+                                        }
+                                    }
+                                    else if (intDeleteCategory == 2)
+                                    {
+                                        Console.Clear();
+
+                                        var allSubcategory = db.Shop.GroupBy(x => x.SubCategory);
+
+                                        Console.WriteLine("Which do you want to Delete?");
+                                        foreach (var cate in allSubcategory)
+                                        {
+                                            Console.WriteLine(cate.Key);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Invalid Input");
+                                    Thread.Sleep(1500);
+                                }
+                            }
+                            db.SaveChanges();
+                            break;
+
+                        case 7:
+                            while (true)
+                            {
                                 int updateProductName = 0;
-                                Console.Write($"Wich Product do you want to change Name on? or [B]ack: ");
+                                Console.Write($"Which Product do you want to change Name on? or [B]ack: ");
                                 string propductNameCheck = Console.ReadLine()!;
 
                                 if (BackOption(propductNameCheck))
@@ -287,12 +372,12 @@ internal class Admin
                             db.SaveChanges();
                             break;
 
-                        case 7:
+                        case 8:
                             while (true)
                             {
                                 int updateProductInformation = 0;
 
-                                Console.Write($"Wich product do you want to alter the information about? or [B]ack: ");
+                                Console.Write($"Which product do you want to alter the information about? or [B]ack: ");
                                 string productAlter = Console.ReadLine()!;
 
                                 if (BackOption(productAlter))
@@ -319,7 +404,7 @@ internal class Admin
                             }
                             db.SaveChanges();
                             break;
-                        case 8:
+                        case 9:
                             while (true)
                             {
                                 Console.Clear();
@@ -337,7 +422,7 @@ internal class Admin
                                 }
                                 Console.WriteLine("---------------------------------");
                                 Console.WriteLine("\nB to back");
-                                Console.WriteLine("Wich Person do you want to update/delete");
+                                Console.WriteLine("Which Person do you want to update/delete");
                                 string personString = Console.ReadLine()!;
                                 if (BackOption(personString))
                                     break;
@@ -536,7 +621,7 @@ internal class Admin
                             db.SaveChanges();
                             break;
 
-                        case 9:
+                        case 10:
                             Console.Clear();
 
                             var allOrders = db.Order.Include(a => a.Customer)
@@ -570,7 +655,7 @@ internal class Admin
                             Console.ReadKey();
                             break;
 
-                        case 10:
+                        case 11:
                             while (true)
                             {
                                 Console.Clear();
