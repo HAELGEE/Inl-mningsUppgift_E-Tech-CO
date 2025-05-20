@@ -22,7 +22,7 @@ internal class Customer : ICustomer
         Password = password;
         Registered = Program.GetDate();
         Logins = 0;
-        LoggedIn = true; // sätter denna till true när man registrerat sig så man automatiskt kan gå in i shop för att slippa login
+        LoggedIn = true; // sätter denna till true när man registrerat sig så man automatiskt kan gå in i shop för att slippa login (automatisk inlogg vid registrering)
         IsAdmin = isAdmin;
     }
 

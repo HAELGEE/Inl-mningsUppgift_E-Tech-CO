@@ -1034,6 +1034,7 @@ internal class RunProgram
                                         {
                                             productNameCheck = cartProducts[i].Name;
                                             productDelete = true;
+                                            totalprice -= cartProducts[i].Price * cartProducts[i].Amount;
                                         }
                                     }
                                     var singleProduct = db.Shop.Where(x => x.Name == productNameCheck).SingleOrDefault();
@@ -1042,6 +1043,13 @@ internal class RunProgram
                                     {
                                         singleProduct.Quantity += cartProducts[numberToDelete - 1].Amount;
                                         cartProducts.RemoveAt(numberToDelete - 1);
+                                        if (cartProducts.Count() == 0)
+                                        {
+                                            totalAmount = 0;
+                                            cartProductsInString.Clear();
+                                        }
+                                        else
+                                            cartProductsInString.RemoveAt(numberToDelete - 1);
                                     }
                                 }
                                 else
@@ -1244,7 +1252,7 @@ internal class RunProgram
                                                                 Console.WriteLine("Option 'Pay with Creditcard' is Chosen");
                                                                 payOption = "Pay with Creditcard";
                                                             }
-                                                            else
+                                                            else if (intPayOptionShipping == 2)
                                                             {
                                                                 Console.WriteLine("Option 'Pay with Swish' is Chosen");
                                                                 payOption = "Pay with Swish";
