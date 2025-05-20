@@ -1,6 +1,11 @@
 
 
-2 olika frakt kostnader.
-Visa totala summan med frakten
+
+Fixa interface för Inloggning
+Man kan inte se vissa saker om man inte är inloggad
+
+Vid produkterKategorin
+
+Generiska metoder?
 
 
