@@ -9,6 +9,11 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace InlämningsUppgift_E_Tech_CO.Models;
 internal class Customer
 {
+    readonly Customer _customer;
+    public Customer(Customer customer)
+    {
+        _customer = customer;
+    }
     public Customer(string? name, string? lastName, int? age, string? userName, string? password, bool isAdmin)
     {
         Name = name;
@@ -35,29 +40,5 @@ internal class Customer
     public List<CustomerSave> Saves { get; set; } = new List<CustomerSave>();
     public virtual ICollection<Order> Order { get; set; } = new List<Order>(); // En kund kan har flera orderhistorik
     public int TotalOrders { get; set; }
-
-    //public string settingName()
-    //{
-    //    using(var db = new MyDbContext())
-    //    {
-    //        var customer = db.Customer.Where(x => x.LoggedIn == true).SingleOrDefault();
-
-    //        return customer.Name;
-    //    }
-    //}
-
-    //public bool IsLoggedIn()
-    //{
-    //    using (var db = new MyDbContext())
-    //    {
-    //        var customer = db.Customer.Any(x => x.LoggedIn == true);
-
-    //        if (customer)
-    //            return true;
-    //        else
-    //            return false;
-    //    }
-    //}
-
 
 }

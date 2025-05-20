@@ -13,23 +13,22 @@ internal class GuestCustomer : ICustomer
     public bool IsAdmin { get; set; }
     public string SettingName { get; set; }
     public GuestCustomer()
-    {
-        GettingCustomer();
+    {       
         IsLoggedInMethod();
         IsAdminMethod();
-        SettingNameMethod();
     }
 
-    void GettingCustomer()
+    public void GettingCustomer()
     {
         using (var db = new MyDbContext())
         {
             var customer = db.Customer.Where(x => x.LoggedIn == true).SingleOrDefault();
 
-            customer = new Customer(customer.Name, customer.LastName, customer.Age, customer.UserName, customer.Password, customer.IsAdmin);
+            if (customer.UserName != "")
+                customer = new Customer(customer.Name, customer.LastName, customer.Age, customer.UserName, customer.Password, customer.IsAdmin);
         }
     }
-    
+
     void IsLoggedInMethod()
     {
         using (var db = new MyDbContext())
@@ -54,7 +53,7 @@ internal class GuestCustomer : ICustomer
                 IsAdmin = false;
         }
     }
-    void  SettingNameMethod()
+    public void SettingNameMethod()
     {
         using (var db = new MyDbContext())
         {

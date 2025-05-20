@@ -136,7 +136,7 @@ internal class RunProgram
                                             Console.WriteLine("You are now logged in!");
                                             customer.LoggedIn = true;
                                             customer.Logins = customer.Logins + 1;    
-                                            Thread.Sleep(1500);
+                                            Thread.Sleep(1500);                                            
                                         }
                                         else
                                         {
@@ -153,6 +153,8 @@ internal class RunProgram
                             }
 
                             db.SaveChanges();
+                            guestCustomer.GettingCustomer();
+                            guestCustomer.SettingNameMethod();
                             break;
                         }
                         else
@@ -367,12 +369,6 @@ internal class RunProgram
 
                         var items = db.Shop.GroupBy(x => x.Category);
 
-                        bool customerLogedIn = false;
-                        await foreach (var customer in db.Customer)
-                        {
-                            if (customer.LoggedIn)
-                                customerLogedIn = true;
-                        }
 
                         bool shopMore = true;
                         while (shopMore)
@@ -388,12 +384,13 @@ internal class RunProgram
                                     Console.WriteLine($"{categoryNum}. Category: {cat.Key}");
                                     Console.WriteLine("----------------------");
                                 }
-                                Console.WriteLine($"4. to search for a Product by name\n");
+                                categoryNum++;
+                                Console.WriteLine($"{categoryNum}. to search for a Product by name\n");
 
                                 Console.WriteLine("Press B to back");
                                 Console.Write("Wich product do you want to enter?: ");
 
-                                if (customerLogedIn)
+                                if (isGuest.IsLoggedIn)
                                 {
                                     GUI.DrawWindowForCart("Shopping Cart", totalAmount, 20, 26, cartProductsInString);
                                 }
@@ -457,7 +454,7 @@ internal class RunProgram
                                                 }
                                                 Console.WriteLine();
                                                 // Så man inte kan lägga i varukorgen när man inte är inloggad
-                                                if (customerLogedIn)
+                                                if (isGuest.IsLoggedIn)
                                                     Console.WriteLine("Type ID number you want to add to Cart");
 
                                                 Console.WriteLine("B to Back");
@@ -481,7 +478,7 @@ internal class RunProgram
                                                     totalAmount = 0;
 
                                                 }
-                                                else if (int.TryParse(addToCart, out intToCart) && customerLogedIn)
+                                                else if (int.TryParse(addToCart, out intToCart) && isGuest.IsLoggedIn)
                                                 {
                                                     var idChecker = await db.Shop.OrderBy(x => x.Id).ToListAsync();
                                                     bool idCheck = false;
