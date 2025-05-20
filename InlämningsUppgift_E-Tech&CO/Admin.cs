@@ -395,7 +395,7 @@ internal class Admin
                                     {
                                         case 1:
                                             Console.Clear();
-                                            if (isGuest.SettingName() == customer.UserName)
+                                            if (isGuest.SettingName == customer.UserName)
                                             {
                                                 Console.WriteLine("Cant delete your own account");
                                                 Thread.Sleep(1500);
@@ -496,7 +496,7 @@ internal class Admin
 
                                         case 7:
                                             Console.Clear();
-                                            if (isGuest.SettingName() == customer.UserName)
+                                            if (isGuest.SettingName == customer.UserName)
                                             {
                                                 Console.WriteLine("You cant change Admin rights on your own account");
                                                 Thread.Sleep(1500);
