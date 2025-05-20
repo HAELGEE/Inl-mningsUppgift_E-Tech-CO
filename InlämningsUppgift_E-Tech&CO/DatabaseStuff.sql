@@ -2,7 +2,7 @@ Insert into Shop (Category, [name], Quantity, ProductInformation, SubCategory, P
 values
 ('Computer', 'Samsung 9100 PRO M.2', 10, 'The latest hard drive on the market.', 'Computer Components', 2849, 0),
 ('Computer', 'Samsung 990 EVO Plus', 33, 'A more affordable yet solid SSD.', 'Computer Components', 1549, 0),
-('Computer', 'CoIntel Core i9, 11', 1, 'This is a good computer for gaming, but it is best for programming.', 'Desktop Computers', 1199, 0),
+('Computer', 'Intel Core i9, 11', 1, 'This is a good computer for gaming, but it is best for programming.', 'Desktop Computers', 1199, 0),
 ('Computer', 'AMD Ryzen 2040', 2, 'The best desktop computer for gaming.', 'Desktop Computers', 5001, 0),
 ('Computer', 'Asus 3940 pro', 9, 'Great for playing Tetris.', 'Laptops', 1550, 0),
 ('Computer', 'Apple MacBook Air (2025)', 69, 'Has the latest CPU and fast RAM, ideal for drawing in Paint.', 'Laptops', 300, 0),

@@ -415,15 +415,30 @@ internal class RunProgram
                                 string numberCheck = Console.ReadLine()!;
 
                                 if (numberCheck.ToLower() == "o")
+                                {
+                                    shopMore = false;
                                     Order();
-
-                                if (numberCheck.ToLower() == "b")
+                                }
+                                else if (numberCheck.ToLower() == "b")
                                 {
                                     shopMore = false;
                                     break;
                                 }
+                                else if (numberCheck.ToLower() == "c")
+                                {
+                                    shopMore = false;
 
-                                if (int.TryParse(numberCheck, out validNum) || validNum > 0 || validNum < 5)
+                                    foreach (var product in cartProducts)
+                                    {
+                                        var itemToBuy = db.Shop.Where(n => n.Name == product.Name)
+                                        .SingleOrDefault();
+                                        itemToBuy!.Quantity += product.Amount;
+                                    }
+                                    cartProductsInString.Clear();
+                                    cartProducts.Clear();
+                                    totalAmount = 0;
+                                }
+                                else if (int.TryParse(numberCheck, out validNum) || validNum > 0 || validNum < 5)
                                 {
                                     if (validNum == 1)
                                         categoryName = "Computer";
@@ -439,7 +454,8 @@ internal class RunProgram
                                             List<Product> productList = new List<Product>();
                                             Console.Clear();
 
-                                            GUI.DrawWindowForCart("Shopping Cart", totalAmount, 20, 26, cartProductsInString);
+                                            if (loggedinName != "")
+                                                GUI.DrawWindowForCart("Shopping Cart", totalAmount, 20, 26, cartProductsInString);
 
                                             Console.SetCursorPosition(0, 0);
                                             Console.Write("Wich product do you want to see?: ");
@@ -451,7 +467,7 @@ internal class RunProgram
                                             {
                                                 foreach (var product in gettingProductName)
                                                 {
-                                                    Console.WriteLine($"ID: {product.Id} - {product.Name}");
+                                                    Console.WriteLine($"ID: {product.Id} - In stock: {product.Quantity.ToString().PadRight(2)} - {product.Name}");
                                                 }
                                                 Console.WriteLine();
                                                 // Så man inte kan lägga i varukorgen när man inte är inloggad
@@ -464,10 +480,22 @@ internal class RunProgram
 
                                                 if (addToCart.ToLower() == "b")
                                                     break;
-                                                if (addToCart.ToLower() == "o")
+                                                else if (addToCart.ToLower() == "o")
                                                     Order();
+                                                else if (addToCart.ToLower() == "c")
+                                                {
+                                                    foreach (var product in cartProducts)
+                                                    {
+                                                        var itemToBuy = db.Shop.Where(n => n.Name == product.Name)
+                                                        .SingleOrDefault();
+                                                        itemToBuy!.Quantity += product.Amount;
+                                                    }
+                                                    cartProductsInString.Clear();
+                                                    cartProducts.Clear();
+                                                    totalAmount = 0;
 
-                                                if (int.TryParse(addToCart, out intToCart) && customerLogedIn)
+                                                }
+                                                else if (int.TryParse(addToCart, out intToCart) && customerLogedIn)
                                                 {
                                                     var idChecker = await db.Shop.OrderBy(x => x.Id).ToListAsync();
                                                     bool idCheck = false;
@@ -490,7 +518,7 @@ internal class RunProgram
 
                                                         if (int.TryParse(stringAmountAdd, out intAmountAdd) && !string.IsNullOrWhiteSpace(stringAmountAdd))
                                                         {
-                                                            var itemToBuy = db.Shop.Where(s => s.Id == intAmountAdd)
+                                                            var itemToBuy = db.Shop.Where(s => s.Id == intToCart)
                                                                                     .SingleOrDefault();
 
                                                             if (intAmountAdd <= itemToBuy.Quantity)
@@ -1040,19 +1068,24 @@ internal class RunProgram
                             var order = db.Order.ToList();
                             var person = db.Customer.Where(x => x.UserName == loggedinName).SingleOrDefault();
 
-                            int? amountOfProducts = 0;
-                            double? totalPriceCheckout = 0;
                             while (true)
                             {
+                                int? amountOfProducts = 0;
+                                double? totalPriceCheckout = 0;
+
+                                Console.Clear();
                                 Console.WriteLine("You are about to buy these Products");
-                                Console.WriteLine("-----------------------------------------------------------");
+                                Console.WriteLine("-----------------------------------------------------------");                                
                                 foreach (var item in cartProducts)
-                                {
+                                {                                    
                                     amountOfProducts += item.Amount;
-                                    totalPriceCheckout += (item.Amount * item.Price);
+                                    totalPriceCheckout += item.Amount * item.Price;
                                     Console.WriteLine($"{item.Name.PadRight(48)} Amount: {item.Amount} - Price/Unit: {item.Price:C} - Price*Amount: {item.Price * item.Amount:C}");
                                 }
-                                Console.WriteLine($"Total Price: {totalPriceCheckout:C}");
+                                Console.Write($"Total Price: ");
+                                Console.ForegroundColor = ConsoleColor.DarkCyan;
+                                Console.WriteLine($"{totalPriceCheckout:C}");
+                                Console.ResetColor();
                                 Console.WriteLine("-----------------------------------------------------------\n");
 
                                 Console.WriteLine($"1. to Buy \nB to back"); //Oneliner
@@ -1179,8 +1212,27 @@ internal class RunProgram
 
                                                 case 2:
                                                     orderCollection = "Shipping to Adress";
+                                                    int fee = 0;
                                                     Console.WriteLine("Option 'Shipping to Adress' is chosen");
-                                                    Console.WriteLine("1. Pay with Creditcard");
+                                                    Console.WriteLine("1. Regular shipping (3-4 days) - Shipping fee = 200.00 kr");
+                                                    Console.WriteLine("2. Express shipping (1-2 days) - Shipping fee = 500.00 kr");
+                                                    Console.WriteLine("B to Back");
+                                                    string shippingOption = Console.ReadLine()!;
+
+                                                    if (shippingOption == "b")
+                                                        break;
+                                                    else if (shippingOption == "1")
+                                                        fee = 200;
+                                                    else if (shippingOption == "2")
+                                                        fee = 500;
+                                                    else
+                                                    {
+                                                        Console.WriteLine("Invalid Input");
+                                                        Thread.Sleep(1500);
+                                                        break;
+                                                    }
+                                                    Console.WriteLine($"Total price inc fee and tax = {totalAmount + fee:C}");
+                                                    Console.WriteLine("\n1. Pay with Creditcard");
                                                     Console.WriteLine("2. Pay with Swish");
                                                     Console.WriteLine("B to Back");
                                                     string stringPayOptionShipping = Console.ReadLine()!;

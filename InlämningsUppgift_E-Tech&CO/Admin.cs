@@ -627,7 +627,7 @@ internal class Admin
                                     SubCategory = x.Key,
                                     TotalSold = x.Sum(z => z.Sold)
                                 })
-                                .OrderByDescending(x => x.SubCategory)
+                                .OrderByDescending(x => x.TotalSold)
                                 .Take(3)
                                 .ToList();
 
@@ -643,10 +643,15 @@ internal class Admin
                             foreach (var top in topSubcategory)
                             {
                                 var toUpdate = db.Shop.Where(x => x.SubCategory == top.SubCategory).ToList();
+                                bool boolCheck = true;
                                 foreach (var item in toUpdate)
                                 {
-                                    item.IsActive = true;
-                                    item.IsActiveCategory = 2;
+                                    if (boolCheck)
+                                    {
+                                        item.IsActive = true;
+                                        item.IsActiveCategory = 2;
+                                        boolCheck = false;
+                                    }
                                 }
                             }
                             db.SaveChanges();
@@ -711,11 +716,19 @@ internal class Admin
                                 Console.WriteLine(key.Key);
                                 foreach (var item in key)
                                 {
+                                    Console.ForegroundColor = ConsoleColor.Green;
                                     Console.WriteLine("Customer");
+                                    Console.ResetColor();                                    
                                     Console.WriteLine($"CustomerId: {item.Customer.Id} Name: {item.Customer.Name} Lastname: {item.Customer.LastName} Username: {item.Customer.UserName} Age: {item.Customer.Age} LoggedIn: {item.Customer.LoggedIn} isAdmin: {item.Customer.IsAdmin} Registered {item.Customer.Registered}");
+                                    
+                                    Console.ForegroundColor = ConsoleColor.Green;
                                     Console.WriteLine("Order");
+                                    Console.ResetColor();
                                     Console.WriteLine($"OrderId: {item.Id} City: {item.City} Adress: {item.Adress} ZipCode: {item.Zipcode} Payments: {item.PaymentChoice} Shipping: {item.Shipping}");
+                                    
+                                    Console.ForegroundColor = ConsoleColor.Green;
                                     Console.WriteLine("Products");
+                                    Console.ResetColor();
                                     foreach (var product in item.Products)
                                     {
                                         Console.WriteLine($"Productid: {product.Id} Name: {product.Name} Price: {product.Price} OrderId: {product.OrderId}");

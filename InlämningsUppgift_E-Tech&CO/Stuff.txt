@@ -1,10 +1,5 @@
 
 
-FIXA KATEGORI TOP 3
-
-Fixa så jag kan trycka O i Kategori menyn
-Så man kan söka efter produkter (fritext)
-
 2 olika frakt kostnader.
 Visa totala summan med frakten
 
