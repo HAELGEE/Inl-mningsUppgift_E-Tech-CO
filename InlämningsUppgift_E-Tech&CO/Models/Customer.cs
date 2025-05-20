@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace InlämningsUppgift_E_Tech_CO.Models;
-internal class Customer
+internal class Customer : ICustomer
 {
     public Customer(string? name, string? lastName, int? age, string? userName, string? password, bool isAdmin)
     {
