@@ -1,14 +1,13 @@
 
 
 
-Fixa interface för Inloggning
-Man kan inte se vissa saker om man inte är inloggad
 
 Vid produkterKategorin så det ökar i siffor och läggs till mer
+Vid rad 428 är det krångel. Måste bygga om!
 
 Generiska metoder?
 
 
-Inte kunna gå in i order om det inte finns något i listan
+
 
 

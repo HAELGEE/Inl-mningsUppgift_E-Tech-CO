@@ -18,18 +18,18 @@ internal class RunProgram
 {
     static string categoryName = ""; // Sätter denna här så att jag kan komma åt den i mina metoder       
     static List<Product> cartProducts = new List<Product>();
-    static List<string> cartProductsInString = new List<string>();    
+    static List<string> cartProductsInString = new List<string>();
     static double totalAmount = 0;
-    static ICustomer isGuest = new GuestCustomer();
+    static ICustomer isGuest = new Customer();
+    //static ICustomer isGuest = (ICustomer)isLoggedIn;
     public static async Task RunningProgram()
     {
-        GuestCustomer guestCustomer = new GuestCustomer();
-        bool running = true; 
+        bool running = true;
         while (running)
         {
             using (var db = new MyDbContext())
             {
-                     
+
                 int menu = 0;
                 bool validInput = false;
                 do
@@ -75,7 +75,7 @@ internal class RunProgram
                     Console.CursorTop = 13;
 
                     Console.WriteLine($"What do you want to do?");
-                    if (!isGuest.IsLoggedIn)
+                    if (!isGuest.LoggedIn)
                         Console.WriteLine($"1. Login");
                     else
                         Console.WriteLine($"1. Logout");
@@ -83,13 +83,13 @@ internal class RunProgram
                     Console.WriteLine($"3. Profile");
                     Console.WriteLine($"4. Enter Shop");
                     Console.WriteLine($"5. Quit");
-                    if (isGuest.IsLoggedIn && isGuest.IsAdmin)
+                    if (isGuest.LoggedIn && isGuest.IsAdmin)
                         Console.WriteLine($"6. Admin");
-                    if (isGuest.IsLoggedIn)
+                    if (isGuest.LoggedIn)
                     {
                         Console.Write($"\nYou are currently logged in as ");
                         Console.ForegroundColor = ConsoleColor.DarkCyan;
-                        Console.WriteLine(isGuest.SettingName);
+                        Console.WriteLine(isGuest.UserName);
                         Console.ResetColor();
                     }
                     else
@@ -106,7 +106,7 @@ internal class RunProgram
                 switch (menu)
                 {
                     case 1:
-                        if (!isGuest.IsLoggedIn)
+                        if (!isGuest.LoggedIn)
                         {
                             Console.Clear();
 
@@ -135,8 +135,12 @@ internal class RunProgram
                                         {
                                             Console.WriteLine("You are now logged in!");
                                             customer.LoggedIn = true;
-                                            customer.Logins = customer.Logins + 1;    
-                                            Thread.Sleep(1500);                                            
+                                            customer.Logins = customer.Logins + 1;
+                                            isGuest.LoggedIn = true;
+                                            isGuest.UserName = customer.UserName;
+                                            isGuest.IsAdmin = customer.IsAdmin;
+                                            Thread.Sleep(1500);
+
                                         }
                                         else
                                         {
@@ -153,8 +157,6 @@ internal class RunProgram
                             }
 
                             db.SaveChanges();
-                            guestCustomer.GettingCustomer();
-                            guestCustomer.SettingNameMethod();
                             break;
                         }
                         else
@@ -162,7 +164,8 @@ internal class RunProgram
                             await foreach (var customer in db.Customer)
                             {
                                 customer.LoggedIn = false;
-                            }                            
+                                isGuest.LoggedIn = false;
+                            }
                             db.SaveChanges();
                             break;
                         }
@@ -239,9 +242,9 @@ internal class RunProgram
                     //Profile
                     case 3:
                         Console.Clear();
-                        var person = db.Customer.Where(x => x.UserName == isGuest.SettingName).SingleOrDefault();
+                        var person = db.Customer.Where(x => x.UserName == isGuest.UserName).SingleOrDefault();
 
-                        if (isGuest.IsLoggedIn)
+                        if (isGuest.LoggedIn)
                         {
                             while (true)
                             {
@@ -274,7 +277,7 @@ internal class RunProgram
                                 {
                                     var oderHistory = db.Order.Include(x => x.Customer)
                                                     .Include(x => x.Products)
-                                                    .Where(x => x.Customer.UserName == isGuest.SettingName);
+                                                    .Where(x => x.Customer.UserName == isGuest.UserName);
                                     switch (updateNumber)
                                     {
                                         case 1:
@@ -296,10 +299,11 @@ internal class RunProgram
                                             }
                                             else
                                             {
-                                                Console.ForegroundColor = ConsoleColor.Green;
+                                                Console.ForegroundColor = ConsoleColor.Red;
                                                 Console.WriteLine("Invalid Input");
-                                                Console.ResetColor();
+                                                Thread.Sleep(1000);
                                             }
+                                            Console.ResetColor();
                                             db.SaveChanges();
                                             break;
 
@@ -351,14 +355,12 @@ internal class RunProgram
                             }
                             break;
                         }
-
-                        if (isGuest.IsLoggedIn)
+                        else
                         {
                             Console.WriteLine("Need to be logged in to see Profile");
                             Thread.Sleep(1000);
                         }
                         break;
-
 
                     case 4:
                         Console.Clear();
@@ -369,13 +371,12 @@ internal class RunProgram
 
                         var items = db.Shop.GroupBy(x => x.Category);
 
-
                         bool shopMore = true;
                         while (shopMore)
                         {
-                            int validNum = 0;
-                            while (validNum <= 0 || validNum > 3)
+                            while (true)
                             {
+                                int validNum = 0;
                                 int categoryNum = 0;
                                 Console.Clear();
                                 foreach (var cat in items)
@@ -390,7 +391,7 @@ internal class RunProgram
                                 Console.WriteLine("Press B to back");
                                 Console.Write("Wich product do you want to enter?: ");
 
-                                if (isGuest.IsLoggedIn)
+                                if (isGuest.LoggedIn)
                                 {
                                     GUI.DrawWindowForCart("Shopping Cart", totalAmount, 20, 26, cartProductsInString);
                                 }
@@ -399,8 +400,11 @@ internal class RunProgram
 
                                 if (numberCheck.ToLower() == "o")
                                 {
-                                    shopMore = false;
-                                    Order();
+                                    if (cartProducts.Count > 0)
+                                    {
+                                        shopMore = false;
+                                        Order();
+                                    }
                                 }
                                 else if (numberCheck.ToLower() == "b")
                                 {
@@ -421,7 +425,7 @@ internal class RunProgram
                                     cartProducts.Clear();
                                     totalAmount = 0;
                                 }
-                                else if (int.TryParse(numberCheck, out validNum) || validNum > 0 || validNum < 5)
+                                else if (int.TryParse(numberCheck, out validNum))
                                 {
                                     if (validNum == 1)
                                         categoryName = "Computer";
@@ -429,7 +433,7 @@ internal class RunProgram
                                         categoryName = "Phone";
                                     else if (validNum == 3)
                                         categoryName = "Screen";
-                                    else if (validNum == 4)
+                                    else if (validNum == categoryNum)
                                     {
                                         shopMore = false;
                                         while (true)
@@ -437,7 +441,7 @@ internal class RunProgram
                                             List<Product> productList = new List<Product>();
                                             Console.Clear();
 
-                                            if (isGuest.IsLoggedIn)
+                                            if (isGuest.LoggedIn)
                                                 GUI.DrawWindowForCart("Shopping Cart", totalAmount, 20, 26, cartProductsInString);
 
                                             Console.SetCursorPosition(0, 0);
@@ -454,7 +458,7 @@ internal class RunProgram
                                                 }
                                                 Console.WriteLine();
                                                 // Så man inte kan lägga i varukorgen när man inte är inloggad
-                                                if (isGuest.IsLoggedIn)
+                                                if (isGuest.LoggedIn)
                                                     Console.WriteLine("Type ID number you want to add to Cart");
 
                                                 Console.WriteLine("B to Back");
@@ -464,7 +468,10 @@ internal class RunProgram
                                                 if (addToCart.ToLower() == "b")
                                                     break;
                                                 else if (addToCart.ToLower() == "o")
-                                                    Order();
+                                                {
+                                                    if (cartProducts.Count > 0)
+                                                        Order();
+                                                }
                                                 else if (addToCart.ToLower() == "c")
                                                 {
                                                     foreach (var product in cartProducts)
@@ -478,7 +485,7 @@ internal class RunProgram
                                                     totalAmount = 0;
 
                                                 }
-                                                else if (int.TryParse(addToCart, out intToCart) && isGuest.IsLoggedIn)
+                                                else if (int.TryParse(addToCart, out intToCart) && isGuest.LoggedIn)
                                                 {
                                                     var idChecker = await db.Shop.OrderBy(x => x.Id).ToListAsync();
                                                     bool idCheck = false;
@@ -487,6 +494,7 @@ internal class RunProgram
                                                         if (item.Id == intToCart)
                                                             idCheck = true;
                                                     }
+
                                                     if (!idCheck)
                                                     {
                                                         Console.WriteLine("Invalid Input");
@@ -592,7 +600,7 @@ internal class RunProgram
                     case 6:
                         Console.Clear();
 
-                        await Admin.AdminConsol();
+                        await Admin.AdminConsol(isGuest);
 
                         break;
                 }
@@ -635,7 +643,7 @@ internal class RunProgram
                 ShopItems();
 
 
-                if (isGuest.IsLoggedIn)
+                if (!isGuest.LoggedIn)
                 {
                     Console.WriteLine("\nPress B to back");
                     Console.WriteLine("Need to login to buy stuff");
@@ -673,7 +681,8 @@ internal class RunProgram
                     }
                     else if (orderAdd.ToLower() == "o")
                     {
-                        Order();
+                        if (cartProducts.Count > 0)
+                            Order();
                     }
                     else if (int.TryParse(orderAdd, out addToOrder) && addToOrder > 0 && !string.IsNullOrWhiteSpace(orderAdd))    // Här kollas antalet artiklar
                     {
@@ -1049,7 +1058,7 @@ internal class RunProgram
                             Console.Clear();
 
                             var order = db.Order.ToList();
-                            var person = db.Customer.Where(x => x.UserName == isGuest.SettingName).SingleOrDefault();
+                            var person = db.Customer.Where(x => x.UserName == isGuest.UserName).SingleOrDefault();
 
                             while (true)
                             {
@@ -1058,9 +1067,9 @@ internal class RunProgram
 
                                 Console.Clear();
                                 Console.WriteLine("You are about to buy these Products");
-                                Console.WriteLine("-----------------------------------------------------------");                                
+                                Console.WriteLine("-----------------------------------------------------------");
                                 foreach (var item in cartProducts)
-                                {                                    
+                                {
                                     amountOfProducts += item.Amount;
                                     totalPriceCheckout += item.Amount * item.Price;
                                     Console.WriteLine($"{item.Name.PadRight(48)} Amount: {item.Amount} - Price/Unit: {item.Price:C} - Price*Amount: {item.Price * item.Amount:C}");
@@ -1100,7 +1109,7 @@ internal class RunProgram
                                             int customerId = 0;
                                             foreach (var customer in db.Customer)
                                             {
-                                                if (isGuest.SettingName == customer.UserName)
+                                                if (isGuest.UserName == customer.UserName)
                                                     customerId = customer.Id;
                                             }
                                             Console.Clear();

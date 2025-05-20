@@ -5,31 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace InlämningsUppgift_E_Tech_CO.Models;
-internal class GuestCustomer : ICustomer
+internal class GuestCustomer
 {
     // Denna är skapad för att skapa en "gäst" när man inte är inloggad. Så man kan se items och sånt men man kan inte handla
-    public Customer Customer { get; set; }
+
     public bool IsLoggedIn { get; set; }
     public bool IsAdmin { get; set; }
-    public string SettingName { get; set; }
-    public GuestCustomer()
-    {       
-        IsLoggedInMethod();
-        IsAdminMethod();
-    }
+    public string SettingName { get; set; }   
+    
 
-    public void GettingCustomer()
-    {
-        using (var db = new MyDbContext())
-        {
-            var customer = db.Customer.Where(x => x.LoggedIn == true).SingleOrDefault();
-
-            if (customer.UserName != "")
-                customer = new Customer(customer.Name, customer.LastName, customer.Age, customer.UserName, customer.Password, customer.IsAdmin);
-        }
-    }
-
-    void IsLoggedInMethod()
+    public void IsLoggedInMethod()
     {
         using (var db = new MyDbContext())
         {
@@ -41,7 +26,7 @@ internal class GuestCustomer : ICustomer
                 IsLoggedIn = false;
         }
     }
-    void IsAdminMethod()
+    public void IsAdminMethod()
     {
         using (var db = new MyDbContext())
         {
@@ -59,7 +44,8 @@ internal class GuestCustomer : ICustomer
         {
             var customer = db.Customer.Where(x => x.LoggedIn == true).SingleOrDefault();
 
-            SettingName = customer.UserName;
+            if (customer.Name != null)
+                SettingName = customer.UserName;            
         }
     }
 

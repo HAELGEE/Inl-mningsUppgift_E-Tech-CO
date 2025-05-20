@@ -7,14 +7,13 @@ using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace InlämningsUppgift_E_Tech_CO.Models;
-internal class Customer
-{
-    readonly Customer _customer;
-    public Customer(Customer customer)
-    {
-        _customer = customer;
+internal class Customer : ICustomer
+{    
+    public Customer() 
+    {        
     }
-    public Customer(string? name, string? lastName, int? age, string? userName, string? password, bool isAdmin)
+
+    public Customer(string? name, string? lastName, int? age, string? userName, string? password, bool isAdmin) : this()
     {
         Name = name;
         LastName = lastName;
@@ -41,4 +40,38 @@ internal class Customer
     public virtual ICollection<Order> Order { get; set; } = new List<Order>(); // En kund kan har flera orderhistorik
     public int TotalOrders { get; set; }
 
+    //public void IsLoggedInMethod()
+    //{
+    //    using (var db = new MyDbContext())
+    //    {
+    //        var customer = db.Customer.Any(x => x.LoggedIn == true);
+
+    //        if (customer)
+    //            LoggedIn = true;
+    //        else
+    //            LoggedIn = false;
+    //    }
+    //}
+    //public void IsAdminMethod()
+    //{
+    //    using (var db = new MyDbContext())
+    //    {
+    //        var customer = db.Customer.Any(x => x.LoggedIn == true && x.IsAdmin == true);
+
+    //        if (customer)
+    //            IsAdmin = true;
+    //        else
+    //            IsAdmin = false;
+    //    }
+    //}
+    //public void SettingNameMethod()
+    //{
+    //    using (var db = new MyDbContext())
+    //    {
+    //        var customer = db.Customer.Where(x => x.LoggedIn == true).SingleOrDefault();
+
+    //        if (customer.Name != null)
+    //            UserName = customer.UserName;
+    //    }
+    //}
 }
