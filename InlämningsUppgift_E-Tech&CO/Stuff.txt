@@ -1,15 +1,11 @@
 
 
+FIXA KATEGORI TOP 3
 
+Fixa så jag kan trycka O i Kategori menyn
+Så man kan söka efter produkter (fritext)
 
-
-Fixa så man kan skriva och söka efter vad man vill leta efter i admin i nummer 9 i Admin, Rad 466
-Samt lägga till lite top 3 listor, ca 3st borde duga
-
-1. Best seller
-2. Best SubCategory eller Category?
-
-
-
+2 olika frakt kostnader.
+Visa totala summan med frakten
 
 
