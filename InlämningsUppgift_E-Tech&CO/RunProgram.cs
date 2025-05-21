@@ -189,9 +189,11 @@ internal class RunProgram
                             string inputCheck = Console.ReadLine()!;
                             if (Admin.BackOption(inputCheck))
                                 break;
-                            if (int.TryParse(inputCheck, out newAge) && !string.IsNullOrWhiteSpace(inputCheck) && newAge < 0)
-                                Console.WriteLine("Must be numbers");
-
+                            if (int.TryParse(inputCheck, out newAge) && !string.IsNullOrWhiteSpace(inputCheck) && newAge > 0)
+                            {                                         
+                            }
+                            else
+                                Console.WriteLine("Invalid Input");
                         }
 
                         string newUserName = "";
@@ -203,8 +205,7 @@ internal class RunProgram
                                 newUserName = Console.ReadLine()!;
                                 if (Admin.BackOption(newUserName))
                                     break;
-
-                                break;
+                                
                             }
                             catch (Exception ex)
                             {

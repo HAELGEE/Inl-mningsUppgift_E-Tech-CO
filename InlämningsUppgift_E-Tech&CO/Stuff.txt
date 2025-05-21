@@ -2,10 +2,6 @@
 
 
 
-Problem med att ta bort Kategorier och Subkategorier Från rad 300
-
-Generiska metoder?
-
 
 
 
