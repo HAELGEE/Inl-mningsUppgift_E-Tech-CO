@@ -832,14 +832,12 @@ internal class Admin
                                         int? counter = 0;
                                         foreach (var product in key)
                                         {
-                                            Console.WriteLine(product.Sold);
                                             counter += product.Sold;
                                         }
                                         topCategories.Add((key.Key, counter));
                                     }
-                                    Console.Clear();
-                                    var orderedList = topCategories.OrderByDescending(x => x.totalSold)
-                                    .Take(3);
+
+                                    var orderedList = topCategories.OrderByDescending(x => x.totalSold);                               
 
                                     foreach (var reset in resetTop)
                                     {

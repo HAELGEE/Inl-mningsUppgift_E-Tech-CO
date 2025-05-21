@@ -39,9 +39,7 @@ internal class RunProgram
                     WelcomeMessage();       // Skrivet ut ett välkomstmeddelande
                     CompanyName();          // Skriver ut Företagsnamnet
 
-                    List<string> top3List = new List<string>();
-
-                    
+                    List<string> top3List = new List<string>();                    
 
                     var top3 = db.Shop.Where(x => x.IsActive == true)
                         .OrderByDescending(x => x.Sold)
@@ -80,7 +78,7 @@ internal class RunProgram
                         }
                     }
                     else if (top3Category.IsActiveCategory == 2)
-                    {
+                    {                        
                         int i = 1;
                         foreach (var item in orderedList)
                         {
