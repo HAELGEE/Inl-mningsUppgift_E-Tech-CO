@@ -24,7 +24,8 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     LoggedIn = table.Column<bool>(type: "bit", nullable: false),
                     IsAdmin = table.Column<bool>(type: "bit", nullable: false),
                     Age = table.Column<int>(type: "int", nullable: true),
-                    Logins = table.Column<int>(type: "int", nullable: true)
+                    Logins = table.Column<int>(type: "int", nullable: true),
+                    TotalOrders = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -43,7 +44,9 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     Sold = table.Column<int>(type: "int", nullable: true),
                     Quantity = table.Column<int>(type: "int", nullable: true),
                     Price = table.Column<double>(type: "float", nullable: true),
-                    ProductInformation = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    ProductInformation = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsActiveCategory = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {

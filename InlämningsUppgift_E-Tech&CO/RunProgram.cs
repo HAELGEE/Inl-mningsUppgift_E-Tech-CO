@@ -49,7 +49,11 @@ internal class RunProgram
                         .OrderByDescending(x => x.IsActiveCategory)
                         .Take(1).SingleOrDefault();
 
-                    if (top3Category.IsActiveCategory == 1)
+
+
+                    if (top3Category == null)
+                        top3List.Add($"The List is empty at the moment");
+                    else if (top3Category.IsActiveCategory == 1)
                     {
                         int i = 1;
                         foreach (var item in top3)
@@ -67,8 +71,7 @@ internal class RunProgram
                             i++;
                         }
                     }
-                    else
-                        top3List.Add($"The List is empty at the moment");
+
 
                     GUI.DrawWindow("Top3", 40, 13, top3List);
 
@@ -190,7 +193,7 @@ internal class RunProgram
                             if (Admin.BackOption(inputCheck))
                                 break;
                             if (int.TryParse(inputCheck, out newAge) && !string.IsNullOrWhiteSpace(inputCheck) && newAge > 0)
-                            {                                         
+                            {
                             }
                             else
                                 Console.WriteLine("Invalid Input");
@@ -199,21 +202,22 @@ internal class RunProgram
                         string newUserName = "";
                         while (true)
                         {
-                            try
-                            {
-                                Console.Write("Please enter UserName: ");
-                                newUserName = Console.ReadLine()!;
-                                if (Admin.BackOption(newUserName))
-                                    break;
-                                
-                            }
-                            catch (Exception ex)
+                            Console.Write("Please enter UserName: ");
+                            newUserName = Console.ReadLine()!;
+
+                            if (Admin.BackOption(newUserName))
+                                break;
+                            var customers = db.Customer.Where(x => x.UserName == newUserName).SingleOrDefault();
+
+                            if (customers != null)
                             {
                                 Console.ForegroundColor = ConsoleColor.Red;
                                 Console.WriteLine("The username is already taken\n");
                                 Console.ResetColor();
                                 Thread.Sleep(1500);
                             }
+                            else
+                                break;
                         }
 
                         Console.Write("Please enter your Password: ");
@@ -235,7 +239,12 @@ internal class RunProgram
                         foreach (var customer in db.Customer)
                         {
                             if (customer.LoggedIn)
+                            {
                                 customer.Logins++;
+                                isGuest.LoggedIn = true;
+                                isGuest.UserName = newUserName;
+                                isGuest.IsAdmin = false;
+                            }
                         }
                         db.SaveChanges(); // Då användaren är skapad, så  skall man automatiskt blir inloggad vid registrering så skall även inloggningsräknaren ökas
 

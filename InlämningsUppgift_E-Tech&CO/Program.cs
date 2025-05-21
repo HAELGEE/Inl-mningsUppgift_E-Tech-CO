@@ -41,10 +41,7 @@ namespace InlämningsUppgift_E_Tech_CO
             using (var db = new MyDbContext())
             {
                 db.Customer.Add(new Customer
-                ("Admin", "Admin", 666, "Admin", "ADMIN", true)
-                {
-                    Logins = 1
-                });
+                ("Admin", "Admin", 666, "Admin", "ADMIN", true));
                 db.SaveChanges();
             }
         }       

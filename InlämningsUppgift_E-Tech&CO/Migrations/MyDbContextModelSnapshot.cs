@@ -208,7 +208,7 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Property<string>("Category")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsActive")
+                    b.Property<bool?>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<int?>("IsActiveCategory")
