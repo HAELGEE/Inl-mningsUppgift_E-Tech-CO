@@ -67,8 +67,11 @@ internal class RunProgram
                     var orderedList = topCategories.OrderByDescending(x => x.totalSold)
                     .Take(3);
 
-
-                    if (top3Category.IsActiveCategory == 1)
+                    if (top3Category == null)
+                    {
+                        top3List.Add($"The List is empty at the moment");
+                    }
+                    else if (top3Category.IsActiveCategory == 1)
                     {
                         int i = 1;
                         foreach (var item in top3)
@@ -86,10 +89,7 @@ internal class RunProgram
                             i++;
                         }
                     }
-                    else if (top3Category == null)
-                    {
-                        top3List.Add($"The List is empty at the moment");
-                    }
+                    
 
 
                     GUI.DrawWindow("Top3", 40, 13, top3List);

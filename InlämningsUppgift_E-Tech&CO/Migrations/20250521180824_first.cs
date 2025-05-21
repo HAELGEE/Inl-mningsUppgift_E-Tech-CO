@@ -45,8 +45,10 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     Quantity = table.Column<int>(type: "int", nullable: true),
                     Price = table.Column<double>(type: "float", nullable: true),
                     ProductInformation = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    IsActiveCategory = table.Column<int>(type: "int", nullable: true)
+                    IsActive = table.Column<bool>(type: "bit", nullable: true),
+                    IsActiveCategory = table.Column<int>(type: "int", nullable: true),
+                    RegularShipping = table.Column<int>(type: "int", nullable: true),
+                    ExpressShipping = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {

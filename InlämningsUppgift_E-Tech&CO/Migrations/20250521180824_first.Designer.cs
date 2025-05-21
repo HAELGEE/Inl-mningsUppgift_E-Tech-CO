@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InlämningsUppgift_E_Tech_CO.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20250521083958_first")]
+    [Migration("20250521180824_first")]
     partial class first
     {
         /// <inheritdoc />
@@ -211,7 +211,10 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Property<string>("Category")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsActive")
+                    b.Property<int?>("ExpressShipping")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<int?>("IsActiveCategory")
@@ -227,6 +230,9 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RegularShipping")
                         .HasColumnType("int");
 
                     b.Property<int?>("Sold")
