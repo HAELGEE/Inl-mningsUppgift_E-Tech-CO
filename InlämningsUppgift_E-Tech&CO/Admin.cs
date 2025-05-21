@@ -43,7 +43,7 @@ internal class Admin
                 Console.WriteLine($"7.  Change Name on Product");
                 Console.WriteLine($"8.  Change Shipping fee");
                 Console.WriteLine($"9.  Product info");
-                Console.WriteLine($"10.  All customers & Change Customer");
+                Console.WriteLine($"10. All customers & Change Customer");
                 Console.WriteLine($"11. Look Orderhistories");                    // Inte riktigt klar, får det inte utskrivet (finns inga ordrar än)
                 Console.WriteLine($"12. Change top3 in menu");
                 Console.WriteLine($"B to Back");

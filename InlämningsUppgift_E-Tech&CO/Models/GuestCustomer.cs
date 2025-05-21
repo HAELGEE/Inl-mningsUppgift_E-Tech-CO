@@ -48,5 +48,4 @@ internal class GuestCustomer
                 SettingName = customer.UserName;            
         }
     }
-
 }

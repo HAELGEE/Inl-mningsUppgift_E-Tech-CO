@@ -40,38 +40,4 @@ internal class Customer : ICustomer
     public virtual ICollection<Order> Order { get; set; } = new List<Order>(); // En kund kan har flera orderhistorik
     public int TotalOrders { get; set; }
 
-    //public void IsLoggedInMethod()
-    //{
-    //    using (var db = new MyDbContext())
-    //    {
-    //        var customer = db.Customer.Any(x => x.LoggedIn == true);
-
-    //        if (customer)
-    //            LoggedIn = true;
-    //        else
-    //            LoggedIn = false;
-    //    }
-    //}
-    //public void IsAdminMethod()
-    //{
-    //    using (var db = new MyDbContext())
-    //    {
-    //        var customer = db.Customer.Any(x => x.LoggedIn == true && x.IsAdmin == true);
-
-    //        if (customer)
-    //            IsAdmin = true;
-    //        else
-    //            IsAdmin = false;
-    //    }
-    //}
-    //public void SettingNameMethod()
-    //{
-    //    using (var db = new MyDbContext())
-    //    {
-    //        var customer = db.Customer.Where(x => x.LoggedIn == true).SingleOrDefault();
-
-    //        if (customer.Name != null)
-    //            UserName = customer.UserName;
-    //    }
-    //}
 }

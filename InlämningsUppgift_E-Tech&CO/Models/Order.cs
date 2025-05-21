@@ -26,7 +26,4 @@ internal class Order
     public string? City { get; set; }
     public string? Adress { get; set; }
     public int? ShippingFee { get; set; }
-    
-
-
 }
