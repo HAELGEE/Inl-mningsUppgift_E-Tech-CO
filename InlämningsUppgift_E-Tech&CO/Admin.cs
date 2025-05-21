@@ -55,7 +55,7 @@ internal class Admin
                 var categorySearch = await db.Shop.OrderBy(i => i.Id)
                                             .GroupBy(c => new { c.Category, c.SubCategory })
                                             .ToListAsync();
-                if (int.TryParse(input, out userInput) && userInput > 0 && userInput < 11)
+                if (int.TryParse(input, out userInput) && userInput > 0 && userInput < 12)
                 {
 
                     if (userInput > 0 && userInput < 8)
@@ -469,177 +469,179 @@ internal class Admin
                                     {
                                         Console.WriteLine("No user found with that ID");
                                         Thread.Sleep(1000);
-                                        break;
                                     }
-                                    string updateCustomerString = "";
-                                    while (updateCustomerString.ToLower() != "b")
+                                    else
                                     {
-                                        Console.Clear();
-                                        Console.Write("What do you want to do with ");
-                                        Console.ForegroundColor = ConsoleColor.Green;
-                                        Console.WriteLine("Customer:");
-                                        Console.ForegroundColor = ConsoleColor.DarkCyan;
-                                        Console.WriteLine($"Name: {customer.Name}   Lastname: {customer.LastName}   Age: {customer.Age}   Username: {customer.UserName}   Password: {customer.Password}   isAdmin: {customer.IsAdmin}   Logins: {customer.Logins}\n");
-                                        Console.ResetColor();
-                                        Console.WriteLine("1. Delete Customer");
-                                        Console.WriteLine("2. Update Customer Name");
-                                        Console.WriteLine("3. Update Customer Lastname");
-                                        Console.WriteLine("4. Update Customer Age");
-                                        Console.WriteLine("5. Update Customer Username");
-                                        Console.WriteLine("6. Update Customer Password");
-                                        Console.WriteLine("7. Update Customer Admin");
-                                        Console.WriteLine("B to back");
-                                        updateCustomerString = Console.ReadLine()!;
-                                        if (BackOption(updateCustomerString))
-                                            break;
 
-
-                                        int number = 0;
-                                        if (int.TryParse(updateCustomerString, out number) && !string.IsNullOrWhiteSpace(updateCustomerString) && number > 0)
+                                        while (true)
                                         {
-                                            switch (number)
+                                            Console.Clear();
+                                            Console.Write("What do you want to do with ");
+                                            Console.ForegroundColor = ConsoleColor.Green;
+                                            Console.WriteLine("Customer:");
+                                            Console.ForegroundColor = ConsoleColor.DarkCyan;
+                                            Console.WriteLine($"Name: {customer.Name}   Lastname: {customer.LastName}   Age: {customer.Age}   Username: {customer.UserName}   Password: {customer.Password}   isAdmin: {customer.IsAdmin}   Logins: {customer.Logins}\n");
+                                            Console.ResetColor();
+                                            Console.WriteLine("1. Delete Customer");
+                                            Console.WriteLine("2. Update Customer Name");
+                                            Console.WriteLine("3. Update Customer Lastname");
+                                            Console.WriteLine("4. Update Customer Age");
+                                            Console.WriteLine("5. Update Customer Username");
+                                            Console.WriteLine("6. Update Customer Password");
+                                            Console.WriteLine("7. Update Customer Admin");
+                                            Console.WriteLine("B to back");
+                                            string updateCustomerString = Console.ReadLine()!;
+                                            if (BackOption(updateCustomerString))
+                                                break;
+
+
+                                            int number = 0;
+                                            if (int.TryParse(updateCustomerString, out number) && !string.IsNullOrWhiteSpace(updateCustomerString) && number > 0)
                                             {
-                                                case 1:
-                                                    Console.Clear();
-                                                    if (isGuest.UserName == customer.UserName)
-                                                    {
-                                                        Console.WriteLine("Cant delete your own account");
-                                                        Thread.Sleep(1500);
-                                                        break;
-                                                    }
-                                                    Console.WriteLine($"Do you still want to delete customer {customer.Name} - {customer.LastName} ?");
-                                                    Console.WriteLine("Press Y for Yes or press anykey to back");
-                                                    string inputCheck = Console.ReadLine()!;
-                                                    if (inputCheck.ToLower() == "y")
-                                                    {
-                                                        var deleteCustomer = db.Customer.Where(x => x.Id == updateCustomerInformation)
-                                                                                        .ExecuteDelete();
-
-                                                        Console.ForegroundColor = ConsoleColor.Red;
-                                                        Console.WriteLine("\nCustomer is now deleted from Database");
-                                                        Console.ResetColor();
-                                                        Thread.Sleep(1000);
-                                                        db.SaveChanges();
-                                                    }
-
-                                                    break;
-
-                                                case 2:
-                                                    Console.Clear();
-                                                    Console.WriteLine($"Current Customer Name: {customer.Name}");
-                                                    Console.WriteLine("What do you want to update the Customer Name to?");
-                                                    string nameUpdate = Console.ReadLine()!;
-                                                    customer.Name = nameUpdate;
-
-                                                    Console.ForegroundColor = ConsoleColor.Green;
-                                                    Console.WriteLine("Name updated");
-                                                    Console.ResetColor();
-                                                    Thread.Sleep(1000);
-                                                    db.SaveChanges();
-                                                    break;
-
-                                                case 3:
-                                                    Console.Clear();
-                                                    Console.WriteLine($"Current Customer lastname: {customer.LastName}");
-                                                    Console.WriteLine("What do you want to update the Customer Lastname to?");
-                                                    string lastnameUpdate = Console.ReadLine()!;
-                                                    customer.LastName = lastnameUpdate;
-
-                                                    Console.ForegroundColor = ConsoleColor.Green;
-                                                    Console.WriteLine("Lastname updated");
-                                                    Console.ResetColor();
-                                                    Thread.Sleep(1000);
-                                                    db.SaveChanges();
-                                                    break;
-
-                                                case 4:
-                                                    Console.Clear();
-                                                    Console.WriteLine($"Current Customer Age: {customer.Age}");
-                                                    Console.WriteLine("What do you want to update the Customer Age to?");
-                                                    string ageUpdate = Console.ReadLine()!;
-                                                    int age = 0;
-                                                    if (int.TryParse(ageUpdate, out age) && age > 0 && !string.IsNullOrWhiteSpace(ageUpdate))
-                                                    {
-                                                        customer.Age = age;
-                                                        Console.ForegroundColor = ConsoleColor.Green;
-                                                        Console.WriteLine("Age updated");
-                                                        Console.ResetColor();
-                                                        Thread.Sleep(1000);
-                                                        db.SaveChanges();
-                                                    }
-                                                    else
-                                                        Console.WriteLine("Invalid Input");
-
-                                                    break;
-
-                                                case 5:
-                                                    Console.Clear();
-                                                    Console.WriteLine($"Current Customer Username: {customer.UserName}");
-                                                    Console.WriteLine("What do you want to update the Customer Lastname to?");
-                                                    string usernamUpdate = Console.ReadLine()!;
-                                                    customer.UserName = usernamUpdate;
-
-                                                    Console.ForegroundColor = ConsoleColor.Green;
-                                                    Console.WriteLine("Username updated");
-                                                    Console.ResetColor();
-                                                    Thread.Sleep(1000);
-                                                    db.SaveChanges();
-                                                    break;
-
-                                                case 6:
-                                                    Console.Clear();
-                                                    Console.WriteLine($"Current Customer Password: {customer.Password}");
-                                                    Console.WriteLine("What do you want to update the Customer Lastname to?");
-                                                    string passwordUpdate = Console.ReadLine()!;
-                                                    customer.Password = passwordUpdate;
-
-                                                    Console.ForegroundColor = ConsoleColor.Green;
-                                                    Console.WriteLine("Password updated");
-                                                    Console.ResetColor();
-                                                    Thread.Sleep(1000);
-                                                    db.SaveChanges();
-                                                    break;
-
-                                                case 7:
-                                                    Console.Clear();
-                                                    if (isGuest.UserName == customer.UserName)
-                                                    {
-                                                        Console.WriteLine("You cant change Admin rights on your own account");
-                                                        Thread.Sleep(1500);
-                                                        break;
-                                                    }
-                                                    while (true)
-                                                    {
-                                                        Console.WriteLine($"Current Customer isAdmin: {customer.IsAdmin}");
-                                                        Console.WriteLine("What do you want to update the Customer isAdmin to? (true/false)");
-                                                        string isAdminUpdate = Console.ReadLine()!;
-                                                        if (isAdminUpdate.ToLower() == "true")
+                                                switch (number)
+                                                {
+                                                    case 1:
+                                                        Console.Clear();
+                                                        if (isGuest.UserName == customer.UserName)
                                                         {
-                                                            customer.IsAdmin = true;
+                                                            Console.WriteLine("Cant delete your own account");
+                                                            Thread.Sleep(1500);
                                                             break;
                                                         }
-                                                        else if (isAdminUpdate.ToLower() == "false")
+                                                        Console.WriteLine($"Do you still want to delete customer {customer.Name} - {customer.LastName} ?");
+                                                        Console.WriteLine("Press Y for Yes or press anykey to back");
+                                                        string inputCheck = Console.ReadLine()!;
+                                                        if (inputCheck.ToLower() == "y")
                                                         {
-                                                            customer.IsAdmin = false;
-                                                            break;
+                                                            var deleteCustomer = db.Customer.Where(x => x.Id == updateCustomerInformation)
+                                                                                            .ExecuteDelete();
+
+                                                            Console.ForegroundColor = ConsoleColor.Red;
+                                                            Console.WriteLine("\nCustomer is now deleted from Database");
+                                                            Console.ResetColor();
+                                                            Thread.Sleep(1000);
+                                                            db.SaveChanges();
+                                                        }
+
+                                                        break;
+
+                                                    case 2:
+                                                        Console.Clear();
+                                                        Console.WriteLine($"Current Customer Name: {customer.Name}");
+                                                        Console.WriteLine("What do you want to update the Customer Name to?");
+                                                        string nameUpdate = Console.ReadLine()!;
+                                                        customer.Name = nameUpdate;
+
+                                                        Console.ForegroundColor = ConsoleColor.Green;
+                                                        Console.WriteLine("Name updated");
+                                                        Console.ResetColor();
+                                                        Thread.Sleep(1000);
+                                                        db.SaveChanges();
+                                                        break;
+
+                                                    case 3:
+                                                        Console.Clear();
+                                                        Console.WriteLine($"Current Customer lastname: {customer.LastName}");
+                                                        Console.WriteLine("What do you want to update the Customer Lastname to?");
+                                                        string lastnameUpdate = Console.ReadLine()!;
+                                                        customer.LastName = lastnameUpdate;
+
+                                                        Console.ForegroundColor = ConsoleColor.Green;
+                                                        Console.WriteLine("Lastname updated");
+                                                        Console.ResetColor();
+                                                        Thread.Sleep(1000);
+                                                        db.SaveChanges();
+                                                        break;
+
+                                                    case 4:
+                                                        Console.Clear();
+                                                        Console.WriteLine($"Current Customer Age: {customer.Age}");
+                                                        Console.WriteLine("What do you want to update the Customer Age to?");
+                                                        string ageUpdate = Console.ReadLine()!;
+                                                        int age = 0;
+                                                        if (int.TryParse(ageUpdate, out age) && age > 0 && !string.IsNullOrWhiteSpace(ageUpdate))
+                                                        {
+                                                            customer.Age = age;
+                                                            Console.ForegroundColor = ConsoleColor.Green;
+                                                            Console.WriteLine("Age updated");
+                                                            Console.ResetColor();
+                                                            Thread.Sleep(1000);
+                                                            db.SaveChanges();
                                                         }
                                                         else
-                                                        {
                                                             Console.WriteLine("Invalid Input");
-                                                            Thread.Sleep(1000);
-                                                        }
-                                                    }
 
-                                                    Console.ForegroundColor = ConsoleColor.Green;
-                                                    Console.WriteLine("isAdmin updated");
-                                                    Console.ResetColor();
-                                                    Thread.Sleep(1000);
-                                                    db.SaveChanges();
-                                                    break;
+                                                        break;
+
+                                                    case 5:
+                                                        Console.Clear();
+                                                        Console.WriteLine($"Current Customer Username: {customer.UserName}");
+                                                        Console.WriteLine("What do you want to update the Customer Lastname to?");
+                                                        string usernamUpdate = Console.ReadLine()!;
+                                                        customer.UserName = usernamUpdate;
+
+                                                        Console.ForegroundColor = ConsoleColor.Green;
+                                                        Console.WriteLine("Username updated");
+                                                        Console.ResetColor();
+                                                        Thread.Sleep(1000);
+                                                        db.SaveChanges();
+                                                        break;
+
+                                                    case 6:
+                                                        Console.Clear();
+                                                        Console.WriteLine($"Current Customer Password: {customer.Password}");
+                                                        Console.WriteLine("What do you want to update the Customer Lastname to?");
+                                                        string passwordUpdate = Console.ReadLine()!;
+                                                        customer.Password = passwordUpdate;
+
+                                                        Console.ForegroundColor = ConsoleColor.Green;
+                                                        Console.WriteLine("Password updated");
+                                                        Console.ResetColor();
+                                                        Thread.Sleep(1000);
+                                                        db.SaveChanges();
+                                                        break;
+
+                                                    case 7:
+                                                        Console.Clear();
+                                                        if (isGuest.UserName == customer.UserName)
+                                                        {
+                                                            Console.WriteLine("You cant change Admin rights on your own account");
+                                                            Thread.Sleep(1500);
+                                                            break;
+                                                        }
+                                                        while (true)
+                                                        {
+                                                            Console.WriteLine($"Current Customer isAdmin: {customer.IsAdmin}");
+                                                            Console.WriteLine("What do you want to update the Customer isAdmin to? (true/false)");
+                                                            string isAdminUpdate = Console.ReadLine()!;
+                                                            if (isAdminUpdate.ToLower() == "true")
+                                                            {
+                                                                customer.IsAdmin = true;
+                                                                break;
+                                                            }
+                                                            else if (isAdminUpdate.ToLower() == "false")
+                                                            {
+                                                                customer.IsAdmin = false;
+                                                                break;
+                                                            }
+                                                            else
+                                                            {
+                                                                Console.WriteLine("Invalid Input");
+                                                                Thread.Sleep(1000);
+                                                            }
+                                                        }
+
+                                                        Console.ForegroundColor = ConsoleColor.Green;
+                                                        Console.WriteLine("isAdmin updated");
+                                                        Console.ResetColor();
+                                                        Thread.Sleep(1000);
+                                                        db.SaveChanges();
+                                                        break;
+                                                }
                                             }
+                                            else
+                                                Console.WriteLine("Invalid Input");
                                         }
-                                        else
-                                            Console.WriteLine("Invalid Input");
                                     }
                                 }
                                 else

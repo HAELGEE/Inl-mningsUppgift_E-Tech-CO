@@ -4,6 +4,7 @@ using InlämningsUppgift_E_Tech_CO.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InlämningsUppgift_E_Tech_CO.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250521091616_update3")]
+    partial class update3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -113,17 +116,11 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Property<string>("Date")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ExpressShipping")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PaymentChoice")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("RegularShipping")
-                        .HasColumnType("int");
 
                     b.Property<string>("Shipping")
                         .HasColumnType("nvarchar(max)");
@@ -214,6 +211,9 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Property<string>("Category")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ExpressShipping")
+                        .HasColumnType("int");
+
                     b.Property<bool?>("IsActive")
                         .HasColumnType("bit");
 
@@ -230,6 +230,9 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RegularShipping")
                         .HasColumnType("int");
 
                     b.Property<int?>("Sold")

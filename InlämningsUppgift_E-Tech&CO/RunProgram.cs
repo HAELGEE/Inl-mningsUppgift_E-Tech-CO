@@ -330,7 +330,7 @@ internal class RunProgram
                                                     {
                                                         Console.WriteLine($"{product.Name.PadRight(48)} Amount: {product.Amount} Price/Unit: {product.Price:C}");
                                                     }
-                                                    Console.WriteLine($"-------------------------------------------------- Total Price: {item.TotalAmountPrice:C} ----------\n");
+                                                    Console.WriteLine($"---- Shipping: {item.ShippingFee:C} ---- Taxes: {Convert.ToInt32((item.TotalAmountPrice - item.ShippingFee) * 0.25):C} ---- Total Price: {item.TotalAmountPrice:C} ----\n");
                                                 }
                                                 Console.WriteLine("B to Back");
                                                 string value = Console.ReadLine()!;
@@ -1222,20 +1222,22 @@ internal class RunProgram
                                                     break;
 
                                                 case 2:
+                                                    Order orderFee = new Order();
+                                                    
                                                     orderCollection = "Shipping to Adress";
-                                                    int fee = 0;
+                                                    int? fee = 0;
                                                     Console.WriteLine("Option 'Shipping to Adress' is chosen");
-                                                    Console.WriteLine("1. Regular shipping (3-4 days) - Shipping fee = 200.00 kr");
-                                                    Console.WriteLine("2. Express shipping (1-2 days) - Shipping fee = 500.00 kr");
+                                                    Console.WriteLine($"1. Regular shipping (3-4 days) - Shipping fee = {orderFee.RegularShipping:C}");
+                                                    Console.WriteLine($"2. Express shipping (1-2 days) - Shipping fee = {orderFee.ExpressShipping:C}");
                                                     Console.WriteLine("B to Back");
                                                     string shippingOption = Console.ReadLine()!;
 
                                                     if (shippingOption == "b")
                                                         break;
                                                     else if (shippingOption == "1")
-                                                        fee = 200;
+                                                        fee = orderFee.RegularShipping;
                                                     else if (shippingOption == "2")
-                                                        fee = 500;
+                                                        fee = orderFee.ExpressShipping;
                                                     else
                                                     {
                                                         Console.WriteLine("Invalid Input");

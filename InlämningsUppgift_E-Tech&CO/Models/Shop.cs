@@ -9,7 +9,7 @@ internal class Shop
 {
     public Shop()
     {
-        Sold = 0;
+        Sold = 0;        
     }
 
     public int Id { get; set; }
@@ -23,5 +23,6 @@ internal class Shop
     public virtual ICollection<OrderItem> OrderItem { get; set; }
     public bool? IsActive { get; set; }
     public int? IsActiveCategory { get; set; }
+    
 
 }
