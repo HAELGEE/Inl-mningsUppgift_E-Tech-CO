@@ -295,7 +295,7 @@ internal class Admin
                                         {
                                             int counter = 1;
                                             Console.Clear();
-                                            var allCategory = db.Shop.GroupBy(x => x.Category);
+                                            var allCategory = db.Shop.GroupBy(x => x.Category).ToList();
 
                                             Console.WriteLine("B to back");
                                             Console.WriteLine("Which do you want to Delete?");
@@ -309,34 +309,61 @@ internal class Admin
                                             if (inputDelete.ToLower() == "b")
                                                 break;
 
-                                            if (int.TryParse(inputDelete, out intInputDelete))
+                                            if (int.TryParse(inputDelete, out intInputDelete) && intInputDelete > 0 && intInputDelete <= allCategory.Count)
                                             {
-                                                counter = 1;
-                                                foreach (var cate in allCategory)
-                                                {
-                                                    if (counter == intInputDelete)
-                                                    {
-                                                        var delete = db.Shop.Where(x => x.Category == cate.Key);
-                                                    }
-                                                        db.SaveChanges();
+                                                var selectedCategory = allCategory[intInputDelete - 1].Key;
 
-                                                    counter++;
-                                                }
+                                                var cateToDelete = db.Shop.Where(x => x.Category == selectedCategory).SingleOrDefault();
+                                                db.Shop.Remove(cateToDelete);
+                                                db.SaveChanges();
+
                                                 Console.WriteLine("Category Deleted");
                                                 Thread.Sleep(1500);
+                                            }
+                                            else
+                                            {
+                                                Console.WriteLine("Invalid Input");
+                                                Thread.Sleep(1560);
                                             }
                                         }
                                     }
                                     else if (intDeleteCategory == 2)
                                     {
-                                        Console.Clear();
-
-                                        var allSubcategory = db.Shop.GroupBy(x => x.SubCategory);
-
-                                        Console.WriteLine("Which do you want to Delete?");
-                                        foreach (var cate in allSubcategory)
+                                        while (true)
                                         {
-                                            Console.WriteLine(cate.Key);
+                                            int counter = 1;
+                                            Console.Clear();
+                                            var allSubcategory = db.Shop.GroupBy(x => x.SubCategory).ToList();
+
+                                            Console.WriteLine("B to back");
+                                            Console.WriteLine("Which do you want to Delete?");
+                                            foreach (var cate in allSubcategory)
+                                            {
+                                                Console.WriteLine($"{counter}.{cate.Key}");
+                                                counter++;
+                                            }
+                                            string inputDelete = Console.ReadLine()!;
+                                            int intInputDelete = 0;
+
+                                            if (inputDelete.ToLower() == "b")
+                                                break;
+
+                                            if (int.TryParse(inputDelete, out intInputDelete) && intInputDelete > 0 && intInputDelete <= allSubcategory.Count)
+                                            {
+                                                var selectedCategory = allSubcategory[intInputDelete - 1].Key;
+
+                                                var cateToDelete = db.Shop.Where(x => x.SubCategory == selectedCategory).SingleOrDefault();
+                                                db.Shop.Remove(cateToDelete);
+                                                db.SaveChanges();
+
+                                                Console.WriteLine("Subcategory Deleted");
+                                                Thread.Sleep(1500);
+                                            }
+                                            else
+                                            {
+                                                Console.WriteLine("Invalid Input");
+                                                Thread.Sleep(1560);
+                                            }
                                         }
                                     }
                                 }
@@ -346,7 +373,7 @@ internal class Admin
                                     Thread.Sleep(1500);
                                 }
                             }
-                            db.SaveChanges();
+                            //db.SaveChanges();
                             break;
 
                         case 7:
