@@ -41,10 +41,11 @@ internal class Admin
                 Console.WriteLine($"5.  Change Category/subcategory");
                 Console.WriteLine($"6.  Delete Category/subcategory");
                 Console.WriteLine($"7.  Change Name on Product");
-                Console.WriteLine($"8.  Product info");
-                Console.WriteLine($"9.  All customers & Change Customer");
-                Console.WriteLine($"10.  Look Orderhistories");                    // Inte riktigt klar, får det inte utskrivet (finns inga ordrar än)
-                Console.WriteLine($"11. Change top3 in menu");
+                Console.WriteLine($"8.  Change Shipping fee");
+                Console.WriteLine($"9.  Product info");
+                Console.WriteLine($"10.  All customers & Change Customer");
+                Console.WriteLine($"11. Look Orderhistories");                    // Inte riktigt klar, får det inte utskrivet (finns inga ordrar än)
+                Console.WriteLine($"12. Change top3 in menu");
                 Console.WriteLine($"B to Back");
                 string input = Console.ReadLine()!;
 
@@ -55,7 +56,7 @@ internal class Admin
                 var categorySearch = await db.Shop.OrderBy(i => i.Id)
                                             .GroupBy(c => new { c.Category, c.SubCategory })
                                             .ToListAsync();
-                if (int.TryParse(input, out userInput) && userInput > 0 && userInput < 12)
+                if (int.TryParse(input, out userInput) && userInput > 0 && userInput < 13)
                 {
 
                     if (userInput > 0 && userInput < 8)
@@ -402,6 +403,75 @@ internal class Admin
                         case 8:
                             while (true)
                             {
+                                Order feeChecker = new Order();
+                                Console.Clear();
+                                Console.WriteLine("1. to change Regular shipping fee");
+                                Console.WriteLine("2. to change Express shipping fee");
+                                Console.WriteLine("B to back");
+                                string shippingCheck = Console.ReadLine()!;
+                                int intShippingCheck = 0;
+
+                                if (shippingCheck.ToLower() == "b")
+                                    break;
+
+                                if(int.TryParse(shippingCheck, out intShippingCheck))
+                                {
+                                    while (true)
+                                    {
+                                        if (intShippingCheck == 1)
+                                        {
+                                            Console.WriteLine("B to back");
+                                            Console.WriteLine($"Current regular shipping fee: {feeChecker.RegularShipping}");
+                                            Console.Write($"Switch to?: ");
+                                            string feeChange = Console.ReadLine()!;
+                                            int intFeeChange = 0;
+
+                                            if (feeChange.ToLower() == "B")
+                                                break;
+
+                                            if (int.TryParse(feeChange, out intFeeChange) && intFeeChange >= 0)
+                                            {
+                                                feeChecker.RegularShipping = intFeeChange;
+                                                Console.WriteLine("Regulare shipping fee changed");
+                                                Thread.Sleep(1500);
+                                                break;
+
+                                            }
+                                        }
+                                        else if (intShippingCheck == 2)
+                                        {
+                                            Console.WriteLine("B to back");
+                                            Console.WriteLine($"Current regular shipping fee: {feeChecker.ExpressShipping}");
+                                            Console.Write($"Switch to?: ");
+                                            string feeChange = Console.ReadLine()!;
+                                            int intFeeChange = 0;
+
+                                            if (feeChange.ToLower() == "B")
+                                                break;
+
+                                            if (int.TryParse(feeChange, out intFeeChange) && intFeeChange >= 0)
+                                            {
+                                                feeChecker.RegularShipping = intFeeChange;
+                                                Console.WriteLine("Regulare shipping fee changed");
+                                                Thread.Sleep(1500);
+                                                break;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("Inavlid Input");
+                                            Thread.Sleep(1500);
+                                        }
+                                    }
+                                }
+
+                            }
+
+                            break;
+
+                        case 9:
+                            while (true)
+                            {
                                 int updateProductInformation = 0;
 
                                 Console.Write($"Which product do you want to alter the information about? or [B]ack: ");
@@ -431,7 +501,7 @@ internal class Admin
                             }
                             db.SaveChanges();
                             break;
-                        case 9:
+                        case 10:
                             while (true)
                             {
                                 Console.Clear();
@@ -650,7 +720,7 @@ internal class Admin
                             db.SaveChanges();
                             break;
 
-                        case 10:
+                        case 11:
                             Console.Clear();
 
                             var allOrders = db.Order.Include(a => a.Customer)
@@ -684,7 +754,7 @@ internal class Admin
                             Console.ReadKey();
                             break;
 
-                        case 11:
+                        case 12:
                             while (true)
                             {
                                 Console.Clear();
