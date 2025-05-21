@@ -39,21 +39,38 @@ internal class RunProgram
                     WelcomeMessage();       // Skrivet ut ett välkomstmeddelande
                     CompanyName();          // Skriver ut Företagsnamnet
 
-
                     List<string> top3List = new List<string>();
 
+                    
+
                     var top3 = db.Shop.Where(x => x.IsActive == true)
+                        .OrderByDescending(x => x.Sold)
                         .Take(3).ToList();
 
-                    var top3Category = db.Shop.Where(x => x.IsActiveCategory != null)
-                        .OrderByDescending(x => x.IsActiveCategory)
+                    var top3Category = db.Shop
+                        .OrderByDescending(x => x.Sold)
+                        .Where(x => x.IsActiveCategory != null)
                         .Take(1).SingleOrDefault();
 
+                    // Här kommer logiken för att få fram vilken kategori som har mest sålda produkter
+                    var allCategories = db.Shop.GroupBy(x => x.SubCategory);
+
+                    List<(string Category, int? totalSold)> topCategories = new List<(string, int?)>(); // Tillfälligt skapad Lista för att sortera ut
+
+                    foreach (var key in allCategories)
+                    {
+                        int? counter = 0;
+                        foreach (var product in key)
+                        {
+                            counter += product.Sold;
+                        }
+                        topCategories.Add((key.Key, counter));
+                    }
+                    var orderedList = topCategories.OrderByDescending(x => x.totalSold)
+                    .Take(3);
 
 
-                    if (top3Category == null)
-                        top3List.Add($"The List is empty at the moment");
-                    else if (top3Category.IsActiveCategory == 1)
+                    if (top3Category.IsActiveCategory == 1)
                     {
                         int i = 1;
                         foreach (var item in top3)
@@ -65,11 +82,15 @@ internal class RunProgram
                     else if (top3Category.IsActiveCategory == 2)
                     {
                         int i = 1;
-                        foreach (var item in top3)
+                        foreach (var item in orderedList)
                         {
-                            top3List.Add($"Nr {i}. Subcategory/Maker: {item.SubCategory}");
+                            top3List.Add($"Nr {i}. Subcategory/Maker: {item.Category}");
                             i++;
                         }
+                    }
+                    else if (top3Category == null)
+                    {
+                        top3List.Add($"The List is empty at the moment");
                     }
 
 
@@ -617,6 +638,7 @@ internal class RunProgram
             }
         }
     }
+
     static void WelcomeMessage()
     {
         Console.WriteLine(@"__          __  _                             _         ");
@@ -640,7 +662,6 @@ internal class RunProgram
         Console.WriteLine();
         Console.ResetColor();
     }
-
     static async Task GettingProducts(string categoryName)
     {
         int addToOrder = 0;
@@ -781,7 +802,6 @@ internal class RunProgram
             }
         }
     }
-
     static void ShopItems(string categoryName)
     {
         using (var db = new MyDbContext())
@@ -1221,9 +1241,9 @@ internal class RunProgram
                                                     db.SaveChanges();
                                                     break;
 
-                                                case 2:                                                   
+                                                case 2:
                                                     var regularShipping = db.Shop.Select(x => x.RegularShipping).First();
-                                                    var expressShipping = db.Shop.Select(x => x.RegularShipping).First();
+                                                    var expressShipping = db.Shop.Select(x => x.ExpressShipping).First();
 
                                                     orderCollection = "Shipping to Adress";
                                                     int? fee = 0;

@@ -822,17 +822,24 @@ internal class Admin
                                 }
                                 else if (int.TryParse(stringTop, out intTop) && intTop == 2)
                                 {
-                                    var topSubcategory = db.Shop.GroupBy(x => x.SubCategory)
-                                        .Select(x => new
-                                        {
-                                            SubCategory = x.Key,
-                                            TotalSold = x.Sum(z => z.Sold)
-                                        })
-                                        .OrderByDescending(x => x.TotalSold)
-                                        .Take(3)
-                                        .ToList();
+                                    // Här kommer logiken för att få fram vilken kategori som har mest sålda produkter
+                                    var allCategories = db.Shop.GroupBy(x => x.SubCategory);
 
-                                    db.SaveChanges();
+                                    List<(string Category, int? totalSold)> topCategories = new List<(string, int?)>(); // Tillfälligt skapad Lista för att sortera ut
+
+                                    foreach (var key in allCategories)
+                                    {
+                                        int? counter = 0;
+                                        foreach (var product in key)
+                                        {
+                                            Console.WriteLine(product.Sold);
+                                            counter += product.Sold;
+                                        }
+                                        topCategories.Add((key.Key, counter));
+                                    }
+                                    Console.Clear();
+                                    var orderedList = topCategories.OrderByDescending(x => x.totalSold)
+                                    .Take(3);
 
                                     foreach (var reset in resetTop)
                                     {
@@ -841,18 +848,14 @@ internal class Admin
                                     }
                                     db.SaveChanges();
 
-                                    foreach (var top in topSubcategory)
+                                    foreach (var top in orderedList)
                                     {
-                                        var toUpdate = db.Shop.Where(x => x.SubCategory == top.SubCategory).ToList();
-                                        bool boolCheck = true;
+                                        var toUpdate = db.Shop.Where(x => x.SubCategory == top.Category).ToList();
+
                                         foreach (var item in toUpdate)
                                         {
-                                            if (boolCheck)
-                                            {
-                                                item.IsActive = true;
-                                                item.IsActiveCategory = 2;
-                                                boolCheck = false;
-                                            }
+                                            item.IsActive = true;
+                                            item.IsActiveCategory = 2;
                                         }
                                     }
                                     db.SaveChanges();
