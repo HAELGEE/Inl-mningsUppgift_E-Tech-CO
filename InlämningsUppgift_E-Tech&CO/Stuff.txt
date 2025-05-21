@@ -2,8 +2,7 @@
 
 
 
-Kan gå in i admin då man inte har admin rättigheter, måste reseta isAdmin till false i
-min interface.
+
 
 När man ändrar username så står det fel i texten, säger Lastname.
 Kan heller inte gå bakåt utan att ändra

@@ -22,7 +22,6 @@ internal class RunProgram
     static List<string> cartProductsInString = new List<string>();
     static double totalAmount = 0;
     static ICustomer isGuest = new Customer();
-    //static ICustomer isGuest = (ICustomer)isLoggedIn;
     public static async Task RunningProgram()
     {
         bool running = true;
@@ -39,7 +38,7 @@ internal class RunProgram
                     WelcomeMessage();       // Skrivet ut ett välkomstmeddelande
                     CompanyName();          // Skriver ut Företagsnamnet
 
-                    List<string> top3List = new List<string>();                    
+                    List<string> top3List = new List<string>();
 
                     var top3 = db.Shop.Where(x => x.IsActive == true)
                         .OrderByDescending(x => x.Sold)
@@ -81,7 +80,7 @@ internal class RunProgram
                         }
                     }
                     else if (top3Category.IsActiveCategory == 2)
-                    {                        
+                    {
                         int i = 1;
                         foreach (var item in orderedList)
                         {
@@ -89,7 +88,7 @@ internal class RunProgram
                             i++;
                         }
                     }
-                    
+
 
 
                     GUI.DrawWindow("Top3", 40, 13, top3List);
@@ -187,8 +186,10 @@ internal class RunProgram
                             await foreach (var customer in db.Customer)
                             {
                                 customer.LoggedIn = false;
-                                isGuest.LoggedIn = false;
                             }
+                            db.SaveChanges();
+                            isGuest.LoggedIn = false;
+                            isGuest.IsAdmin = false;
                             db.SaveChanges();
                             break;
                         }
@@ -627,10 +628,12 @@ internal class RunProgram
                         break;
 
                     case 6:
-                        Console.Clear();
+                        if (isGuest.IsAdmin)
+                        {
+                            Console.Clear();
 
-                        await Admin.AdminConsol(isGuest);
-
+                            await Admin.AdminConsol(isGuest);
+                        }
                         break;
                 }
             }
