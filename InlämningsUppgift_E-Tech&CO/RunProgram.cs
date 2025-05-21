@@ -1221,23 +1221,24 @@ internal class RunProgram
                                                     db.SaveChanges();
                                                     break;
 
-                                                case 2:
-                                                    Order orderFee = new Order();
-                                                    
+                                                case 2:                                                   
+                                                    var regularShipping = db.Shop.Select(x => x.RegularShipping).First();
+                                                    var expressShipping = db.Shop.Select(x => x.RegularShipping).First();
+
                                                     orderCollection = "Shipping to Adress";
                                                     int? fee = 0;
                                                     Console.WriteLine("Option 'Shipping to Adress' is chosen");
-                                                    Console.WriteLine($"1. Regular shipping (3-4 days) - Shipping fee = {orderFee.RegularShipping:C}");
-                                                    Console.WriteLine($"2. Express shipping (1-2 days) - Shipping fee = {orderFee.ExpressShipping:C}");
+                                                    Console.WriteLine($"1. Regular shipping (3-4 days) - Shipping fee = {regularShipping}");
+                                                    Console.WriteLine($"2. Express shipping (1-2 days) - Shipping fee = {expressShipping}");
                                                     Console.WriteLine("B to Back");
                                                     string shippingOption = Console.ReadLine()!;
 
                                                     if (shippingOption == "b")
                                                         break;
                                                     else if (shippingOption == "1")
-                                                        fee = orderFee.RegularShipping;
+                                                        fee = regularShipping;
                                                     else if (shippingOption == "2")
-                                                        fee = orderFee.ExpressShipping;
+                                                        fee = expressShipping;
                                                     else
                                                     {
                                                         Console.WriteLine("Invalid Input");

@@ -403,7 +403,6 @@ internal class Admin
                         case 8:
                             while (true)
                             {
-                                Order feeChecker = new Order();
                                 Console.Clear();
                                 Console.WriteLine("1. to change Regular shipping fee");
                                 Console.WriteLine("2. to change Express shipping fee");
@@ -414,45 +413,68 @@ internal class Admin
                                 if (shippingCheck.ToLower() == "b")
                                     break;
 
-                                if(int.TryParse(shippingCheck, out intShippingCheck))
+                                if (int.TryParse(shippingCheck, out intShippingCheck))
                                 {
                                     while (true)
                                     {
+                                        var shippingFee = db.Shop.ToList();
+
+                                        Console.Clear();
                                         if (intShippingCheck == 1)
                                         {
+                                            int? current = 0;
+                                            foreach (var fee in db.Shop)
+                                            {
+                                                current = fee.RegularShipping;
+                                                break;
+                                            }
                                             Console.WriteLine("B to back");
-                                            Console.WriteLine($"Current regular shipping fee: {feeChecker.RegularShipping}");
+                                            Console.WriteLine($"Current Regular shipping fee: {current}");
                                             Console.Write($"Switch to?: ");
                                             string feeChange = Console.ReadLine()!;
                                             int intFeeChange = 0;
 
-                                            if (feeChange.ToLower() == "B")
+                                            if (feeChange.ToLower() == "b")
                                                 break;
 
                                             if (int.TryParse(feeChange, out intFeeChange) && intFeeChange >= 0)
                                             {
-                                                feeChecker.RegularShipping = intFeeChange;
+
                                                 Console.WriteLine("Regulare shipping fee changed");
+                                                foreach (var fee in db.Shop)
+                                                {
+                                                    fee.RegularShipping = intFeeChange;
+                                                }
+                                                db.SaveChanges();
                                                 Thread.Sleep(1500);
                                                 break;
-
                                             }
                                         }
                                         else if (intShippingCheck == 2)
                                         {
+                                            int? current = 0;
+                                            foreach (var fee in db.Shop)
+                                            {
+                                                current = fee.ExpressShipping;
+                                                break;
+                                            }
                                             Console.WriteLine("B to back");
-                                            Console.WriteLine($"Current regular shipping fee: {feeChecker.ExpressShipping}");
+                                            Console.WriteLine($"Current Express shipping fee: {current}");
                                             Console.Write($"Switch to?: ");
                                             string feeChange = Console.ReadLine()!;
                                             int intFeeChange = 0;
 
-                                            if (feeChange.ToLower() == "B")
+                                            if (feeChange.ToLower() == "b")
                                                 break;
 
                                             if (int.TryParse(feeChange, out intFeeChange) && intFeeChange >= 0)
                                             {
-                                                feeChecker.RegularShipping = intFeeChange;
-                                                Console.WriteLine("Regulare shipping fee changed");
+                                                Console.WriteLine("Express shipping fee changed");
+                                                foreach (var fee in db.Shop)
+                                                {
+                                                    fee.ExpressShipping = intFeeChange;
+                                                }
+                                                db.SaveChanges();
                                                 Thread.Sleep(1500);
                                                 break;
                                             }

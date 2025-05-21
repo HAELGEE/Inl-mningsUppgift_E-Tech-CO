@@ -9,7 +9,7 @@ internal class Order
 {
     public Order()
     {               
-        Date = Program.GetDate();
+        Date = Program.GetDate();       
     }
     public int Id { get; set; }
     public string? Name { get; set; }    
@@ -26,8 +26,7 @@ internal class Order
     public string? City { get; set; }
     public string? Adress { get; set; }
     public int? ShippingFee { get; set; }
-    public int? RegularShipping { get; set; } = 200;
-    public int? ExpressShipping { get; set; } = 500;
+    
 
 
 }
