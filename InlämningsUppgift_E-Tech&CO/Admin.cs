@@ -814,7 +814,7 @@ internal class Admin
                                             Console.WriteLine($"Name: {product.Name.PadRight(48)} Amount: {product.Amount} - Price: {product.Price:C}");
 
                                         }
-                                        Console.WriteLine($"------------------------------------------------------- Total: {item.TotalAmountPrice:C} ----------\n");
+                                        Console.WriteLine($"------ Shipping: {item.ShippingFee:C} ------ Taxes: {Convert.ToInt32((item.TotalAmountPrice - item.ShippingFee) * 0.25):C} ------ Total Price: {item.TotalAmountPrice:C} ------");
                                     }
                                 }
                             }
