@@ -1332,7 +1332,7 @@ internal class RunProgram
                                                                                 TotalItems = amountOfProducts,
                                                                                 PaymentChoice = payOption,
                                                                                 Shipping = orderCollection,
-                                                                                ShippingFee = 500,
+                                                                                ShippingFee = fee,
                                                                                 TotalAmountPrice = totalPriceCheckout + 500,
                                                                                 Products = cartProducts,
                                                                                 City = city,

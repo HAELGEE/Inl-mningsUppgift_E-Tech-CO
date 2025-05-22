@@ -5,7 +5,4 @@
 
 
 
-Efter köpt order, komma till huvudmenyn
-rad 1225
-eller
-1345
+1335
