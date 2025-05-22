@@ -17,11 +17,11 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace InlämningsUppgift_E_Tech_CO;
 internal class RunProgram
 {
-    static string categoryName = ""; // Sätter denna här så att jag kan komma åt den i mina metoder       
     static List<Product> cartProducts = new List<Product>();
     static List<string> cartProductsInString = new List<string>();
     static double totalAmount = 0;
     static ICustomer isGuest = new Customer();
+    static bool orderBuy = false;
     public static async Task RunningProgram()
     {
         bool running = true;

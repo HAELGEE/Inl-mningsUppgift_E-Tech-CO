@@ -41,10 +41,10 @@ internal class Admin
                 Console.WriteLine($"5.  Change Category/subcategory");
                 Console.WriteLine($"6.  Delete Category/subcategory");
                 Console.WriteLine($"7.  Change Name on Product");
-                Console.WriteLine($"8.  Change Shipping fee");
-                Console.WriteLine($"9.  Product info");
+                Console.WriteLine($"8.  Product info");
+                Console.WriteLine($"9.  Change Shipping fee");
                 Console.WriteLine($"10. All customers & Change Customer");
-                Console.WriteLine($"11. Look Orderhistories");                    // Inte riktigt klar, får det inte utskrivet (finns inga ordrar än)
+                Console.WriteLine($"11. Look Orderhistories");                    
                 Console.WriteLine($"12. Change top3 in menu");
                 Console.WriteLine($"B to Back");
                 string input = Console.ReadLine()!;
@@ -52,14 +52,13 @@ internal class Admin
                 if (BackOption(input))
                     break;
 
-
                 var categorySearch = await db.Shop.OrderBy(i => i.Id)
                                             .GroupBy(c => new { c.Category, c.SubCategory })
                                             .ToListAsync();
                 if (int.TryParse(input, out userInput) && userInput > 0 && userInput < 13)
                 {
 
-                    if (userInput > 0 && userInput < 8)
+                    if (userInput > 0 && userInput < 9)
                     {
                         Console.Clear();
 
@@ -403,6 +402,39 @@ internal class Admin
                         case 8:
                             while (true)
                             {
+                                int updateProductInformation = 0;
+
+                                Console.Write($"Which product do you want to alter the information about? or [B]ack: ");
+                                string productAlter = Console.ReadLine()!;
+
+                                if (BackOption(productAlter))
+                                    break;
+
+                                if (int.TryParse(productAlter, out updateProductInformation) && updateProductInformation > 0 && !string.IsNullOrWhiteSpace(productAlter))
+                                {
+                                    Console.Clear();
+
+                                    var productInfo = db.Shop.Where(x => x.Id == updateProductInformation).SingleOrDefault();
+                                    Console.WriteLine($"Product: {productInfo.Name}");
+                                    Console.Write($"Information about the product: ");
+                                    Console.ForegroundColor = ConsoleColor.Blue;
+                                    Console.WriteLine(productInfo.ProductInformation + "\n");
+                                    Console.ResetColor();
+                                    Console.WriteLine("What do tou want to update the information to? or [B]ack: ");
+                                    string checkProductInfo = Console.ReadLine()!;
+
+                                    if (BackOption(checkProductInfo))
+                                        break;
+
+                                    productInfo.ProductInformation = checkProductInfo;
+                                }
+                            }
+                            db.SaveChanges();
+                            break;
+
+                        case 9:
+                            while (true)
+                            {
                                 Console.Clear();
                                 Console.WriteLine("1. to change Regular shipping fee");
                                 Console.WriteLine("2. to change Express shipping fee");
@@ -486,43 +518,10 @@ internal class Admin
                                         }
                                     }
                                 }
-
                             }
 
                             break;
 
-                        case 9:
-                            while (true)
-                            {
-                                int updateProductInformation = 0;
-
-                                Console.Write($"Which product do you want to alter the information about? or [B]ack: ");
-                                string productAlter = Console.ReadLine()!;
-
-                                if (BackOption(productAlter))
-                                    break;
-
-                                if (int.TryParse(productAlter, out updateProductInformation) && updateProductInformation > 0 && !string.IsNullOrWhiteSpace(productAlter))
-                                {
-                                    Console.Clear();
-
-                                    var productInfo = db.Shop.Where(x => x.Id == updateProductInformation).SingleOrDefault();
-                                    Console.WriteLine($"Product: {productInfo.Name}");
-                                    Console.Write($"Information about the product: ");
-                                    Console.ForegroundColor = ConsoleColor.Blue;
-                                    Console.WriteLine(productInfo.ProductInformation + "\n");
-                                    Console.ResetColor();
-                                    Console.WriteLine("What do tou want to update the information to? or [B]ack: ");
-                                    string checkProductInfo = Console.ReadLine()!;
-
-                                    if (BackOption(checkProductInfo))
-                                        break;
-
-                                    productInfo.ProductInformation = checkProductInfo;
-                                }
-                            }
-                            db.SaveChanges();
-                            break;
                         case 10:
                             while (true)
                             {
@@ -618,82 +617,123 @@ internal class Admin
                                                         break;
 
                                                     case 2:
-                                                        Console.Clear();
-                                                        Console.WriteLine($"Current Customer Name: {customer.Name}");
-                                                        Console.WriteLine("What do you want to update the Customer Name to?");
-                                                        string nameUpdate = Console.ReadLine()!;
-                                                        customer.Name = nameUpdate;
-
-                                                        Console.ForegroundColor = ConsoleColor.Green;
-                                                        Console.WriteLine("Name updated");
-                                                        Console.ResetColor();
-                                                        Thread.Sleep(1000);
-                                                        db.SaveChanges();
-                                                        break;
-
-                                                    case 3:
-                                                        Console.Clear();
-                                                        Console.WriteLine($"Current Customer lastname: {customer.LastName}");
-                                                        Console.WriteLine("What do you want to update the Customer Lastname to?");
-                                                        string lastnameUpdate = Console.ReadLine()!;
-                                                        customer.LastName = lastnameUpdate;
-
-                                                        Console.ForegroundColor = ConsoleColor.Green;
-                                                        Console.WriteLine("Lastname updated");
-                                                        Console.ResetColor();
-                                                        Thread.Sleep(1000);
-                                                        db.SaveChanges();
-                                                        break;
-
-                                                    case 4:
-                                                        Console.Clear();
-                                                        Console.WriteLine($"Current Customer Age: {customer.Age}");
-                                                        Console.WriteLine("What do you want to update the Customer Age to?");
-                                                        string ageUpdate = Console.ReadLine()!;
-                                                        int age = 0;
-                                                        if (int.TryParse(ageUpdate, out age) && age > 0 && !string.IsNullOrWhiteSpace(ageUpdate))
+                                                        while (true)
                                                         {
-                                                            customer.Age = age;
+                                                            Console.Clear();
+                                                            Console.WriteLine($"Current Customer Name: {customer.Name}");
+                                                            Console.WriteLine("What do you want to update the Customer Name to?");
+                                                            Console.WriteLine("B to back");
+                                                            string nameUpdate = Console.ReadLine()!;
+
+                                                            if (nameUpdate.ToLower() == "b")
+                                                                break;
+
+                                                            customer.Name = nameUpdate;
+
                                                             Console.ForegroundColor = ConsoleColor.Green;
-                                                            Console.WriteLine("Age updated");
+                                                            Console.WriteLine("Name updated");
                                                             Console.ResetColor();
                                                             Thread.Sleep(1000);
                                                             db.SaveChanges();
                                                         }
-                                                        else
-                                                            Console.WriteLine("Invalid Input");
+                                                        break;
+
+                                                    case 3:
+                                                        while (true)
+                                                        {
+                                                            Console.Clear();
+                                                            Console.WriteLine($"Current Customer lastname: {customer.LastName}");
+                                                            Console.WriteLine("What do you want to update the Customer Lastname to?");
+                                                            Console.WriteLine("B to back");
+                                                            string lastnameUpdate = Console.ReadLine()!;
+
+                                                            if (lastnameUpdate.ToLower() == "b")
+                                                                break;
+
+                                                            customer.LastName = lastnameUpdate;
+
+                                                            Console.ForegroundColor = ConsoleColor.Green;
+                                                            Console.WriteLine("Lastname updated");
+                                                            Console.ResetColor();
+                                                            Thread.Sleep(1000);
+                                                            db.SaveChanges();
+                                                        }
+                                                        break;
+
+                                                    case 4:
+                                                        while (true)
+                                                        {
+                                                            Console.Clear();
+                                                            Console.WriteLine($"Current Customer Age: {customer.Age}");
+                                                            Console.WriteLine("What do you want to update the Customer Age to?");
+                                                            Console.WriteLine("B to back");
+                                                            string ageUpdate = Console.ReadLine()!;
+
+                                                            if (ageUpdate.ToLower() == "b")
+                                                                break;
+
+                                                            int age = 0;
+                                                            if (int.TryParse(ageUpdate, out age) && age > 0 && !string.IsNullOrWhiteSpace(ageUpdate))
+                                                            {
+                                                                customer.Age = age;
+                                                                Console.ForegroundColor = ConsoleColor.Green;
+                                                                Console.WriteLine("Age updated");
+                                                                Console.ResetColor();
+                                                                Thread.Sleep(1000);
+                                                                db.SaveChanges();
+                                                            }
+                                                            else
+                                                                Console.WriteLine("Invalid Input");
+                                                        }
 
                                                         break;
 
                                                     case 5:
-                                                        Console.Clear();
-                                                        Console.WriteLine($"Current Customer Username: {customer.UserName}");
-                                                        Console.WriteLine("What do you want to update the Customer Lastname to?");
-                                                        string usernamUpdate = Console.ReadLine()!;
-                                                        customer.UserName = usernamUpdate;
+                                                        while (true)
+                                                        {
+                                                            Console.Clear();
+                                                            Console.WriteLine($"Current Customer Username: {customer.UserName}");
+                                                            Console.WriteLine("What do you want to update the Customer Username to?");
+                                                            Console.WriteLine("B to back");
+                                                            string usernamUpdate = Console.ReadLine()!;
 
-                                                        Console.ForegroundColor = ConsoleColor.Green;
-                                                        Console.WriteLine("Username updated");
-                                                        Console.ResetColor();
-                                                        Thread.Sleep(1000);
-                                                        db.SaveChanges();
+                                                            if (usernamUpdate.ToLower() == "b")
+                                                                break;
+
+                                                            customer.UserName = usernamUpdate;
+
+                                                            Console.ForegroundColor = ConsoleColor.Green;
+                                                            Console.WriteLine("Username updated");
+                                                            Console.ResetColor();
+                                                            Thread.Sleep(1000);
+                                                            db.SaveChanges();
+                                                        }
                                                         break;
 
                                                     case 6:
-                                                        Console.Clear();
-                                                        Console.WriteLine($"Current Customer Password: {customer.Password}");
-                                                        Console.WriteLine("What do you want to update the Customer Lastname to?");
-                                                        string passwordUpdate = Console.ReadLine()!;
-                                                        customer.Password = passwordUpdate;
+                                                        while (true)
+                                                        {
+                                                            Console.Clear();
+                                                            Console.WriteLine($"Current Customer Password: {customer.Password}");
+                                                            Console.WriteLine("What do you want to update the Customer Lastname to?");
+                                                            Console.WriteLine("B to back");
+                                                            string passwordUpdate = Console.ReadLine()!;
 
-                                                        Console.ForegroundColor = ConsoleColor.Green;
-                                                        Console.WriteLine("Password updated");
-                                                        Console.ResetColor();
-                                                        Thread.Sleep(1000);
-                                                        db.SaveChanges();
+                                                            if (passwordUpdate.ToLower() == "b")
+                                                                break;
+
+                                                            customer.Password = passwordUpdate;
+
+                                                            Console.ForegroundColor = ConsoleColor.Green;
+                                                            Console.WriteLine("Password updated");
+                                                            Console.ResetColor();
+                                                            Thread.Sleep(1000);
+                                                            db.SaveChanges();
+                                                        }
                                                         break;
 
                                                     case 7:
+
                                                         Console.Clear();
                                                         if (isGuest.UserName == customer.UserName)
                                                         {
@@ -705,7 +745,12 @@ internal class Admin
                                                         {
                                                             Console.WriteLine($"Current Customer isAdmin: {customer.IsAdmin}");
                                                             Console.WriteLine("What do you want to update the Customer isAdmin to? (true/false)");
+                                                            Console.WriteLine("B to back");
                                                             string isAdminUpdate = Console.ReadLine()!;
+
+                                                            if (isAdminUpdate.ToLower() == "b")
+                                                                break;
+
                                                             if (isAdminUpdate.ToLower() == "true")
                                                             {
                                                                 customer.IsAdmin = true;
@@ -721,15 +766,17 @@ internal class Admin
                                                                 Console.WriteLine("Invalid Input");
                                                                 Thread.Sleep(1000);
                                                             }
-                                                        }
 
-                                                        Console.ForegroundColor = ConsoleColor.Green;
-                                                        Console.WriteLine("isAdmin updated");
-                                                        Console.ResetColor();
-                                                        Thread.Sleep(1000);
-                                                        db.SaveChanges();
+                                                            Console.ForegroundColor = ConsoleColor.Green;
+                                                            Console.WriteLine("isAdmin updated");
+                                                            Console.ResetColor();
+                                                            Thread.Sleep(1000);
+                                                            db.SaveChanges();
+
+                                                        }
                                                         break;
                                                 }
+
                                             }
                                             else
                                                 Console.WriteLine("Invalid Input");
@@ -837,7 +884,7 @@ internal class Admin
                                         topCategories.Add((key.Key, counter));
                                     }
 
-                                    var orderedList = topCategories.OrderByDescending(x => x.totalSold);                               
+                                    var orderedList = topCategories.OrderByDescending(x => x.totalSold);
 
                                     foreach (var reset in resetTop)
                                     {
