@@ -394,15 +394,14 @@ internal class RunProgram
                         break;
 
                     case 4:
+                        while (true)
+                        {
 
                         var topSeller = db.Shop
                             .OrderByDescending(x => x.Sold)
                             .Take(3);
 
                         var items = db.Shop.GroupBy(x => x.Category);
-
-                        while (true)
-                        {
                             Console.Clear();
 
                             if (isGuest.LoggedIn)
