@@ -23,8 +23,7 @@ internal class Admin
         ICustomer isGuest = customerInput;
 
         using (var db = new MyDbContext())
-        {
-            // Testade göra en do while-loop här för att se vilken som blev bäst att använda
+        {            
             while (true)
             {
                 Console.Clear();
@@ -32,7 +31,6 @@ internal class Admin
                 bool validInput = false;
                 int userInput = 0;
                 Console.Clear();
-
 
                 Console.WriteLine($"What do you want to do?");
                 Console.WriteLine($"1.  Add Product to shop");
@@ -115,10 +113,7 @@ internal class Admin
                                     else if (productPriceString.ToLower() == "b")
                                         break;
                                     else
-                                    {
-                                        Console.WriteLine("Invalid Input");
-                                        Thread.Sleep(1000);
-                                    }
+                                        RunProgram.ErrorMessage();
 
                                 }
                                 if (productPriceString.ToLower() == "b")
@@ -138,10 +133,7 @@ internal class Admin
                                     else if (stockString.ToLower() == "b")
                                         break;
                                     else
-                                    {
-                                        Console.WriteLine("Invalid Input");
-                                        Thread.Sleep(1000);
-                                    }
+                                        RunProgram.ErrorMessage();
                                 }
                                 if (stockString.ToLower() == "b")
                                     break;
@@ -322,10 +314,7 @@ internal class Admin
                                                 Thread.Sleep(1500);
                                             }
                                             else
-                                            {
-                                                Console.WriteLine("Invalid Input");
-                                                Thread.Sleep(1560);
-                                            }
+                                                RunProgram.ErrorMessage();
                                         }
                                     }
                                     else if (intDeleteCategory == 2)
@@ -361,18 +350,12 @@ internal class Admin
                                                 Thread.Sleep(1500);
                                             }
                                             else
-                                            {
-                                                Console.WriteLine("Invalid Input");
-                                                Thread.Sleep(1560);
-                                            }
+                                                RunProgram.ErrorMessage();
                                         }
                                     }
                                 }
                                 else
-                                {
-                                    Console.WriteLine("Invalid Input");
-                                    Thread.Sleep(1500);
-                                }
+                                    RunProgram.ErrorMessage();
                             }
                             //db.SaveChanges();
                             break;
@@ -513,10 +496,7 @@ internal class Admin
                                             }
                                         }
                                         else
-                                        {
-                                            Console.WriteLine("Inavlid Input");
-                                            Thread.Sleep(1500);
-                                        }
+                                            RunProgram.ErrorMessage();
                                     }
                                 }
                             }
@@ -608,10 +588,8 @@ internal class Admin
                                                             var deleteCustomer = db.Customer.Where(x => x.Id == updateCustomerInformation)
                                                                                             .ExecuteDelete();
 
-                                                            Console.ForegroundColor = ConsoleColor.Red;
-                                                            Console.WriteLine("\nCustomer is now deleted from Database");
-                                                            Console.ResetColor();
-                                                            Thread.Sleep(1000);
+                                                            RunProgram.RedColor("\nCustomer is now deleted from Database");
+                                                            Thread.Sleep(1500);
                                                             db.SaveChanges();
                                                         }
 
@@ -631,10 +609,8 @@ internal class Admin
 
                                                             customer.Name = nameUpdate;
 
-                                                            Console.ForegroundColor = ConsoleColor.Green;
-                                                            Console.WriteLine("Name updated");
-                                                            Console.ResetColor();
-                                                            Thread.Sleep(1000);
+                                                            RunProgram.GreenColor("Name updated");
+                                                            Thread.Sleep(1500);
                                                             db.SaveChanges();
                                                         }
                                                         break;
@@ -653,10 +629,8 @@ internal class Admin
 
                                                             customer.LastName = lastnameUpdate;
 
-                                                            Console.ForegroundColor = ConsoleColor.Green;
-                                                            Console.WriteLine("Lastname updated");
-                                                            Console.ResetColor();
-                                                            Thread.Sleep(1000);
+                                                            RunProgram.GreenColor("Lastname updated");
+                                                            Thread.Sleep(1500);
                                                             db.SaveChanges();
                                                         }
                                                         break;
@@ -677,10 +651,8 @@ internal class Admin
                                                             if (int.TryParse(ageUpdate, out age) && age > 0 && !string.IsNullOrWhiteSpace(ageUpdate))
                                                             {
                                                                 customer.Age = age;
-                                                                Console.ForegroundColor = ConsoleColor.Green;
-                                                                Console.WriteLine("Age updated");
-                                                                Console.ResetColor();
-                                                                Thread.Sleep(1000);
+                                                                RunProgram.GreenColor("Age updated");
+                                                                Thread.Sleep(1500);
                                                                 db.SaveChanges();
                                                             }
                                                             else
@@ -703,10 +675,8 @@ internal class Admin
 
                                                             customer.UserName = usernamUpdate;
 
-                                                            Console.ForegroundColor = ConsoleColor.Green;
-                                                            Console.WriteLine("Username updated");
-                                                            Console.ResetColor();
-                                                            Thread.Sleep(1000);
+                                                            RunProgram.GreenColor("Username updated");
+                                                            Thread.Sleep(1500);
                                                             db.SaveChanges();
                                                         }
                                                         break;
@@ -725,10 +695,8 @@ internal class Admin
 
                                                             customer.Password = BC.EnhancedHashPassword(passwordUpdate, 14);
 
-                                                            Console.ForegroundColor = ConsoleColor.Green;
-                                                            Console.WriteLine("Password updated");
-                                                            Console.ResetColor();
-                                                            Thread.Sleep(1000);
+                                                            RunProgram.GreenColor("Password updated");
+                                                            Thread.Sleep(1500);
                                                             db.SaveChanges();
                                                         }
                                                         break;
@@ -768,10 +736,8 @@ internal class Admin
                                                                 Thread.Sleep(1000);
                                                             }
 
-                                                            Console.ForegroundColor = ConsoleColor.Green;
-                                                            Console.WriteLine("isAdmin updated");
-                                                            Console.ResetColor();
-                                                            Thread.Sleep(1000);
+                                                            RunProgram.GreenColor("isAdmin updated");
+                                                            Thread.Sleep(1500);
                                                             db.SaveChanges();
 
                                                         }

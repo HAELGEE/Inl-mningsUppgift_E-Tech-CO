@@ -232,9 +232,8 @@ internal class RunProgram
 
                             if (customers != null)
                             {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine("The username is already taken\n");
-                                Console.ResetColor();
+
+                                RedColor("The username is already taken\n");                                
                                 Thread.Sleep(1500);
                             }
                             else
@@ -328,18 +327,15 @@ internal class RunProgram
 
                                             if (!string.IsNullOrWhiteSpace(passwordUpdate))
                                             {
-                                                person.Password = BC.EnhancedHashPassword(passwordUpdate, 14);
-                                                Console.ForegroundColor = ConsoleColor.Green;
-                                                Console.WriteLine("Password Changed");
-                                                Thread.Sleep(1000);
+                                                person.Password = BC.EnhancedHashPassword(passwordUpdate, 14);                                                
+                                                GreenColor("Password Changed");
+                                                Thread.Sleep(1300);
                                             }
                                             else
-                                            {
-                                                Console.ForegroundColor = ConsoleColor.Red;
-                                                Console.WriteLine("Invalid Input");
-                                                Thread.Sleep(1000);
+                                            {                                                
+                                                RedColor("Invalid Input");
+                                                Thread.Sleep(1300);
                                             }
-                                            Console.ResetColor();
                                             db.SaveChanges();
                                             break;
 
@@ -351,28 +347,22 @@ internal class RunProgram
                                                 {
                                                     Console.WriteLine($"OrderID: {item.Id}");
                                                     Console.Write("-- ");
-                                                    Console.ForegroundColor = ConsoleColor.DarkGreen;
-                                                    Console.Write("Products ");
-                                                    Console.ResetColor();
+                                                    DarkGreenColor("Products ");
                                                     Console.WriteLine("--------------------------------------------");
                                                     foreach (var product in item.Products)
                                                     {
                                                         Console.WriteLine($"{product.Name.PadRight(48)} Amount: {product.Amount} Price/Unit: {product.Price:C}");
                                                     }
                                                     Console.Write($"---- Shipping: ");
-                                                    Console.ForegroundColor = ConsoleColor.DarkCyan;
-                                                    Console.Write($"{item.ShippingFee:C}");
-                                                    Console.ResetColor();
+                                                    DarkCyanColor(item.ShippingFee);
                                                     Console.Write($"---- Taxes: ");
-                                                    Console.ForegroundColor = ConsoleColor.DarkCyan;
-                                                    Console.Write($"{Convert.ToInt32((item.TotalAmountPrice - item.ShippingFee) * 0.25):C}");
-                                                    Console.ResetColor();
+                                                    DarkCyanColor(Convert.ToInt32((item.TotalAmountPrice - item.ShippingFee) * 0.25));
                                                     Console.Write($" ---- Total Price: ");
-                                                    Console.ForegroundColor = ConsoleColor.DarkCyan;
-                                                    Console.Write($"{item.TotalAmountPrice:C}");
-                                                    Console.ResetColor();
+                                                    DarkCyanColor(item.TotalAmountPrice);
                                                     Console.Write($" ----\n");
+                                                    
                                                 }
+
                                                 Console.WriteLine("B to Back");
                                                 string value = Console.ReadLine()!;
                                                 if (Admin.BackOption(value))
@@ -546,11 +536,8 @@ internal class RunProgram
                                                         idCheck = true;
                                                 }
 
-                                                if (!idCheck)
-                                                {
-                                                    Console.WriteLine("Invalid Input");
-                                                    Thread.Sleep(1500);
-                                                }
+                                                if (!idCheck)                                                
+                                                    ErrorMessage();                                                
                                                 else
                                                 {
                                                     Console.WriteLine("How many of these?");
@@ -604,16 +591,13 @@ internal class RunProgram
                                                         else
                                                         {
                                                             Console.WriteLine("Cant buy more then there is in stock");
-                                                            Thread.Sleep(1000);
+                                                            Thread.Sleep(3000);
                                                         }
                                                     }
                                                 }
                                             }
                                             else
-                                            {
-                                                Console.WriteLine("Invalid Input");
-                                                Thread.Sleep(1500);
-                                            }
+                                                ErrorMessage();
                                         }
                                         else
                                         {
@@ -624,17 +608,12 @@ internal class RunProgram
                                 }
                                 else
                                 {
-                                    Console.ForegroundColor = ConsoleColor.Red;
-                                    Console.WriteLine($"Must be a number from {categoryNum / categoryNum} to {categoryNum}");
-                                    Console.ResetColor();
+                                    RedColor($"Must be a number from {categoryNum / categoryNum} to {categoryNum}");
                                     Thread.Sleep(1500);
                                 }
                             }
                             else
-                            {
-                                Console.WriteLine("Invalid Input");
-                                Thread.Sleep(1500);
-                            }
+                                Console.ResetColor();
                         }
 
                         db.SaveChanges();
@@ -806,7 +785,7 @@ internal class RunProgram
                             else
                             {
                                 Console.WriteLine("Cant buy more then there is in stock");
-                                Thread.Sleep(1000);
+                                Thread.Sleep(1500);
                             }
                         }
 
@@ -815,8 +794,7 @@ internal class RunProgram
                     }
                     else
                     {
-                        Console.WriteLine("Invalid input");
-                        Thread.Sleep(1000);
+                        ErrorMessage();
                     }
                 }
                 db.SaveChanges();
@@ -1006,10 +984,8 @@ internal class RunProgram
                                                     }
                                                     if (isTrue)
                                                     {
-                                                        Console.ForegroundColor = ConsoleColor.Red;
-                                                        Console.WriteLine("No more Product in stock to add");
-                                                        Thread.Sleep(1000);
-                                                        Console.ResetColor();
+                                                        RedColor("No more Product in stock to add");
+                                                        Thread.Sleep(1500);
                                                     }
                                                     break;
 
@@ -1025,10 +1001,8 @@ internal class RunProgram
                                                     }
                                                     if (isTrue)
                                                     {
-                                                        Console.ForegroundColor = ConsoleColor.Red;
-                                                        Console.WriteLine("Cant be less then 0");
-                                                        Thread.Sleep(1000);
-                                                        Console.ResetColor();
+                                                        RedColor("Cant be less then 0");
+                                                        Thread.Sleep(1500);
                                                     }
                                                     break;
                                             }
@@ -1043,15 +1017,11 @@ internal class RunProgram
                                             }
                                             cartProductsInString.Add($"---------------------------------------------------");
                                             cartProductsInString.Add($"Press C to cancel order or press O to enter Order");
-
                                         }
                                     }
                                 }
                                 else
-                                {
-                                    Console.WriteLine("Invalid Input");
-                                    Thread.Sleep(1000);
-                                }
+                                    ErrorMessage();
                             }
                             db.SaveChanges();
                             break;
@@ -1105,10 +1075,7 @@ internal class RunProgram
                                     }
                                 }
                                 else
-                                {
-                                    Console.WriteLine("Invalid input");
-                                    Thread.Sleep(1000);
-                                }
+                                    ErrorMessage();
 
                             }
                             db.SaveChanges();
@@ -1247,10 +1214,8 @@ internal class RunProgram
                                                                     person.TotalOrders++;
                                                                     db.SaveChanges();
 
-                                                                    Console.WriteLine("Sucess on buying Order");
+                                                                    GreenColor("Sucess on buying Order");
                                                                     orderBuy = true;
-                                                                    Console.ResetColor();
-                                                                    Thread.Sleep(1000);
 
                                                                     cartProducts.Clear();
                                                                     cartProductsInString.Clear();
@@ -1260,10 +1225,8 @@ internal class RunProgram
                                                             }
                                                         }
                                                         else
-                                                        {
-                                                            Console.WriteLine("Invalid Input");
-                                                            Thread.Sleep(1000);
-                                                        }
+                                                            ErrorMessage();
+
                                                         db.SaveChanges();
                                                     }
                                                     break;
@@ -1291,8 +1254,7 @@ internal class RunProgram
                                                             fee = expressShipping;
                                                         else
                                                         {
-                                                            Console.WriteLine("Invalid Input");
-                                                            Thread.Sleep(1500);
+                                                            ErrorMessage();
                                                             break;
                                                         }
 
@@ -1381,10 +1343,10 @@ internal class RunProgram
                                                                             person.TotalOrders++;
                                                                             db.SaveChanges();
 
-                                                                            Console.WriteLine("Sucess on buying Order");
+                                                                            GreenColor("Sucess on buying Order");
                                                                             orderBuy = true;
                                                                             Console.ResetColor();
-                                                                            Thread.Sleep(1000);
+                                                                            Thread.Sleep(1500);
 
                                                                             cartProducts.Clear();
                                                                             cartProductsInString.Clear();
@@ -1394,10 +1356,7 @@ internal class RunProgram
                                                                     }
                                                                 }
                                                                 else
-                                                                {
-                                                                    Console.WriteLine("Invalid Input");
-                                                                    Thread.Sleep(1000);
-                                                                }
+                                                                    ErrorMessage();
                                                             }
                                                             db.SaveChanges();
                                                         }
@@ -1408,10 +1367,7 @@ internal class RunProgram
                                     }
                                 }
                                 else
-                                {
-                                    Console.WriteLine("Invalid Input");
-                                    Thread.Sleep(1000);
-                                }
+                                    ErrorMessage();
                             }
                             db.SaveChanges();
                             break;
@@ -1433,13 +1389,43 @@ internal class RunProgram
                     }
                 }
                 else
-                {
-                    Console.WriteLine("Invalid Input");
-                    Thread.Sleep(1000);
-                }
+                    ErrorMessage();
 
                 db.SaveChanges();
             }
         }
+    }
+
+    public static void GreenColor<T>(T input)
+    {
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.Write(input);
+        Console.ResetColor();
+    }
+
+    public static void RedColor<T>(T input)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.Write(input);
+        Console.ResetColor();
+    }
+
+    static void DarkGreenColor<T>(T input)
+    {
+        Console.ForegroundColor = ConsoleColor.DarkGreen;
+        Console.Write(input);
+        Console.ResetColor();
+    }
+
+    static void DarkCyanColor<T>(T input)
+    {
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        Console.Write($"{input:C}");
+        Console.ResetColor();
+    }
+    public static void ErrorMessage()
+    {
+        Console.WriteLine("Invalid input");
+        Thread.Sleep(1700);
     }
 }
