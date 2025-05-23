@@ -41,7 +41,8 @@ namespace InlämningsUppgift_E_Tech_CO
         {
             using (var db = new MyDbContext())
             {
-                var password = BC.EnhancedHashPassword("ADMIN", 14); // Hashar lösenordet så det inte går att knäcka.
+                // Hashar lösenordet så det inte går att knäcka. Med hjälp av Nugget BCrypt
+                var password = BC.EnhancedHashPassword("ADMIN", 14); 
                 db.Customer.Add(new Customer
                 ("Admin", "Admin", 666, "Admin", password, true));
                 db.SaveChanges();
