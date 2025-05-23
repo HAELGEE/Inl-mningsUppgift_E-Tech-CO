@@ -9,6 +9,9 @@ namespace InlämningsUppgift_E_Tech_CO
 {
     internal class Program
     {
+        // Först göra en Migration av detta så databasen skapas
+        // Innan programmet startar så behövs produkterna läggas till via "DatabaseStuff.sql" annars finns inga artiklar/produkter inlagda
+
         static async Task Main(string[] args)
         {
             using (var db = new MyDbContext())
