@@ -549,8 +549,7 @@ internal class Admin
                                         {
                                             Console.Clear();
                                             Console.Write("What do you want to do with ");
-                                            Console.ForegroundColor = ConsoleColor.Green;
-                                            Console.WriteLine("Customer:");
+                                            RunProgram.GreenColor("Customer:");
                                             Console.ForegroundColor = ConsoleColor.DarkCyan;
                                             Console.WriteLine($"Name: {customer.Name}   Lastname: {customer.LastName}   Age: {customer.Age}   Username: {customer.UserName}   Password: {customer.Password}   isAdmin: {customer.IsAdmin}   Logins: {customer.Logins}\n");
                                             Console.ResetColor();
