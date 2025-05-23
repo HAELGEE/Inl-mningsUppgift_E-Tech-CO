@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
+using BCrypt.Net;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
@@ -154,7 +155,7 @@ internal class RunProgram
                                         Console.Write("Please enter Password: ");
                                         string loginPassword = Console.ReadLine()!;
 
-                                        if (customer.Password == loginPassword)
+                                        if (BC.EnhancedVerify(loginPassword, customer.Password))
                                         {
                                             Console.WriteLine("You are now logged in!");
                                             customer.LoggedIn = true;
@@ -245,13 +246,17 @@ internal class RunProgram
                         if (Admin.BackOption(newPassword))
                             break;
 
+                        
+                        var hashPassword = BC.EnhancedHashPassword(newPassword, 14);                    
+
+                        
                         db.Customer.Add(new Customer
                         (
                             newFirstName,
                             newLastname,
                             newAge,
                             newUserName,
-                            newPassword,
+                            hashPassword,
                             false
                         ));
                         db.SaveChanges(); // måste spara användaren Innan man kan göra det som kommer under
@@ -310,11 +315,11 @@ internal class RunProgram
                                                     .Include(x => x.Products)
                                                     .Where(x => x.Customer.UserName == isGuest.UserName);
                                     switch (updateNumber)
-                                    {
+                                    {                                        
                                         case 1:
                                             Console.Clear();
                                             Console.WriteLine("\nPress B to back");
-                                            Console.WriteLine($"Current password: {person.Password}");
+                                            //Console.WriteLine($"Current password: {person.Password}");
                                             Console.WriteLine("What do you want to change your Password to?: ");
                                             string passwordUpdate = Console.ReadLine()!;
 
@@ -323,7 +328,7 @@ internal class RunProgram
 
                                             if (!string.IsNullOrWhiteSpace(passwordUpdate))
                                             {
-                                                person.Password = passwordUpdate;
+                                                person.Password = BC.EnhancedHashPassword(passwordUpdate, 14);
                                                 Console.ForegroundColor = ConsoleColor.Green;
                                                 Console.WriteLine("Password Changed");
                                                 Thread.Sleep(1000);

@@ -1,6 +1,7 @@
 ﻿using InlämningsUppgift_E_Tech_CO.Models;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System.Runtime.Intrinsics.Arm;
+using BCrypt.Net;
 using System;
 using Microsoft.VisualBasic;
 
@@ -40,8 +41,9 @@ namespace InlämningsUppgift_E_Tech_CO
         {
             using (var db = new MyDbContext())
             {
+                var password = BC.EnhancedHashPassword("ADMIN", 14); // Hashar lösenordet så det inte går att knäcka.
                 db.Customer.Add(new Customer
-                ("Admin", "Admin", 666, "Admin", "ADMIN", true));
+                ("Admin", "Admin", 666, "Admin", password, true));
                 db.SaveChanges();
             }
         }       

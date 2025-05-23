@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.Design;
+using BCrypt.Net;
 using System.Data;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -722,7 +723,7 @@ internal class Admin
                                                             if (passwordUpdate.ToLower() == "b")
                                                                 break;
 
-                                                            customer.Password = passwordUpdate;
+                                                            customer.Password = BC.EnhancedHashPassword(passwordUpdate, 14);
 
                                                             Console.ForegroundColor = ConsoleColor.Green;
                                                             Console.WriteLine("Password updated");
