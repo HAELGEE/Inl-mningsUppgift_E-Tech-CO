@@ -308,7 +308,7 @@ internal class RunProgram
                                 if (profileCheck.ToLower() == "b")
                                     break;
 
-                                if (int.TryParse(profileCheck, out updateNumber) && !string.IsNullOrWhiteSpace(profileCheck) && updateNumber > 0 && updateNumber < 4)
+                                if (int.TryParse(profileCheck, out updateNumber) && !string.IsNullOrWhiteSpace(profileCheck) && updateNumber > 0)
                                 {
                                     var oderHistory = db.Order.Include(x => x.Customer)
                                                     .Include(x => x.Products)
