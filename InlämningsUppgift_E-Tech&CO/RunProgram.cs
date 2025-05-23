@@ -350,12 +350,28 @@ internal class RunProgram
                                                 foreach (var item in oderHistory)
                                                 {
                                                     Console.WriteLine($"OrderID: {item.Id}");
-                                                    Console.WriteLine("-- Products --------------------------------------------");
+                                                    Console.Write("-- ");
+                                                    Console.ForegroundColor = ConsoleColor.DarkGreen;
+                                                    Console.Write("Products ");
+                                                    Console.ResetColor();
+                                                    Console.WriteLine("--------------------------------------------");
                                                     foreach (var product in item.Products)
                                                     {
                                                         Console.WriteLine($"{product.Name.PadRight(48)} Amount: {product.Amount} Price/Unit: {product.Price:C}");
                                                     }
-                                                    Console.WriteLine($"---- Shipping: {item.ShippingFee:C} ---- Taxes: {Convert.ToInt32((item.TotalAmountPrice - item.ShippingFee) * 0.25):C} ---- Total Price: {item.TotalAmountPrice:C} ----\n");
+                                                    Console.Write($"---- Shipping: ");
+                                                    Console.ForegroundColor = ConsoleColor.DarkCyan;
+                                                    Console.Write($"{item.ShippingFee:C}");
+                                                    Console.ResetColor();
+                                                    Console.Write($"---- Taxes: ");
+                                                    Console.ForegroundColor = ConsoleColor.DarkCyan;
+                                                    Console.Write($"{Convert.ToInt32((item.TotalAmountPrice - item.ShippingFee) * 0.25):C}");
+                                                    Console.ResetColor();
+                                                    Console.Write($" ---- Total Price: ");
+                                                    Console.ForegroundColor = ConsoleColor.DarkCyan;
+                                                    Console.Write($"{item.TotalAmountPrice:C}");
+                                                    Console.ResetColor();
+                                                    Console.Write($" ----\n");
                                                 }
                                                 Console.WriteLine("B to Back");
                                                 string value = Console.ReadLine()!;
