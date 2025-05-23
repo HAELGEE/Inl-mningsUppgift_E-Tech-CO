@@ -233,7 +233,7 @@ internal class RunProgram
                             if (customers != null)
                             {
 
-                                RedColor("The username is already taken\n");                                
+                                ChangeColor("The username is already taken\n", "Red");                                
                                 Thread.Sleep(1500);
                             }
                             else
@@ -327,13 +327,13 @@ internal class RunProgram
 
                                             if (!string.IsNullOrWhiteSpace(passwordUpdate))
                                             {
-                                                person.Password = BC.EnhancedHashPassword(passwordUpdate, 14);                                                
-                                                GreenColor("Password Changed");
+                                                person.Password = BC.EnhancedHashPassword(passwordUpdate, 14);
+                                                ChangeColor("Password Changed", "Green");
                                                 Thread.Sleep(1300);
                                             }
                                             else
-                                            {                                                
-                                                RedColor("Invalid Input");
+                                            {
+                                                ChangeColor("Invalid Input", "Red");
                                                 Thread.Sleep(1300);
                                             }
                                             db.SaveChanges();
@@ -347,18 +347,18 @@ internal class RunProgram
                                                 {
                                                     Console.WriteLine($"OrderID: {item.Id}");
                                                     Console.Write("-- ");
-                                                    DarkGreenColor("Products ");
+                                                    ChangeColor("Products ", "DarkGreen");
                                                     Console.WriteLine("--------------------------------------------");
                                                     foreach (var product in item.Products)
                                                     {
                                                         Console.WriteLine($"{product.Name.PadRight(48)} Amount: {product.Amount} Price/Unit: {product.Price:C}");
                                                     }
                                                     Console.Write($"---- Shipping: ");
-                                                    DarkCyanColor(item.ShippingFee);
+                                                    ChangePriceColor(item.ShippingFee, "DarkCyan");
                                                     Console.Write($"---- Taxes: ");
-                                                    DarkCyanColor(Convert.ToInt32((item.TotalAmountPrice - item.ShippingFee) * 0.25));
+                                                    ChangePriceColor(Convert.ToInt32((item.TotalAmountPrice - item.ShippingFee) * 0.25), "DarkCyan");
                                                     Console.Write($" ---- Total Price: ");
-                                                    DarkCyanColor(item.TotalAmountPrice);
+                                                    ChangePriceColor(item.TotalAmountPrice, "DarkCyan");
                                                     Console.Write($" ----\n");
                                                     
                                                 }
@@ -608,7 +608,7 @@ internal class RunProgram
                                 }
                                 else
                                 {
-                                    RedColor($"Must be a number from {categoryNum / categoryNum} to {categoryNum}");
+                                    ChangeColor($"Must be a number from {categoryNum / categoryNum} to {categoryNum}", "Red");
                                     Thread.Sleep(1500);
                                 }
                             }
@@ -984,7 +984,7 @@ internal class RunProgram
                                                     }
                                                     if (isTrue)
                                                     {
-                                                        RedColor("No more Product in stock to add");
+                                                        ChangeColor("No more Product in stock to add", "Red");
                                                         Thread.Sleep(1500);
                                                     }
                                                     break;
@@ -1001,7 +1001,7 @@ internal class RunProgram
                                                     }
                                                     if (isTrue)
                                                     {
-                                                        RedColor("Cant be less then 0");
+                                                        ChangeColor("Cant be less then 0", "Red");
                                                         Thread.Sleep(1500);
                                                     }
                                                     break;
@@ -1214,7 +1214,7 @@ internal class RunProgram
                                                                     person.TotalOrders++;
                                                                     db.SaveChanges();
 
-                                                                    GreenColor("Sucess on buying Order");
+                                                                    ChangeColor("Sucess on buying Order", "Green");
                                                                     orderBuy = true;
 
                                                                     cartProducts.Clear();
@@ -1343,7 +1343,7 @@ internal class RunProgram
                                                                             person.TotalOrders++;
                                                                             db.SaveChanges();
 
-                                                                            GreenColor("Sucess on buying Order");
+                                                                            ChangeColor("Sucess on buying Order", "Green");
                                                                             orderBuy = true;
                                                                             Console.ResetColor();
                                                                             Thread.Sleep(1500);
@@ -1396,33 +1396,25 @@ internal class RunProgram
         }
     }
 
-    public static void GreenColor<T>(T input)
+    // Denna metoden är till för att ändra färg på det som behövs
+    public static void ChangeColor<T>(T input, string color)
     {
-        Console.ForegroundColor = ConsoleColor.Green;
+        Console.ForegroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), color);
         Console.Write(input);
         Console.ResetColor();
     }
 
-    public static void RedColor<T>(T input)
+    // Denna är till för att ändra färg på priset där jag tycker det underlättar med att se en annan färg.
+    // Då jag använder ":C" efter input för att få "Currency" ifrån det datorn är inställd på.
+    // Så blir det fel om jag använder denna till allt annat
+    public static void ChangePriceColor<T>(T input, string color)
     {
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.Write(input);
-        Console.ResetColor();
-    }
-
-    static void DarkGreenColor<T>(T input)
-    {
-        Console.ForegroundColor = ConsoleColor.DarkGreen;
-        Console.Write(input);
-        Console.ResetColor();
-    }
-
-    static void DarkCyanColor<T>(T input)
-    {
-        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        Console.ForegroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), color);
         Console.Write($"{input:C}");
         Console.ResetColor();
     }
+
+    
     public static void ErrorMessage()
     {
         Console.WriteLine("Invalid input");

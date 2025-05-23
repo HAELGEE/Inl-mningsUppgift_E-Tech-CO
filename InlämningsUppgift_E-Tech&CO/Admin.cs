@@ -549,9 +549,9 @@ internal class Admin
                                         {
                                             Console.Clear();
                                             Console.Write("What do you want to do with ");
-                                            RunProgram.GreenColor("Customer:");
+                                            RunProgram.ChangeColor("Customer:", "Green");
                                             Console.ForegroundColor = ConsoleColor.DarkCyan;
-                                            Console.WriteLine($"Name: {customer.Name}   Lastname: {customer.LastName}   Age: {customer.Age}   Username: {customer.UserName}   Password: {customer.Password}   isAdmin: {customer.IsAdmin}   Logins: {customer.Logins}\n");
+                                            Console.WriteLine($"\nName: {customer.Name}   Lastname: {customer.LastName}   Age: {customer.Age}   Username: {customer.UserName}   Password: {customer.Password}   isAdmin: {customer.IsAdmin}   Logins: {customer.Logins}\n");
                                             Console.ResetColor();
                                             Console.WriteLine("1. Delete Customer");
                                             Console.WriteLine("2. Update Customer Name");
@@ -587,7 +587,7 @@ internal class Admin
                                                             var deleteCustomer = db.Customer.Where(x => x.Id == updateCustomerInformation)
                                                                                             .ExecuteDelete();
 
-                                                            RunProgram.RedColor("\nCustomer is now deleted from Database");
+                                                            RunProgram.ChangeColor("\nCustomer is now deleted from Database", "Red");
                                                             Thread.Sleep(1500);
                                                             db.SaveChanges();
                                                         }
@@ -608,7 +608,7 @@ internal class Admin
 
                                                             customer.Name = nameUpdate;
 
-                                                            RunProgram.GreenColor("Name updated");
+                                                            RunProgram.ChangeColor("Name updated", "Green");
                                                             Thread.Sleep(1500);
                                                             db.SaveChanges();
                                                         }
@@ -628,7 +628,7 @@ internal class Admin
 
                                                             customer.LastName = lastnameUpdate;
 
-                                                            RunProgram.GreenColor("Lastname updated");
+                                                            RunProgram.ChangeColor("Lastname updated", "Green");
                                                             Thread.Sleep(1500);
                                                             db.SaveChanges();
                                                         }
@@ -650,7 +650,7 @@ internal class Admin
                                                             if (int.TryParse(ageUpdate, out age) && age > 0 && !string.IsNullOrWhiteSpace(ageUpdate))
                                                             {
                                                                 customer.Age = age;
-                                                                RunProgram.GreenColor("Age updated");
+                                                                RunProgram.ChangeColor("Age updated", "Green");
                                                                 Thread.Sleep(1500);
                                                                 db.SaveChanges();
                                                             }
@@ -674,7 +674,7 @@ internal class Admin
 
                                                             customer.UserName = usernamUpdate;
 
-                                                            RunProgram.GreenColor("Username updated");
+                                                            RunProgram.ChangeColor("Username updated", "Green");
                                                             Thread.Sleep(1500);
                                                             db.SaveChanges();
                                                         }
@@ -694,7 +694,7 @@ internal class Admin
 
                                                             customer.Password = BC.EnhancedHashPassword(passwordUpdate, 14);
 
-                                                            RunProgram.GreenColor("Password updated");
+                                                            RunProgram.ChangeColor("Password updated", "Green");
                                                             Thread.Sleep(1500);
                                                             db.SaveChanges();
                                                         }
@@ -735,14 +735,13 @@ internal class Admin
                                                                 Thread.Sleep(1000);
                                                             }
 
-                                                            RunProgram.GreenColor("isAdmin updated");
+                                                            RunProgram.ChangeColor("isAdmin updated", "Green");
                                                             Thread.Sleep(1500);
                                                             db.SaveChanges();
 
                                                         }
                                                         break;
                                                 }
-
                                             }
                                             else
                                                 Console.WriteLine("Invalid Input");
@@ -769,11 +768,14 @@ internal class Admin
                                 Console.Clear();
                                 foreach (var orders in allOrders)
                                 {
-                                    Console.WriteLine($"UserName: {orders.Key}");
-                                    Console.WriteLine("-------------------------------");
+                                    Console.Write($"UserName: ");
+                                    RunProgram.ChangeColor($"{orders.Key}", "DarkGreen");
+                                    Console.WriteLine("\n-------------------------------");
                                     foreach (var item in orders)
                                     {
-                                        Console.WriteLine($"OrderID: {item.Id}  Order created: {item.Date}  Payment: {item.PaymentChoice.PadRight(17)}\tCollected: {item.Shipping}");
+                                        Console.Write($"OrderID: ");
+                                        RunProgram.ChangeColor($"{item.Id}", "DarkCyan");
+                                        Console.Write($" Order created: {item.Date}  Payment: {item.PaymentChoice.PadRight(17)}\tCollected: {item.Shipping}");
                                         Console.WriteLine("Products:");
                                         foreach (var product in item.Products)
                                         {
