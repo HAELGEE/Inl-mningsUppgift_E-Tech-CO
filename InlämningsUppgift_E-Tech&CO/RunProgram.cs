@@ -42,14 +42,14 @@ internal class RunProgram
 
                     List<string> top3List = new List<string>();
 
-                    var top3 = db.Shop.Where(x => x.IsActive == true)
+                    var top3 = await db.Shop.Where(x => x.IsActive == true)
                         .OrderByDescending(x => x.Sold)
-                        .Take(3).ToList();
+                        .Take(3).ToListAsync();
 
-                    var top3Category = db.Shop
+                    var top3Category = await db.Shop
                         .OrderByDescending(x => x.Sold)
                         .Where(x => x.IsActiveCategory != null)
-                        .Take(1).SingleOrDefault();
+                        .Take(1).SingleOrDefaultAsync();
 
                     // Här kommer logiken för att få fram vilken kategori som har mest sålda produkter
                     var allCategories = db.Shop.GroupBy(x => x.SubCategory);
@@ -63,7 +63,7 @@ internal class RunProgram
                         {
                             counter += product.Sold;
                         }
-                        topCategories.Add((key.Key, counter));
+                        topCategories.Add((key.Key!, counter));
                     }
                     var orderedList = topCategories.OrderByDescending(x => x.totalSold)
                     .Take(3);
@@ -77,7 +77,7 @@ internal class RunProgram
                         int i = 1;
                         foreach (var item in top3)
                         {
-                            top3List.Add($"Nr {i}. Product Name: {item.Name.PadRight(33)} Sold: {item.Sold} Price: {item.Price:C}/unit");
+                            top3List.Add($"Nr {i}. Product Name: {item.Name!.PadRight(33)} Sold: {item.Sold} Price: {item.Price:C}/unit");
                             i++;
                         }
                     }
@@ -285,7 +285,7 @@ internal class RunProgram
                             {
                                 Console.Clear();
                                 GUI.DrawWindow("Profile", 5, 10, new List<string>() {
-                                                $"1. Firstname: {person.Name}",
+                                                $"1. Firstname: {person!.Name}",
                                                 $"2. Lastname: {person.LastName}",
                                                 $"3. Age: {person.Age}",
                                                 $"4. Username: {person.UserName}",
@@ -312,7 +312,7 @@ internal class RunProgram
                                 {
                                     var oderHistory = db.Order.Include(x => x.Customer)
                                                     .Include(x => x.Products)
-                                                    .Where(x => x.Customer.UserName == isGuest.UserName);
+                                                    .Where(x => x.Customer!.UserName == isGuest.UserName);
                                     switch (updateNumber)
                                     {                                        
                                         case 1:
@@ -349,9 +349,9 @@ internal class RunProgram
                                                     Console.Write("-- ");
                                                     ChangeColor("Products ", "DarkGreen");
                                                     Console.WriteLine("--------------------------------------------");
-                                                    foreach (var product in item.Products)
+                                                    foreach (var product in item.Products!)
                                                     {
-                                                        Console.WriteLine($"{product.Name.PadRight(48)} Amount: {product.Amount} Price/Unit: {product.Price:C}");
+                                                        Console.WriteLine($"{product.Name!.PadRight(48)} Amount: {product.Amount} Price/Unit: {product.Price:C}");
                                                     }
                                                     Console.Write($"---- Shipping: ");
                                                     ChangePriceColor(item.ShippingFee, "DarkCyan");
@@ -466,7 +466,7 @@ internal class RunProgram
                                 {
                                     // Då jag inte börjar ifrån 0 med min text så får jag ta med -1 för att få det till rätt Index
                                     if (counter == validNum - 1)
-                                        categoryName = cate.Key;
+                                        categoryName = cate.Key!;
 
                                     counter++;
                                 }
@@ -495,7 +495,7 @@ internal class RunProgram
                                         {
                                             foreach (var product in gettingProductName)
                                             {
-                                                Console.WriteLine($"ID: {product.Id} - In stock: {product.Quantity.ToString().PadRight(2)} - {product.Name}");
+                                                Console.WriteLine($"ID: {product.Id} - In stock: {product.Quantity.ToString()!.PadRight(2)} - {product.Name}");
                                             }
                                             Console.WriteLine();
                                             // Så man inte kan lägga i varukorgen när man inte är inloggad
@@ -550,7 +550,7 @@ internal class RunProgram
                                                         var itemToBuy = db.Shop.Where(s => s.Id == intToCart)
                                                                                 .SingleOrDefault();
 
-                                                        if (intAmountAdd <= itemToBuy.Quantity)
+                                                        if (intAmountAdd <= itemToBuy!.Quantity)
                                                         {
                                                             bool nameCheck = false;
                                                             if (!cartProducts.IsNullOrEmpty())
@@ -581,7 +581,7 @@ internal class RunProgram
                                                             foreach (var product in cartProducts)
                                                             {
                                                                 totalAmount += Convert.ToDouble(product.Amount * product.Price);
-                                                                cartProductsInString.Add($"Name: {product.Name.PadRight(51)}\t Amount: {product.Amount}, Price: {(product.Price * product.Amount)}");
+                                                                cartProductsInString.Add($"Name: {product.Name!.PadRight(51)}\t Amount: {product.Amount}, Price: {(product.Price * product.Amount)}");
                                                                 if (product.Name == itemToBuy.Name)
                                                                     itemToBuy.Quantity -= product.Amount;
                                                             }
@@ -744,7 +744,7 @@ internal class RunProgram
                             var itemToBuy = db.Shop.Where(s => s.Id == addToOrder)
                                                     .SingleOrDefault();
 
-                            if (amount <= itemToBuy.Quantity)
+                            if (amount <= itemToBuy!.Quantity)
                             {
                                 bool nameCheck = false;
                                 if (!cartProducts.IsNullOrEmpty())
@@ -775,7 +775,7 @@ internal class RunProgram
                                 foreach (var product in cartProducts)
                                 {
                                     totalAmount += Convert.ToDouble(product.Amount * product.Price);
-                                    cartProductsInString.Add($"Name: {product.Name.PadRight(51)}\t Amount: {product.Amount}, Price: {(product.Price * product.Amount)}");
+                                    cartProductsInString.Add($"Name: {product.Name!.PadRight(51)}\t Amount: {product.Amount}, Price: {(product.Price * product.Amount)}");
                                     if (product.Name == itemToBuy.Name)
                                         itemToBuy.Quantity -= product.Amount;
                                 }
@@ -863,7 +863,7 @@ internal class RunProgram
                 Console.WriteLine("-- Cart --------------------------");
                 for (int i = 0; i < cartProducts.Count; i++)
                 {
-                    Console.WriteLine($"Product Name: {cartProducts[i].Name.PadRight(48)}\t Amount: {cartProducts[i].Amount}\t Price: {cartProducts[i].Price:C}");
+                    Console.WriteLine($"Product Name: {cartProducts[i].Name!.PadRight(48)}\t Amount: {cartProducts[i].Amount}\t Price: {cartProducts[i].Price:C}");
                     totalprice += (cartProducts[i].Price * cartProducts[i].Amount);
                 }
                 if (cartProducts.Count == 0)
@@ -912,7 +912,7 @@ internal class RunProgram
                                 Console.WriteLine("--------------------------");
                                 for (int i = 0; i < cartProducts.Count; i++)
                                 {
-                                    Console.WriteLine($"Id.{i + 1} {cartProducts[i].Name.PadRight(48)} Amount: {cartProducts[i].Amount}");
+                                    Console.WriteLine($"Id.{i + 1} {cartProducts[i].Name!.PadRight(48)} Amount: {cartProducts[i].Amount}");
                                 }
                                 Console.WriteLine("--------------------------\n");
                                 Console.WriteLine("B to Back");
@@ -926,7 +926,7 @@ internal class RunProgram
                                     for (int i = 0; i < cartProducts.Count; i++)
                                     {
                                         if (i == numberInList - 1)
-                                            nameCheck = cartProducts[i].Name;
+                                            nameCheck = cartProducts[i].Name!;
                                     }
                                     while (true)
                                     {
@@ -937,7 +937,7 @@ internal class RunProgram
                                         var singleProduct = db.Shop.Where(x => x.Name == nameCheck).SingleOrDefault();
                                         foreach (var item in cartProducts)
                                         {
-                                            if (item.Name.Contains(singleProduct.Name))
+                                            if (item.Name!.Contains(singleProduct!.Name!))
                                             {
                                                 Console.Write("Amount: ");
                                                 Console.ForegroundColor = ConsoleColor.DarkCyan;
@@ -974,7 +974,7 @@ internal class RunProgram
                                                 case 1:
                                                     foreach (var item in cartProducts)
                                                     {
-                                                        if (item.Name.Contains(singleProduct.Name) && 0 < singleProduct.Quantity)
+                                                        if (item.Name!.Contains(singleProduct!.Name!) && 0 < singleProduct.Quantity)
                                                         {
                                                             item.Amount++;
                                                             singleProduct.Quantity--;
@@ -992,7 +992,7 @@ internal class RunProgram
                                                 case 2:
                                                     foreach (var item in cartProducts)
                                                     {
-                                                        if (item.Name.Contains(singleProduct.Name) && item.Amount > 0)
+                                                        if (item.Name!.Contains(singleProduct!.Name!) && item.Amount > 0)
                                                         {
                                                             item.Amount--;
                                                             singleProduct.Quantity++;
@@ -1013,7 +1013,7 @@ internal class RunProgram
                                             foreach (var product in cartProducts)
                                             {
                                                 totalAmount += Convert.ToDouble(product.Amount * product.Price);
-                                                cartProductsInString.Add(new string($"Name: {product.Name.PadRight(51)}\t Amount: {product.Amount}, Price: {(product.Price * product.Amount)}"));
+                                                cartProductsInString.Add(new string($"Name: {product.Name!.PadRight(51)}\t Amount: {product.Amount}, Price: {(product.Price * product.Amount)}"));
                                             }
                                             cartProductsInString.Add($"---------------------------------------------------");
                                             cartProductsInString.Add($"Press C to cancel order or press O to enter Order");
@@ -1037,7 +1037,7 @@ internal class RunProgram
                                 Console.WriteLine("--------------------------");
                                 for (int i = 0; i < cartProducts.Count; i++)
                                 {
-                                    Console.WriteLine($"Id.{i + 1} {cartProducts[i].Name.PadRight(48)} Amount: {cartProducts[i].Amount}");
+                                    Console.WriteLine($"Id.{i + 1} {cartProducts[i].Name!.PadRight(48)} Amount: {cartProducts[i].Amount}");
                                 }
                                 Console.WriteLine("--------------------------\n");
                                 Console.WriteLine("B to Back");
@@ -1054,7 +1054,7 @@ internal class RunProgram
                                     {
                                         if (i == numberToDelete - 1)
                                         {
-                                            productNameCheck = cartProducts[i].Name;
+                                            productNameCheck = cartProducts[i].Name!;
                                             productDelete = true;
                                             totalprice -= cartProducts[i].Price * cartProducts[i].Amount;
                                         }
@@ -1063,7 +1063,7 @@ internal class RunProgram
 
                                     if (productDelete)
                                     {
-                                        singleProduct.Quantity += cartProducts[numberToDelete - 1].Amount;
+                                        singleProduct!.Quantity += cartProducts[numberToDelete - 1].Amount;
                                         cartProducts.RemoveAt(numberToDelete - 1);
                                         if (cartProducts.Count() == 0)
                                         {
@@ -1099,7 +1099,7 @@ internal class RunProgram
                                 {
                                     amountOfProducts += item.Amount;
                                     totalPriceCheckout += item.Amount * item.Price;
-                                    Console.WriteLine($"{item.Name.PadRight(48)} Amount: {item.Amount} - Price/Unit: {item.Price:C} - Price*Amount: {item.Price * item.Amount:C}");
+                                    Console.WriteLine($"{item.Name!.PadRight(48)} Amount: {item.Amount} - Price/Unit: {item.Price:C} - Price*Amount: {item.Price * item.Amount:C}");
                                 }
                                 Console.Write($"Total Price: ");
                                 Console.ForegroundColor = ConsoleColor.DarkCyan;
@@ -1211,7 +1211,7 @@ internal class RunProgram
                                                                         }
                                                                     }
 
-                                                                    person.TotalOrders++;
+                                                                    person!.TotalOrders++;
                                                                     db.SaveChanges();
 
                                                                     ChangeColor("Sucess on buying Order", "Green");
@@ -1340,7 +1340,7 @@ internal class RunProgram
                                                                                 }
                                                                             }
 
-                                                                            person.TotalOrders++;
+                                                                            person!.TotalOrders++;
                                                                             db.SaveChanges();
 
                                                                             ChangeColor("Sucess on buying Order", "Green");

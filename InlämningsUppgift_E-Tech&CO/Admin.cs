@@ -28,7 +28,6 @@ internal class Admin
             {
                 Console.Clear();
 
-                bool validInput = false;
                 int userInput = 0;
                 Console.Clear();
 
@@ -54,6 +53,7 @@ internal class Admin
                 var categorySearch = await db.Shop.OrderBy(i => i.Id)
                                             .GroupBy(c => new { c.Category, c.SubCategory })
                                             .ToListAsync();
+
                 if (int.TryParse(input, out userInput) && userInput > 0 && userInput < 13)
                 {
 
@@ -203,7 +203,7 @@ internal class Admin
                                         string alterCheck = Console.ReadLine()!;
                                         if (int.TryParse(alterCheck, out updateStock) && updateStock != 0)
                                         {
-                                            if (updateItem.Quantity >= 0)
+                                            if (updateItem!.Quantity >= 0)
                                                 updateItem.Quantity = updateItem.Quantity + updateStock;
                                             else
                                                 Console.WriteLine("You cant have negative in your balance");
@@ -227,7 +227,7 @@ internal class Admin
                                 var updateItem = db.Shop.Where(x => x.Id == updatePrice).SingleOrDefault();
                                 if (int.TryParse(priceCheck, out updatePrice) && updatePrice > 0 && !string.IsNullOrWhiteSpace(priceCheck))
                                 {
-                                    if (updateItem.Price > 0)
+                                    if (updateItem!.Price > 0)
                                         updateItem.Price = updateItem.Price + updatePrice;
                                     else
                                         Console.WriteLine("Cant be negative in price");
@@ -257,8 +257,8 @@ internal class Admin
 
                                     if (categoryChange != "" && subCategoryChange != "")
                                     {
-                                        categoryAndSub.Category = categoryChange;
-                                        categoryAndSub.SubCategory = subCategoryChange;
+                                        categoryAndSub!.Category = categoryChange;
+                                        categoryAndSub!.SubCategory = subCategoryChange;
                                     }
                                 }
                             }
@@ -307,7 +307,7 @@ internal class Admin
                                                 var selectedCategory = allCategory[intInputDelete - 1].Key;
 
                                                 var cateToDelete = db.Shop.Where(x => x.Category == selectedCategory).SingleOrDefault();
-                                                db.Shop.Remove(cateToDelete);
+                                                db.Shop.Remove(cateToDelete!);
                                                 db.SaveChanges();
 
                                                 Console.WriteLine("Category Deleted");
@@ -343,7 +343,7 @@ internal class Admin
                                                 var selectedCategory = allSubcategory[intInputDelete - 1].Key;
 
                                                 var cateToDelete = db.Shop.Where(x => x.SubCategory == selectedCategory).SingleOrDefault();
-                                                db.Shop.Remove(cateToDelete);
+                                                db.Shop.Remove(cateToDelete!);
                                                 db.SaveChanges();
 
                                                 Console.WriteLine("Subcategory Deleted");
@@ -376,7 +376,7 @@ internal class Admin
                                     var productNameUpdate = db.Shop.Where(x => x.Id == updateProductName).SingleOrDefault();
                                     Console.Write("What do you want to update the name to?: ");
                                     string productNameInfo = Console.ReadLine()!;
-                                    productNameUpdate.Name = productNameInfo;
+                                    productNameUpdate!.Name = productNameInfo;
                                 }
                             }
 
@@ -399,7 +399,7 @@ internal class Admin
                                     Console.Clear();
 
                                     var productInfo = db.Shop.Where(x => x.Id == updateProductInformation).SingleOrDefault();
-                                    Console.WriteLine($"Product: {productInfo.Name}");
+                                    Console.WriteLine($"Product: {productInfo!.Name}");
                                     Console.Write($"Information about the product: ");
                                     Console.ForegroundColor = ConsoleColor.Blue;
                                     Console.WriteLine(productInfo.ProductInformation + "\n");
@@ -551,7 +551,7 @@ internal class Admin
                                             Console.Write("What do you want to do with ");
                                             RunProgram.ChangeColor("Customer:", "Green");
                                             Console.ForegroundColor = ConsoleColor.DarkCyan;
-                                            Console.WriteLine($"\nName: {customer.Name}   Lastname: {customer.LastName}   Age: {customer.Age}   Username: {customer.UserName}   Password: {customer.Password}   isAdmin: {customer.IsAdmin}   Logins: {customer.Logins}\n");
+                                            Console.WriteLine($"\nName: {customer!.Name}   Lastname: {customer.LastName}   Age: {customer.Age}   Username: {customer.UserName}   isAdmin: {customer.IsAdmin}   Logins: {customer.Logins}\n");
                                             Console.ResetColor();
                                             Console.WriteLine("1. Delete Customer");
                                             Console.WriteLine("2. Update Customer Name");
@@ -759,7 +759,7 @@ internal class Admin
 
                             var allOrders = db.Order.Include(a => a.Customer)
                                 .Include(a => a.Products)
-                                .GroupBy(x => x.Customer.UserName);
+                                .GroupBy(x => x.Customer!.UserName);
 
                             if (allOrders.Count() == 0)
                                 Console.WriteLine("The orderlist is empty at the moment");
@@ -775,11 +775,11 @@ internal class Admin
                                     {
                                         Console.Write($"OrderID: ");
                                         RunProgram.ChangeColor($"{item.Id}", "DarkCyan");
-                                        Console.Write($" Order created: {item.Date}  Payment: {item.PaymentChoice.PadRight(17)}\tCollected: {item.Shipping}");
+                                        Console.Write($" Order created: {item.Date}  Payment: {item.PaymentChoice!.PadRight(17)}\tCollected: {item.Shipping}");
                                         Console.WriteLine("Products:");
-                                        foreach (var product in item.Products)
+                                        foreach (var product in item.Products!)
                                         {
-                                            Console.WriteLine($"Name: {product.Name.PadRight(48)} Amount: {product.Amount} - Price: {product.Price:C}");
+                                            Console.WriteLine($"Name: {product.Name!.PadRight(48)} Amount: {product.Amount} - Price: {product.Price:C}");
 
                                         }
                                         Console.WriteLine($"------ Shipping: {item.ShippingFee:C} ------ Taxes: {Convert.ToInt32((item.TotalAmountPrice - item.ShippingFee) * 0.25):C} ------ Total Price: {item.TotalAmountPrice:C} ------");
@@ -849,7 +849,7 @@ internal class Admin
                                         {
                                             counter += product.Sold;
                                         }
-                                        topCategories.Add((key.Key, counter));
+                                        topCategories.Add((key.Key!, counter));
                                     }
 
                                     var orderedList = topCategories.OrderByDescending(x => x.totalSold);
