@@ -91,8 +91,6 @@ internal class RunProgram
                         }
                     }
 
-
-
                     GUI.DrawWindow("Top3", 40, 13, top3List);
 
                     Console.CursorLeft = 0;
