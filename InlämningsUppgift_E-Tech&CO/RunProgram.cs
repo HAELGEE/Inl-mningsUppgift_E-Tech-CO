@@ -356,7 +356,9 @@ internal class RunProgram
                                 .OrderByDescending(x => x.Sold)
                                 .Take(3);
 
-                            var items = db.Shop.GroupBy(x => x.Category);
+                            //var items = db.Shop.ToList().GroupBy(x => x.ProductCategoryId);
+                            var gettingName = db.ProductCategory.ToList().GroupBy(x => x.ProductCategoryId);
+
                             Console.Clear();
 
                             if (isGuest.LoggedIn)
@@ -367,11 +369,14 @@ internal class RunProgram
 
                             int validNum = 0;
                             int categoryNum = 0;
-                            foreach (var cat in items)
+                            foreach (var key in gettingName)
                             {
                                 categoryNum++;
-                                Console.WriteLine($"{categoryNum}. Category: {cat.Key}");
-                                Console.WriteLine("----------------------");
+                                foreach (var prod in key)
+                                {
+                                    Console.WriteLine($"{categoryNum}. Category: {prod.ProductCategoryName}");
+                                    Console.WriteLine("----------------------");
+                                }
                             }
                             categoryNum++;
                             Console.WriteLine($"{categoryNum}. to search for a Product by name\n");
@@ -405,8 +410,8 @@ internal class RunProgram
                             else if (int.TryParse(numberCheck, out validNum))
                             {
                                 int counter = 0;
-                                string categoryName = "";
-                                foreach (var cate in items)
+                                int categoryName = 0;
+                                foreach (var cate in gettingName)
                                 {
                                     // Då jag inte börjar ifrån 0 med min text så får jag ta med -1 för att få det till rätt Index
                                     if (counter == validNum - 1)
@@ -415,7 +420,7 @@ internal class RunProgram
                                     counter++;
                                 }
 
-                                if (!string.IsNullOrWhiteSpace(categoryName))
+                                if (categoryName != null)
                                     await GettingProducts(categoryName);
 
                                 else if (validNum == categoryNum)
@@ -599,9 +604,9 @@ internal class RunProgram
                 .Take(1).SingleOrDefault();
 
             // Här kommer logiken för att få fram vilken kategori som har mest sålda produkter
-            var allCategories = db.Shop.GroupBy(x => x.SubCategory);
+            var allCategories = db.Shop.GroupBy(x => x.ProductSubcategoryId);
 
-            List<(string Category, int? totalSold)> topCategories = new List<(string, int?)>(); // Tillfälligt skapad Lista för att sortera ut
+            List<(int? Category, int? totalSold)> topCategories = new List<(int?, int?)>(); // Tillfälligt skapad Lista för att sortera ut
 
             foreach (var key in allCategories)
             {
@@ -666,7 +671,7 @@ internal class RunProgram
         Console.WriteLine();
         Console.ResetColor();
     }
-    static async Task GettingProducts(string categoryName)
+    static async Task GettingProducts(int categoryName)
     {
         int addToOrder = 0;
 
@@ -805,55 +810,50 @@ internal class RunProgram
             }
         }
     }
-    static void ShopItems(string categoryName)
+    static void ShopItems(int categoryName)
     {
         using (var db = new MyDbContext())
         {
-            var itemsSubcategory = db.Shop.Where(cn => cn.Category == categoryName)
-                                                .OrderBy(cn => cn.Id)
-                                                .ThenBy(cn => cn.SubCategory)
-                                                .GroupBy(sc => sc.SubCategory);
+            var gettingProducts = db.Shop.Where(x => x.ProductCategoryId == categoryName).ToList().GroupBy(x => x.ProductSubcategoryId);
 
             Console.Clear();
 
             // Denna loopen skriver ut listan så man ser vad man kan köpa
-            foreach (var sub in itemsSubcategory)
+            foreach (var products in gettingProducts)
             {
-                if (sub.Key! != null)
+                var gettingSubcategoryName = db.ProductSubcategory.Where(x => x.ProductSubcategoryId == products.Key).SingleOrDefault();
+                var getProducts = db.Shop.Where(x => x.ProductSubcategoryId == products.Key);
+
+                Console.WriteLine($"Category: {gettingSubcategoryName!.ProductSubcategoryName}\n----------------------");
+
+                foreach (var item in getProducts)
                 {
-                    Console.WriteLine($"Category: {sub.Key}\n----------------------");
+                    Console.Write($"{item.Id}. Name: {item.Name}  -  Total in stock: ");
 
-                    foreach (var item in sub)
+                    if (item.Quantity > 0)
                     {
-                        if (item.Name != null)
-                        {
-                            Console.Write($"{item.Id}. Name: {item.Name}  -  Total in stock: ");
-
-                            if (item.Quantity > 0)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Green;
-                                Console.WriteLine($"{item.Quantity}");
-                            }
-                            else
-                            {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine($"{item.Quantity}");
-                            }
-                            Console.ResetColor();
-
-                            Console.Write($"Product info:");
-
-                            Console.ForegroundColor = ConsoleColor.Blue;
-                            Console.Write($" {item.ProductInformation} ");
-                            Console.ResetColor();
-                            Console.Write("Price: ");
-                            Console.ForegroundColor = ConsoleColor.Magenta;
-                            Console.WriteLine($"{item.Price:C}");
-                            Console.ResetColor();
-                        }
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"{item.Quantity}");
                     }
-                    Console.WriteLine("---------------------------");
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"{item.Quantity}");
+                    }
+                    Console.ResetColor();
+
+                    Console.Write($"Product info:");
+
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.Write($" {item.ProductInformation} ");
+                    Console.ResetColor();
+                    Console.Write("Price: ");
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                    Console.WriteLine($"{item.Price:C}");
+                    Console.ResetColor();
                 }
+
+                Console.WriteLine("---------------------------");
             }
         }
     }

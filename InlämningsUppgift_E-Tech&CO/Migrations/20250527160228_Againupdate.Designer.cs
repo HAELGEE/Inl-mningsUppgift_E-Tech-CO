@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InlämningsUppgift_E_Tech_CO.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20250527095848_First")]
-    partial class First
+    [Migration("20250527160228_Againupdate")]
+    partial class Againupdate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -234,7 +234,7 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
 
                     b.HasIndex("ProductCategoryId");
 
-                    b.ToTable("ProductSubCategory");
+                    b.ToTable("ProductSubcategory");
                 });
 
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Shop", b =>
@@ -244,9 +244,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Category")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ExpressShipping")
                         .HasColumnType("int");
@@ -263,8 +260,14 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Property<double?>("Price")
                         .HasColumnType("float");
 
+                    b.Property<int>("ProductCategoryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ProductInformation")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProductSubcategoryId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("Quantity")
                         .HasColumnType("int");
@@ -275,27 +278,11 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Property<int?>("Sold")
                         .HasColumnType("int");
 
-                    b.Property<string>("SubCategory")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
+                    b.HasIndex("ProductCategoryId");
+
                     b.ToTable("Shop");
-                });
-
-            modelBuilder.Entity("ProductCategoryShop", b =>
-                {
-                    b.Property<int>("ProductCategoriesProductCategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ShopId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ProductCategoriesProductCategoryId", "ShopId");
-
-                    b.HasIndex("ShopId");
-
-                    b.ToTable("ProductCategoryShop");
                 });
 
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.CustomerSave", b =>
@@ -346,22 +333,17 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 {
                     b.HasOne("InlämningsUppgift_E_Tech_CO.Models.ProductCategory", "ProductCategory")
                         .WithMany("ProductSubcategories")
-                        .HasForeignKey("ProductCategoryId");
+                        .HasForeignKey("ProductCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("ProductCategory");
                 });
 
-            modelBuilder.Entity("ProductCategoryShop", b =>
+            modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Shop", b =>
                 {
                     b.HasOne("InlämningsUppgift_E_Tech_CO.Models.ProductCategory", null)
-                        .WithMany()
-                        .HasForeignKey("ProductCategoriesProductCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("InlämningsUppgift_E_Tech_CO.Models.Shop", null)
-                        .WithMany()
-                        .HasForeignKey("ShopId")
+                        .WithMany("Shop")
+                        .HasForeignKey("ProductCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -383,6 +365,8 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.ProductCategory", b =>
                 {
                     b.Navigation("ProductSubcategories");
+
+                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Shop", b =>

@@ -46,29 +46,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Shop",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Category = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SubCategory = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Sold = table.Column<int>(type: "int", nullable: true),
-                    Quantity = table.Column<int>(type: "int", nullable: true),
-                    Price = table.Column<double>(type: "float", nullable: true),
-                    ProductInformation = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: true),
-                    IsActiveCategory = table.Column<int>(type: "int", nullable: true),
-                    RegularShipping = table.Column<int>(type: "int", nullable: true),
-                    ExpressShipping = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Shop", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "CustomerSave",
                 columns: table => new
                 {
@@ -136,27 +113,56 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductCategoryShop",
+                name: "Shop",
                 columns: table => new
                 {
-                    ProductCategoriesProductCategoryId = table.Column<int>(type: "int", nullable: false),
-                    ShopId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Category = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SubCategory = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProductCategoryId = table.Column<int>(type: "int", nullable: false),
+                    ProductSubcategoryId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Sold = table.Column<int>(type: "int", nullable: true),
+                    Quantity = table.Column<int>(type: "int", nullable: true),
+                    Price = table.Column<double>(type: "float", nullable: true),
+                    ProductInformation = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: true),
+                    IsActiveCategory = table.Column<int>(type: "int", nullable: true),
+                    RegularShipping = table.Column<int>(type: "int", nullable: true),
+                    ExpressShipping = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductCategoryShop", x => new { x.ProductCategoriesProductCategoryId, x.ShopId });
+                    table.PrimaryKey("PK_Shop", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProductCategoryShop_ProductCategory_ProductCategoriesProductCategoryId",
-                        column: x => x.ProductCategoriesProductCategoryId,
+                        name: "FK_Shop_ProductCategory_ProductCategoryId",
+                        column: x => x.ProductCategoryId,
                         principalTable: "ProductCategory",
                         principalColumn: "ProductCategoryId",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Product",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Amount = table.Column<int>(type: "int", nullable: true),
+                    Price = table.Column<double>(type: "float", nullable: true),
+                    OrderItemId = table.Column<int>(type: "int", nullable: true),
+                    OrderId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Product", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProductCategoryShop_Shop_ShopId",
-                        column: x => x.ShopId,
-                        principalTable: "Shop",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_Product_Order_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Order",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -184,28 +190,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                         principalTable: "Shop",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Product",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Amount = table.Column<int>(type: "int", nullable: true),
-                    Price = table.Column<double>(type: "float", nullable: true),
-                    OrderItemId = table.Column<int>(type: "int", nullable: true),
-                    OrderId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Product", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Product_Order_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Order",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -240,13 +224,13 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductCategoryShop_ShopId",
-                table: "ProductCategoryShop",
-                column: "ShopId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ProductSubCategory_ProductCategoryId",
                 table: "ProductSubCategory",
+                column: "ProductCategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Shop_ProductCategoryId",
+                table: "Shop",
                 column: "ProductCategoryId");
         }
 
@@ -263,16 +247,13 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 name: "Product");
 
             migrationBuilder.DropTable(
-                name: "ProductCategoryShop");
-
-            migrationBuilder.DropTable(
                 name: "ProductSubCategory");
 
             migrationBuilder.DropTable(
-                name: "Order");
+                name: "Shop");
 
             migrationBuilder.DropTable(
-                name: "Shop");
+                name: "Order");
 
             migrationBuilder.DropTable(
                 name: "ProductCategory");

@@ -15,9 +15,10 @@ internal class Shop
     }
 
     public int Id { get; set; }
-    public string? Category { get; set; }
-    public string? SubCategory { get; set; }
-    public virtual ICollection<ProductCategory> ProductCategories { get; set; } = new List<ProductCategory>();
+    //public string? Category { get; set; }
+    //public string? SubCategory { get; set; }
+    public int ProductCategoryId { get; set; }
+    public int ProductSubcategoryId { get; set; }
     public string? Name { get; set; }
     public int? Sold { get; set; }
     public int? Quantity { get; set; }

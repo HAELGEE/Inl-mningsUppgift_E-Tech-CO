@@ -4,6 +4,7 @@ using InlämningsUppgift_E_Tech_CO.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InlämningsUppgift_E_Tech_CO.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250527113356_Update")]
+    partial class Update
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -231,7 +234,7 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
 
                     b.HasIndex("ProductCategoryId");
 
-                    b.ToTable("ProductSubcategory");
+                    b.ToTable("ProductSubCategory");
                 });
 
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Shop", b =>
@@ -330,8 +333,7 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 {
                     b.HasOne("InlämningsUppgift_E_Tech_CO.Models.ProductCategory", "ProductCategory")
                         .WithMany("ProductSubcategories")
-                        .HasForeignKey("ProductCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ProductCategoryId");
 
                     b.Navigation("ProductCategory");
                 });

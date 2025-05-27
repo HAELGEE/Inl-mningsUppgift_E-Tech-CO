@@ -8,11 +8,6 @@ using System.Threading.Tasks;
 namespace InlämningsUppgift_E_Tech_CO.Models;
 internal class ProductSubcategory
 {
-    public ProductSubcategory(string productSubcategoryName)
-    {
-        ProductSubcategoryName = productSubcategoryName;
-    }
-
     public int ProductSubcategoryId { get; set; }                  
     public string? ProductSubcategoryName { get; set; }
     public int? ProductCategoryId { get; set; }     // Foreign Key till ProductCategory
