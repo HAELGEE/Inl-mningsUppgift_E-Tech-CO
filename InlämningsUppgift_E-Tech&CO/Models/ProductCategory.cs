@@ -9,13 +9,13 @@ internal class ProductCategory
 {
     public ProductCategory(string productCategoryName)
     {
-        ProductCategoryName = productCategoryName;
-        ShopId = 1;
+        ProductCategoryName = productCategoryName;        
     }
 
     public int ProductCategoryId { get; set; }
     public string? ProductCategoryName { get; set; }
     public virtual ICollection<ProductSubcategory> ProductSubcategories { get; set; } = new List<ProductSubcategory>();
-    public int? ShopId { get; set; }     // Foreign Key till ProductCategory
-    public virtual Shop? Shop { get; set; }  // Navigation property till ProductCategory
+    public virtual ICollection<Shop> Shop { get; set; } = new List<Shop>();
+    //public int? ShopId { get; set; }     // Foreign Key till ProductCategory
+    //public virtual Shop? Shop { get; set; }  // Navigation property till ProductCategory
 }
