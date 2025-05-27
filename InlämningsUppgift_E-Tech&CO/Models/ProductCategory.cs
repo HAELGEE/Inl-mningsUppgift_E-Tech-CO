@@ -9,7 +9,8 @@ internal class ProductCategory
 {
     public ProductCategory(string productCategoryName)
     {
-        ProductCategoryName = productCategoryName;        
+        ProductCategoryName = productCategoryName;
+        //ShopId = 1;
     }
 
     public int ProductCategoryId { get; set; }
