@@ -22,7 +22,7 @@ internal class RunProgram
     static List<string> cartProductsInString = new List<string>();
     static double totalAmount = 0;
     static ICustomer isGuest = new Customer();
-    static bool orderBuy = false; // Denna boolen är bara till för att, när man köpt en order skall hamna i menyn istället för i shoppen.
+    static bool orderBuy = false; // Denna boolen är bara till för att, när man köpt en order, skall hamna i menyn istället för i shoppen.
     public static async Task RunningProgram()
     {
         bool running = true;
@@ -40,6 +40,7 @@ internal class RunProgram
                     WelcomeMessage();       // Skrivet ut ett välkomstmeddelande
                     CompanyName();          // Skriver ut Företagsnamnet
 
+                    Admin.UpdatingTop3();
                     showTop3();             // Skriver ut Top3 Information
 
                     Console.WriteLine($"What do you want to do?");
@@ -593,7 +594,7 @@ internal class RunProgram
         using (var db = new MyDbContext())
         {
             List<string> top3List = new List<string>();
-
+            
             var top3 = db.Shop.Where(x => x.IsActive == true)
                 .OrderByDescending(x => x.Sold)
                 .Take(3).ToList();
@@ -638,7 +639,8 @@ internal class RunProgram
                 int i = 1;
                 foreach (var item in orderedList)
                 {
-                    top3List.Add($"Nr {i}. Subcategory/Maker: {item.Category}");
+                    var selectedCategory = db.ProductSubcategory.Where(x => x.ProductSubcategoryId == item.Category).SingleOrDefault();
+                    top3List.Add($"Nr {i}. Subcategory/Maker: {selectedCategory!.ProductSubcategoryName}");
                     i++;
                 }
             }

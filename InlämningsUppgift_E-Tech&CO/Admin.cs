@@ -488,7 +488,7 @@ internal class Admin
                                                         db.SaveChanges();
                                                         break;
                                                     }
-                                                    
+
                                                 }
                                             }
                                         }
@@ -497,7 +497,7 @@ internal class Admin
                                             var subcategoryUpdate = db.ProductSubcategory.Where(x => x.ProductCategoryId == updateCategory).SingleOrDefault();
 
                                             Console.Write($"Which Subcategory do u want to change to?: ");
-                                            string subCategoryChange = Console.ReadLine()!;                                            
+                                            string subCategoryChange = Console.ReadLine()!;
 
                                             if (!string.IsNullOrWhiteSpace(subCategoryChange))
                                             {
@@ -517,7 +517,7 @@ internal class Admin
                                     }
                                 }
                             }
-                            
+
                             break;
 
                         case 9:
@@ -540,7 +540,7 @@ internal class Admin
                                     if (intDeleteCategory == 1)
                                     {
                                         while (true)
-                                        {                                            
+                                        {
                                             Console.Clear();
                                             var allCategory = db.ProductCategory.Select(x => new { x.ProductCategoryId, x.ProductCategoryName })
                                                 .OrderBy(x => x.ProductCategoryId)
@@ -550,7 +550,7 @@ internal class Admin
                                             Console.WriteLine("Which do you want to Delete?");
                                             foreach (var cate in allCategory)
                                             {
-                                                Console.WriteLine($"{cate.ProductCategoryId}. {cate.ProductCategoryName}");                                                
+                                                Console.WriteLine($"{cate.ProductCategoryId}. {cate.ProductCategoryName}");
                                             }
                                             string inputDelete = Console.ReadLine()!;
                                             int intInputDelete = 0;
@@ -565,8 +565,8 @@ internal class Admin
                                                 var cateToDelete = db.ProductCategory.Where(x => x.ProductCategoryId == selectedCategory.ProductCategoryId).SingleOrDefault();
                                                 db.ProductCategory.Remove(cateToDelete!);
                                                 db.SaveChanges();
-                                                
-                                                RunProgram.ChangeColor("Category have been succefully Deleted", "Green");                                                
+
+                                                RunProgram.ChangeColor("Category have been succefully Deleted", "Green");
                                                 Thread.Sleep(1500);
                                             }
                                             else
@@ -994,102 +994,7 @@ internal class Admin
                             break;
 
                         case 13:
-                            while (true)
-                            {
-                                Console.Clear();
-                                Console.WriteLine("What do you want to show on top3?");
-                                Console.WriteLine("1. Best selling products");
-                                Console.WriteLine("2. Best Selling SubCategory/Maker");
-                                Console.WriteLine("B to Back");
-                                string stringTop = Console.ReadLine()!;
-                                int intTop = 0;
-
-                                if (stringTop.ToLower() == "b")
-                                    break;
-
-
-
-                                var resetTop = db.Shop.OrderByDescending(x => x.IsActiveCategory)
-                                    .ToList();
-
-                                if (int.TryParse(stringTop, out intTop) && intTop == 1)
-                                {
-                                    var topSellers = db.Shop
-                                        .OrderByDescending(x => x.Sold)
-                                        .Take(3).ToList();
-
-                                    foreach (var reset in resetTop)
-                                    {
-                                        reset.IsActive = false;
-                                        reset.IsActiveCategory = null;
-                                    }
-                                    db.SaveChanges();
-
-                                    foreach (var sell in topSellers)
-                                    {
-                                        sell.IsActive = true;
-                                        sell.IsActiveCategory = 1;
-                                    }
-                                    db.SaveChanges();
-
-                                    Console.ForegroundColor = ConsoleColor.Green;
-                                    Console.WriteLine("Top3 Succefully updated");
-                                    Console.ResetColor();
-                                    Thread.Sleep(1500);
-                                }
-                                else if (int.TryParse(stringTop, out intTop) && intTop == 2)
-                                {
-                                    // Här kommer logiken för att få fram vilken kategori som har mest sålda produkter
-                                    var allCategories = db.Shop.GroupBy(x => x.ProductSubcategoryId).ToList();
-
-
-                                    List<(int? Subcategory, int? totalSold)> topCategories = new List<(int?, int?)>(); // Tillfälligt skapad Lista för att sortera ut
-
-                                    foreach (var key in allCategories)
-                                    {
-
-                                        int? counter = 0;
-                                        foreach (var product in key)
-                                        {
-                                            counter += product.Sold;
-                                        }
-                                        topCategories.Add((key.Key, counter));
-                                    }
-
-                                    var orderedList = topCategories.OrderByDescending(x => x.totalSold);
-
-                                    foreach (var reset in resetTop)
-                                    {
-                                        reset.IsActive = false;
-                                        reset.IsActiveCategory = null;
-                                    }
-                                    db.SaveChanges();
-
-                                    foreach (var top in orderedList)
-                                    {
-
-                                        var toUpdate = db.Shop.Include(x => x.ProductSubcategoryId)
-                                            .Where(x => x.ProductSubcategoryId == top.Subcategory).ToList();
-
-                                        foreach (var item in toUpdate)
-                                        {
-                                            item.IsActive = true;
-                                            item.IsActiveCategory = 2;
-                                        }
-                                    }
-                                    db.SaveChanges();
-
-                                    Console.ForegroundColor = ConsoleColor.Green;
-                                    Console.WriteLine("Top3 Succefully updated");
-                                    Console.ResetColor();
-                                    Thread.Sleep(1500);
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Invalid Input");
-                                    Thread.Sleep(1500);
-                                }
-                            }
+                            ShowingTop3();
                             break;
                     }
                 }
@@ -1098,6 +1003,185 @@ internal class Admin
                     Console.WriteLine("Invalid Input");
                     Thread.Sleep(1000);
                 }
+            }
+        }
+    }
+
+    private static void ShowingTop3()
+    {
+        while (true)
+        {
+            using (var db = new MyDbContext())
+            {
+                Console.Clear();
+                Console.WriteLine("What do you want to show on top3?");
+                Console.WriteLine("1. Best selling products");
+                Console.WriteLine("2. Best Selling SubCategory/Maker");
+                Console.WriteLine("B to Back");
+                string stringTop = Console.ReadLine()!;
+                int intTop = 0;
+
+                if (stringTop.ToLower() == "b")
+                    break;
+
+                var resetTop = db.Shop.OrderByDescending(x => x.IsActiveCategory)
+                    .ToList();
+
+                if (int.TryParse(stringTop, out intTop) && intTop == 1)
+                {
+                    var topSellers = db.Shop
+                        .OrderByDescending(x => x.Sold)
+                        .Take(3).ToList();
+
+                    foreach (var reset in resetTop)
+                    {
+                        reset.IsActive = false;
+                        reset.IsActiveCategory = null;
+                    }
+                    db.SaveChanges();
+
+                    foreach (var sell in topSellers)
+                    {
+                        sell.IsActive = true;
+                        sell.IsActiveCategory = 1;
+                    }
+                    db.SaveChanges();
+
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("Top3 Succefully updated");
+                    Console.ResetColor();
+                    Thread.Sleep(1500);
+                }
+                else if (int.TryParse(stringTop, out intTop) && intTop == 2)
+                {
+                    // Här kommer logiken för att få fram vilken kategori som har mest sålda produkter
+                    var allCategories = db.Shop.GroupBy(x => x.ProductSubcategoryId).ToList();
+
+                    List<(int? Subcategory, int? totalSold)> topCategories = new List<(int?, int?)>(); // Tillfälligt skapad Lista för att sortera ut
+
+                    foreach (var key in allCategories)
+                    {
+                        int? soldItem = 0;
+                        foreach (var product in key)
+                        {
+                            soldItem += product.Sold;
+                        }
+                        topCategories.Add((key.Key, soldItem));
+                    }
+
+                    var orderedList = topCategories.OrderByDescending(x => x.totalSold);
+
+                    foreach (var reset in resetTop)
+                    {
+                        reset.IsActive = false;
+                        reset.IsActiveCategory = null;
+                    }
+                    db.SaveChanges();
+
+                    foreach (var top in orderedList)
+                    {
+
+                        var toUpdate = db.Shop.Where(x => x.ProductSubcategoryId == top.Subcategory).ToList();
+
+                        foreach (var item in toUpdate)
+                        {
+                            item.IsActive = true;
+                            item.IsActiveCategory = 2;
+                        }
+                    }
+                    db.SaveChanges();
+
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("Top3 Succefully updated");
+                    Console.ResetColor();
+                    Thread.Sleep(1500);
+                }
+                else
+                {
+                    Console.WriteLine("Invalid Input");
+                    Thread.Sleep(1500);
+                }
+            }
+        }
+    }
+
+    public static void UpdatingTop3()
+    {
+        using (var db = new MyDbContext())
+        {
+            var resetTop = db.Shop.OrderByDescending(x => x.IsActiveCategory)
+                .ToList();
+
+            var topSellers = db.Shop
+                .OrderByDescending(x => x.Sold)
+                .Take(3).ToList();
+
+            int activeCategory = 0;
+            foreach (var sell in topSellers)
+            {
+                if(sell.IsActiveCategory == 1)
+                    activeCategory = 1;
+                else if(sell.IsActiveCategory == 2)
+                    activeCategory = 2;
+            }
+
+            if (activeCategory == 1)
+            {
+
+                foreach (var reset in resetTop)
+                {
+                    reset.IsActive = false;
+                    reset.IsActiveCategory = null;
+                }
+                db.SaveChanges();
+
+                foreach (var sell in topSellers)
+                {
+                    sell.IsActive = true;
+                    sell.IsActiveCategory = 1;
+                }
+                db.SaveChanges();
+            }
+            else if (activeCategory == 2)
+            {
+                // Här kommer logiken för att få fram vilken kategori som har mest sålda produkter
+                var allCategories = db.Shop.GroupBy(x => x.ProductSubcategoryId).ToList();
+
+
+                List<(int? Subcategory, int? totalSold)> topCategories = new List<(int?, int?)>(); // Tillfälligt skapad Lista för att sortera ut
+
+                foreach (var key in allCategories)
+                {
+
+                    int? soldItem = 0;
+                    foreach (var product in key)
+                    {
+                        soldItem += product.Sold;
+                    }
+                    topCategories.Add((key.Key, soldItem));
+                }
+
+                var orderedList = topCategories.OrderByDescending(x => x.totalSold);
+
+                foreach (var reset in resetTop)
+                {
+                    reset.IsActive = false;
+                    reset.IsActiveCategory = null;
+                }
+                db.SaveChanges();
+
+                foreach (var top in orderedList)
+                {
+
+                    var toUpdate = db.Shop.Where(x => x.ProductSubcategoryId == top.Subcategory).ToList();
+
+                    foreach (var item in toUpdate)
+                    {
+                        item.IsActive = true;
+                        item.IsActiveCategory = 2;
+                    }
+                }
+                db.SaveChanges();
             }
         }
     }

@@ -2,4 +2,5 @@
 
 Här skrivs vad som behöver fixas. Lätt att komma åt över flera datorer då det sparas in i Git
 
-Fixa uppdatering utav produkter i Top3
+Fixa uppdatering utav produkter i Top3 (uppdateras inte efter köp)
+Samt uppdatera Kategorierna i Top3
