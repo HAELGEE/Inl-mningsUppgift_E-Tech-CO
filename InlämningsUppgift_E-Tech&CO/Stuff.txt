@@ -3,7 +3,3 @@
 Här skrivs vad som behöver fixas. Lätt att komma åt över flera datorer då det sparas in i Git
 
 Fixa uppdatering utav produkter i Top3
-Lägga till så man bara kan lägga till Kategori   
-
-
-678
