@@ -49,75 +49,20 @@ internal class Admin
                 string input = Console.ReadLine()!;
 
                 if (BackOption(input))
-                    break;
+                    break;                              
 
-                //var categorySearch = await db.Shop.OrderBy(i => i.Id)                                            
-                //                            .GroupBy(c => new { c.ProductCategoryId, c.ProductSubcategoryId })
-                //                            .ToListAsync();
-
-                var gettingProducts = db.Shop.ToList().GroupBy(x => new { x.ProductCategoryId, x.ProductSubcategoryId });
+                //var gettingProducts = db.Shop.ToList().GroupBy(x => new { x.ProductCategoryId, x.ProductSubcategoryId });
 
                 if (int.TryParse(input, out userInput) && userInput > 0)
                 {
-                    if (userInput > 0 && userInput <= 9)
-                    {
-                        Console.Clear();
-
-                        var categoryInfo = db.ProductCategory.Select(x => new { x.ProductCategoryName, x.ProductCategoryId }).ToList();
-
-                        var subcategoryInfo = db.ProductSubcategory.Select(x => new { x.ProductSubcategoryId, x.ProductSubcategoryName, x.ProductCategoryId })
-                            .ToList();
-
-
-                        // Denna loopen skriver ut listan så man ser vad man kan köpa
-                        foreach (var name in categoryInfo)
-                        {
-                            RunProgram.ChangeColor($"Category: {name.ProductCategoryName}", "DarkCyan");
-                            Console.WriteLine("");
-                            foreach (var subcategoryName in subcategoryInfo)
-                            {
-                                if (subcategoryName.ProductCategoryId == name.ProductCategoryId)
-                                {
-                                    RunProgram.ChangeColor($"  Subcategory: {subcategoryName.ProductSubcategoryName}", "DarkGreen");
-                                    Console.WriteLine("\n----------------------");
-
-                                    var productsInfo = db.Shop.Where(x => x.ProductSubcategoryId == subcategoryName.ProductSubcategoryId).ToList();
-
-                                    foreach (var product in productsInfo)
-                                    {
-                                        Console.Write($"{product.Id}. Name: {product.Name}  -  in stock: ");
-
-                                        if (product.Quantity > 0)
-                                        {
-                                            Console.ForegroundColor = ConsoleColor.Green;
-                                            Console.Write($"{product.Quantity}");
-                                        }
-                                        else
-                                        {
-                                            Console.ForegroundColor = ConsoleColor.Red;
-                                            Console.Write($"{product.Quantity}");
-                                        }
-                                        Console.ResetColor();
-                                        Console.Write(" -  Price: ");
-                                        Console.ForegroundColor = ConsoleColor.Magenta;
-                                        Console.WriteLine($"{product.Price:C}");
-                                        Console.ResetColor();
-                                    }
-                                    Console.WriteLine("---------------------------");
-                                }
-
-                            }
-                            Console.WriteLine();
-                        }
-
-                    }
-
-
                     switch (userInput)
                     {
                         case 1:
                             while (true)
                             {
+                                Console.Clear();
+                                Categorylist();
+
                                 Console.WriteLine("Press [B] to back");
                                 Console.Write("Which Category do you want to add this item to?: ");
                                 string category = Console.ReadLine()!;
@@ -186,21 +131,29 @@ internal class Admin
                                     .Select(x => x.ProductSubcategoryId)
                                     .SingleOrDefault();
 
-                                db.Shop.Add(new Shop
+                                if (categoryID != 0 && subcategoryID != 0)
                                 {
-                                    ProductCategoryId = categoryID,
-                                    ProductSubcategoryId = subcategoryID,
-                                    Name = productName,
-                                    Price = productPrice,
-                                    Quantity = stock,
-                                    ProductInformation = information
-                                });
+                                    db.Shop.Add(new Shop
+                                    {
+                                        ProductCategoryId = categoryID,
+                                        ProductSubcategoryId = subcategoryID,
+                                        Name = productName,
+                                        Price = productPrice,
+                                        Quantity = stock,
+                                        ProductInformation = information
+                                    });
 
-                                Console.ForegroundColor = ConsoleColor.Green;
-                                Console.WriteLine("Product added to Store");
-                                Console.ResetColor();
-                                Thread.Sleep(1500);
-                                break;
+                                    Console.ForegroundColor = ConsoleColor.Green;
+                                    Console.WriteLine("Product added to Store");
+                                    Console.ResetColor();
+                                    Thread.Sleep(1500);
+                                    break;
+                                }
+                                else
+                                {
+                                    RunProgram.ChangeColor($"\nSomething went wrong. Check your spelling and if there is a Category with that Spelling", "Red");
+                                    Thread.Sleep(1500);
+                                }
                             }
                             db.SaveChanges();
                             break;
@@ -208,6 +161,9 @@ internal class Admin
                         case 2:
                             while (true)
                             {
+                                Console.Clear();
+                                Categorylist();
+
                                 int deleteId = 0;
                                 Console.Write("Which product do you want to delete? or [B]ack: ");
                                 string deleteCheck = Console.ReadLine()!;
@@ -232,6 +188,9 @@ internal class Admin
                         case 3:
                             while (true)
                             {
+                                Console.Clear();
+                                Categorylist();
+
                                 int updateStock = 0;
                                 Console.Write("Which product do u want to alter the stock? or [B]ack: ");
                                 string updateCheck = Console.ReadLine()!;
@@ -269,6 +228,9 @@ internal class Admin
                         case 4:
                             while (true)
                             {
+                                Console.Clear();
+                                Categorylist();
+
                                 Console.Write("Which product do u want to change price on? or [B]ack: ");
                                 string priceCheck = Console.ReadLine()!;
                                 int intPriceCheck = 0;
@@ -302,6 +264,9 @@ internal class Admin
                         case 5:
                             while (true)
                             {
+                                Console.Clear();
+                                Categorylist();
+
                                 int updateProductName = 0;
                                 Console.Write($"Which Product do you want to change Name on? or [B]ack: ");
                                 string propductNameCheck = Console.ReadLine()!;
@@ -328,6 +293,9 @@ internal class Admin
                         case 6:
                             while (true)
                             {
+                                Console.Clear();
+                                Categorylist();
+
                                 int updateProductInformation = 0;
 
                                 Console.Write($"Which product do you want to alter the information about? or [B]ack: ");
@@ -366,7 +334,7 @@ internal class Admin
 
                         case 7:
                             while (true)
-                            {
+                            {                               
                                 Console.Clear();
 
                                 Console.WriteLine("1. To add new Category");
@@ -440,6 +408,9 @@ internal class Admin
                         case 8:
                             while (true)
                             {
+                                Console.Clear();
+                                Categorylist();
+
                                 int updateCategory = 0;
                                 Console.Write($"Which Product do you want to change category/subcategory on? or [B]ack: ");
                                 string catSubCheck = Console.ReadLine()!;
@@ -1007,6 +978,61 @@ internal class Admin
         }
     }
 
+    private static void Categorylist()
+    {
+        using (var db = new MyDbContext())
+        {
+            Console.Clear();
+
+            var categoryInfo = db.ProductCategory.Select(x => new { x.ProductCategoryName, x.ProductCategoryId }).ToList();
+
+            var subcategoryInfo = db.ProductSubcategory.Select(x => new { x.ProductSubcategoryId, x.ProductSubcategoryName, x.ProductCategoryId })
+                .ToList();
+
+
+            // Denna loopen skriver ut listan så man ser vad man kan köpa
+            foreach (var name in categoryInfo)
+            {
+                RunProgram.ChangeColor($"Category: {name.ProductCategoryName}", "DarkCyan");
+                Console.WriteLine("");
+                foreach (var subcategoryName in subcategoryInfo)
+                {
+                    if (subcategoryName.ProductCategoryId == name.ProductCategoryId)
+                    {
+                        RunProgram.ChangeColor($"  Subcategory: {subcategoryName.ProductSubcategoryName}", "DarkGreen");
+                        Console.WriteLine("\n----------------------");
+
+                        var productsInfo = db.Shop.Where(x => x.ProductSubcategoryId == subcategoryName.ProductSubcategoryId).ToList();
+
+                        foreach (var product in productsInfo)
+                        {
+                            Console.Write($"{product.Id}. Name: {product.Name}  -  in stock: ");
+
+                            if (product.Quantity > 0)
+                            {
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.Write($"{product.Quantity}");
+                            }
+                            else
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.Write($"{product.Quantity}");
+                            }
+                            Console.ResetColor();
+                            Console.Write(" -  Price: ");
+                            Console.ForegroundColor = ConsoleColor.Magenta;
+                            Console.WriteLine($"{product.Price:C}");
+                            Console.ResetColor();
+                        }
+                        Console.WriteLine("---------------------------");
+                    }
+
+                }
+                Console.WriteLine();
+            }
+        }
+    }
+
     private static void ShowingTop3()
     {
         while (true)
@@ -1119,9 +1145,9 @@ internal class Admin
             int activeCategory = 0;
             foreach (var sell in topSellers)
             {
-                if(sell.IsActiveCategory == 1)
+                if (sell.IsActiveCategory == 1)
                     activeCategory = 1;
-                else if(sell.IsActiveCategory == 2)
+                else if (sell.IsActiveCategory == 2)
                     activeCategory = 2;
             }
 

@@ -421,7 +421,7 @@ internal class RunProgram
                                     counter++;
                                 }
 
-                                if (categoryName != null)
+                                if (categoryName != 0)
                                     await GettingProducts(categoryName);
 
                                 else if (validNum == categoryNum)
