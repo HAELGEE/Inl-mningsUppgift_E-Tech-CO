@@ -94,7 +94,7 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductSubCategory",
+                name: "ProductSubcategory",
                 columns: table => new
                 {
                     ProductSubcategoryId = table.Column<int>(type: "int", nullable: false)
@@ -104,12 +104,13 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductSubCategory", x => x.ProductSubcategoryId);
+                    table.PrimaryKey("PK_ProductSubcategory", x => x.ProductSubcategoryId);
                     table.ForeignKey(
-                        name: "FK_ProductSubCategory_ProductCategory_ProductCategoryId",
+                        name: "FK_ProductSubcategory_ProductCategory_ProductCategoryId",
                         column: x => x.ProductCategoryId,
                         principalTable: "ProductCategory",
-                        principalColumn: "ProductCategoryId");
+                        principalColumn: "ProductCategoryId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -118,8 +119,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Category = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SubCategory = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ProductCategoryId = table.Column<int>(type: "int", nullable: false),
                     ProductSubcategoryId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -224,8 +223,8 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductSubCategory_ProductCategoryId",
-                table: "ProductSubCategory",
+                name: "IX_ProductSubcategory_ProductCategoryId",
+                table: "ProductSubcategory",
                 column: "ProductCategoryId");
 
             migrationBuilder.CreateIndex(
@@ -247,7 +246,7 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 name: "Product");
 
             migrationBuilder.DropTable(
-                name: "ProductSubCategory");
+                name: "ProductSubcategory");
 
             migrationBuilder.DropTable(
                 name: "Shop");
