@@ -33,6 +33,19 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProductCategory",
+                columns: table => new
+                {
+                    ProductCategoryId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductCategoryName = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductCategory", x => x.ProductCategoryId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Shop",
                 columns: table => new
                 {
@@ -104,22 +117,46 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductCategory",
+                name: "ProductSubCategory",
                 columns: table => new
                 {
-                    ProductCategoryId = table.Column<int>(type: "int", nullable: false)
+                    ProductSubcategoryId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ProductCategoryName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ShopId = table.Column<int>(type: "int", nullable: true)
+                    ProductSubcategoryName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProductCategoryId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductCategory", x => x.ProductCategoryId);
+                    table.PrimaryKey("PK_ProductSubCategory", x => x.ProductSubcategoryId);
                     table.ForeignKey(
-                        name: "FK_ProductCategory_Shop_ShopId",
+                        name: "FK_ProductSubCategory_ProductCategory_ProductCategoryId",
+                        column: x => x.ProductCategoryId,
+                        principalTable: "ProductCategory",
+                        principalColumn: "ProductCategoryId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductCategoryShop",
+                columns: table => new
+                {
+                    ProductCategoriesProductCategoryId = table.Column<int>(type: "int", nullable: false),
+                    ShopId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductCategoryShop", x => new { x.ProductCategoriesProductCategoryId, x.ShopId });
+                    table.ForeignKey(
+                        name: "FK_ProductCategoryShop_ProductCategory_ProductCategoriesProductCategoryId",
+                        column: x => x.ProductCategoriesProductCategoryId,
+                        principalTable: "ProductCategory",
+                        principalColumn: "ProductCategoryId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProductCategoryShop_Shop_ShopId",
                         column: x => x.ShopId,
                         principalTable: "Shop",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -171,25 +208,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                         principalColumn: "Id");
                 });
 
-            migrationBuilder.CreateTable(
-                name: "ProductSubCategory",
-                columns: table => new
-                {
-                    ProductSubcategoryId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ProductSubcategoryName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProductCategoryId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProductSubCategory", x => x.ProductSubcategoryId);
-                    table.ForeignKey(
-                        name: "FK_ProductSubCategory_ProductCategory_ProductCategoryId",
-                        column: x => x.ProductCategoryId,
-                        principalTable: "ProductCategory",
-                        principalColumn: "ProductCategoryId");
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_Customer_UserName",
                 table: "Customer",
@@ -222,8 +240,8 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductCategory_ShopId",
-                table: "ProductCategory",
+                name: "IX_ProductCategoryShop_ShopId",
+                table: "ProductCategoryShop",
                 column: "ShopId");
 
             migrationBuilder.CreateIndex(
@@ -245,19 +263,22 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 name: "Product");
 
             migrationBuilder.DropTable(
+                name: "ProductCategoryShop");
+
+            migrationBuilder.DropTable(
                 name: "ProductSubCategory");
 
             migrationBuilder.DropTable(
                 name: "Order");
 
             migrationBuilder.DropTable(
+                name: "Shop");
+
+            migrationBuilder.DropTable(
                 name: "ProductCategory");
 
             migrationBuilder.DropTable(
                 name: "Customer");
-
-            migrationBuilder.DropTable(
-                name: "Shop");
         }
     }
 }

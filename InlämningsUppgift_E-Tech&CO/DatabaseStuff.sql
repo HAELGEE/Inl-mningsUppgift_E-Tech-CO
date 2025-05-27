@@ -1,21 +1,21 @@
-Insert into ProductCategory([ProductCategoryName], ShopId)
+Insert into ProductCategory([ProductCategoryName])
 values
-('Computer', 1),
-('Phone', 1),
-('Screen', 1)
+('Computer'),
+('Phone'),
+('Screen')
 go
 
 Insert into ProductSubcategory([ProductSubcategoryName], ProductCategoryId)
 values
-('Computer Components', 2),
-('Desktop Computers', 2),
-('Laptops', 2),
-('Apple', 3),
-('Nothing', 3),
-('Samsung Phone', 3),
-('MSI', 4),
-('ASUS', 4),
-('Samsung', 4)
+('Computer Components', 1),
+('Desktop Computers', 1),
+('Laptops', 1),
+('Apple', 2),
+('Nothing', 2),
+('Samsung Phone', 2),
+('MSI', 3),
+('ASUS', 3),
+('Samsung', 3)
 go
 
 
