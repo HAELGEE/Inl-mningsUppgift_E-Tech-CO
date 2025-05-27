@@ -1,3 +1,24 @@
+Insert into ProductCategory([ProductCategoryName], ShopId)
+values
+('Computer', 1),
+('Phone', 1),
+('Screen', 1)
+go
+
+Insert into ProductSubcategory([ProductSubcategoryName], ProductCategoryId)
+values
+('Computer Components', 1),
+('Desktop Computers', 1),
+('Laptops', 1),
+('Apple', 2),
+('Nothing', 2),
+('Samsung Phone', 2),
+('MSI', 3),
+('ASUS', 3),
+('Samsung', 3)
+go
+
+
 Insert into Shop (Category, [name], Quantity, ProductInformation, SubCategory, Price, Sold, RegularShipping, ExpressShipping)
 values
 ('Computer', 'Samsung 9100 PRO M.2', 10, 'The latest hard drive on the market.', 'Computer Components', 2849, 0, 200, 500),
@@ -20,5 +41,5 @@ values
 ('Screen', 'ASUS 34" Curved TUF VG34VQL3A', 55, '200Hz refresh rate, 1ms response.', 'ASUS', 5490, 0, 200, 500),
 ('Screen', 'Samsung 34" Odyssey G8 34DG85', 10, '175Hz refresh rate, 1ms response.', 'Samsung', 9490, 0, 200, 500),
 ('Screen', 'Samsung 34" ViewFinity S6 34C654VA', 10, '100Hz refresh rate, 5ms response.', 'Samsung', 5490, 0, 200, 500);
-
+go
 
