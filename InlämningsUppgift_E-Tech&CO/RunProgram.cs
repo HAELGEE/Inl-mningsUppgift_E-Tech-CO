@@ -177,7 +177,7 @@ internal class RunProgram
                             if (customers != null)
                             {
 
-                                ChangeColor("The username is already taken\n", "Red");                                
+                                ChangeColor("The username is already taken\n", "Red");
                                 Thread.Sleep(1500);
                             }
                             else
@@ -189,10 +189,10 @@ internal class RunProgram
                         if (Admin.BackOption(newPassword))
                             break;
 
-                        
-                        var hashPassword = BC.EnhancedHashPassword(newPassword, 14);                    
 
-                        
+                        var hashPassword = BC.EnhancedHashPassword(newPassword, 14);
+
+
                         db.Customer.Add(new Customer
                         (
                             newFirstName,
@@ -258,7 +258,7 @@ internal class RunProgram
                                                     .Include(x => x.Products)
                                                     .Where(x => x.Customer!.UserName == isGuest.UserName);
                                     switch (updateNumber)
-                                    {                                        
+                                    {
                                         case 1:
                                             Console.Clear();
                                             Console.WriteLine("\nPress B to back");
@@ -304,7 +304,7 @@ internal class RunProgram
                                                     Console.Write($" ---- Total Price: ");
                                                     ChangePriceColor(item.TotalAmountPrice, "DarkCyan");
                                                     Console.Write($" ----\n");
-                                                    
+
                                                 }
 
                                                 Console.WriteLine("B to Back");
@@ -480,8 +480,8 @@ internal class RunProgram
                                                         idCheck = true;
                                                 }
 
-                                                if (!idCheck)                                                
-                                                    ErrorMessage();                                                
+                                                if (!idCheck)
+                                                    ErrorMessage();
                                                 else
                                                 {
                                                     Console.WriteLine("How many of these?");
@@ -639,7 +639,7 @@ internal class RunProgram
             }
 
             GUI.DrawWindow("Top3", 40, 13, top3List);
-            Console.SetCursorPosition(0, 13);            
+            Console.SetCursorPosition(0, 13);
         }
     }
 
@@ -819,35 +819,41 @@ internal class RunProgram
             // Denna loopen skriver ut listan så man ser vad man kan köpa
             foreach (var sub in itemsSubcategory)
             {
-
-                Console.WriteLine($"Category: {sub.Key}\n----------------------");
-                foreach (var item in sub)
+                if (sub.Key! != null)
                 {
-                    Console.Write($"{item.Id}. Name: {item.Name} Total in stock: ");
+                    Console.WriteLine($"Category: {sub.Key}\n----------------------");
 
-                    if (item.Quantity > 0)
+                    foreach (var item in sub)
                     {
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine($"{item.Quantity}");
-                    }
-                    else
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine($"{item.Quantity}");
-                    }
-                    Console.ResetColor();
+                        if (item.Name != null)
+                        {
+                            Console.Write($"{item.Id}. Name: {item.Name}  -  Total in stock: ");
 
-                    Console.Write($"Product info:");
+                            if (item.Quantity > 0)
+                            {
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine($"{item.Quantity}");
+                            }
+                            else
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine($"{item.Quantity}");
+                            }
+                            Console.ResetColor();
 
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.Write($" {item.ProductInformation} ");
-                    Console.ResetColor();
-                    Console.Write("Price: ");
-                    Console.ForegroundColor = ConsoleColor.Magenta;
-                    Console.WriteLine($"{item.Price:C}");
-                    Console.ResetColor();
+                            Console.Write($"Product info:");
+
+                            Console.ForegroundColor = ConsoleColor.Blue;
+                            Console.Write($" {item.ProductInformation} ");
+                            Console.ResetColor();
+                            Console.Write("Price: ");
+                            Console.ForegroundColor = ConsoleColor.Magenta;
+                            Console.WriteLine($"{item.Price:C}");
+                            Console.ResetColor();
+                        }
+                    }
+                    Console.WriteLine("---------------------------");
                 }
-                Console.WriteLine("---------------------------");
             }
         }
     }
@@ -1418,7 +1424,7 @@ internal class RunProgram
         Console.ResetColor();
     }
 
-    
+
     public static void ErrorMessage()
     {
         Console.WriteLine("Invalid input");

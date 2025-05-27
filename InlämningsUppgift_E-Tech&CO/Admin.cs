@@ -1,11 +1,13 @@
-﻿using InlämningsUppgift_E_Tech_CO.Models;
+﻿using BCrypt.Net;
+using InlämningsUppgift_E_Tech_CO.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.VisualBasic;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.Design;
-using BCrypt.Net;
 using System.Data;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -23,11 +25,9 @@ internal class Admin
         ICustomer isGuest = customerInput;
 
         using (var db = new MyDbContext())
-        {            
+        {
             while (true)
             {
-                Console.Clear();
-
                 int userInput = 0;
                 Console.Clear();
 
@@ -36,13 +36,14 @@ internal class Admin
                 Console.WriteLine($"2.  Remove Product in shop");
                 Console.WriteLine($"3.  Increase/Decrease stock for items");
                 Console.WriteLine($"4.  Change price for Product");
-                Console.WriteLine($"5.  Change Category/subcategory");
-                Console.WriteLine($"6.  Delete Category/subcategory");
-                Console.WriteLine($"7.  Change Name on Product");
-                Console.WriteLine($"8.  Product info");
+                Console.WriteLine($"5.  Change Name on Product");
+                Console.WriteLine($"6.  Product info");
+                Console.WriteLine($"7.  Add Category/subcategory");
+                Console.WriteLine($"8.  Change Category/subcategory");
+                Console.WriteLine($"9.  Delete Category/subcategory");
                 Console.WriteLine($"9.  Change Shipping fee");
                 Console.WriteLine($"10. All customers & Change Customer");
-                Console.WriteLine($"11. Look Orderhistories");                    
+                Console.WriteLine($"11. Look Orderhistories");
                 Console.WriteLine($"12. Change top3 in menu");
                 Console.WriteLine($"B to Back");
                 string input = Console.ReadLine()!;
@@ -54,7 +55,7 @@ internal class Admin
                                             .GroupBy(c => new { c.Category, c.SubCategory })
                                             .ToListAsync();
 
-                if (int.TryParse(input, out userInput) && userInput > 0 && userInput < 13)
+                if (int.TryParse(input, out userInput) && userInput > 0)
                 {
 
                     if (userInput > 0 && userInput < 9)
@@ -69,7 +70,8 @@ internal class Admin
                             Console.WriteLine("-----------------------");
                             foreach (var item in cat)
                             {
-                                Console.WriteLine($"ID:{item.Id} \t Name: {item.Name!.PadRight(34)}\t in Stock: {item.Quantity}, Price: {item.Price}");
+                                if (item.Name != null)
+                                    Console.WriteLine($"ID:{item.Id} \t Name: {item.Name!.PadRight(34)}\t in Stock: {item.Quantity}, Price: {item.Price}");
                             }
                             Console.WriteLine();
                         }
@@ -239,6 +241,149 @@ internal class Admin
                         case 5:
                             while (true)
                             {
+                                int updateProductName = 0;
+                                Console.Write($"Which Product do you want to change Name on? or [B]ack: ");
+                                string propductNameCheck = Console.ReadLine()!;
+
+                                if (BackOption(propductNameCheck))
+                                    break;
+
+
+                                if (int.TryParse(propductNameCheck, out updateProductName) && updateProductName > 0 && !string.IsNullOrWhiteSpace(propductNameCheck))
+                                {
+                                    var productNameUpdate = db.Shop.Where(x => x.Id == updateProductName).SingleOrDefault();
+                                    Console.Write("What do you want to update the name to?: ");
+                                    string productNameInfo = Console.ReadLine()!;
+                                    productNameUpdate!.Name = productNameInfo;
+                                }
+                            }
+
+                            db.SaveChanges();
+                            break;
+
+                        case 6:
+                            while (true)
+                            {
+                                int updateProductInformation = 0;
+
+                                Console.Write($"Which product do you want to alter the information about? or [B]ack: ");
+                                string productAlter = Console.ReadLine()!;
+
+                                if (BackOption(productAlter))
+                                    break;
+
+                                if (int.TryParse(productAlter, out updateProductInformation) && updateProductInformation > 0 && !string.IsNullOrWhiteSpace(productAlter))
+                                {
+                                    Console.Clear();
+
+                                    var productInfo = db.Shop.Where(x => x.Id == updateProductInformation).SingleOrDefault();
+                                    Console.WriteLine($"Product: {productInfo!.Name}");
+                                    Console.Write($"Information about the product: ");
+                                    Console.ForegroundColor = ConsoleColor.Blue;
+                                    Console.WriteLine(productInfo.ProductInformation + "\n");
+                                    Console.ResetColor();
+                                    Console.WriteLine("What do tou want to update the information to? or [B]ack: ");
+                                    string checkProductInfo = Console.ReadLine()!;
+
+                                    if (BackOption(checkProductInfo))
+                                        break;
+
+                                    productInfo.ProductInformation = checkProductInfo;
+                                }
+                            }
+                            db.SaveChanges();
+                            break;
+
+                        case 7:
+                            while (true)
+                            {
+                                Console.Clear();
+
+                                Console.WriteLine("1. To add new Category");
+                                Console.WriteLine("2. To add new Subcategory");
+                                Console.WriteLine("3. B to Back");
+                                string addCategory = Console.ReadLine()!;
+                                int intaddCategory = 0;
+
+                                if (BackOption(addCategory))
+                                    break;
+
+                                if (int.TryParse(addCategory, out intaddCategory) && intaddCategory > 0)
+                                {
+                                    Console.Clear();
+
+                                    if (intaddCategory == 1)
+                                    {
+                                        Console.WriteLine("What do you want to name the Category?");
+                                        string newCategory = Console.ReadLine()!;
+
+                                        db.Shop.Add(new Shop
+                                        {
+                                            Category = newCategory,
+                                            SubCategory = null,
+                                            Name = null,
+                                            Price = null,
+                                            Quantity = null,
+                                            ProductInformation = null
+                                        });
+                                        db.SaveChanges();
+                                        break;
+                                    }
+                                    else if (intaddCategory == 2)
+                                    {
+                                        var allCategories = db.Shop.GroupBy(x => x.Category).ToList();
+
+                                        // En lista för att få ut namnet på kategorien då jag byggt kategorierna och Subkategorierna i Min tabell Shop
+                                        List<string> categoriesInString = new List<string>();
+
+                                        Console.WriteLine("Which Category do you want to add this Subcategory?");
+                                        int number = 1;
+                                        foreach (var key in allCategories)
+                                        {
+                                            categoriesInString.Add(key.Key);
+                                            Console.WriteLine($"{number}. {key.Key}");
+                                            number++;
+                                        }
+
+                                        string selectCategory = Console.ReadLine()!;
+                                        int intSelectCategory = 0;
+                                        if (int.TryParse(selectCategory, out intSelectCategory) && intSelectCategory > 0 && intSelectCategory <= allCategories.Count())
+                                        {
+                                            Console.Clear();
+
+                                            Console.WriteLine($"{categoriesInString[intSelectCategory - 1]} is Selected");
+                                            Console.WriteLine("What do you want to name the Subcategory?");
+                                            string newSubcategory = Console.ReadLine()!;
+
+                                            db.Shop.Add(new Shop
+                                            {
+                                                Category = categoriesInString[intSelectCategory - 1],
+                                                SubCategory = newSubcategory,
+                                                Name = null,
+                                                Sold = null,
+                                                ExpressShipping = null,
+                                                RegularShipping = null,
+                                                Price = null,
+                                                Quantity = null,
+                                                ProductInformation = null
+                                            });
+                                            db.SaveChanges();
+                                            break;
+                                        }
+                                        else
+                                            RunProgram.ErrorMessage();
+                                    }
+                                    else
+                                        RunProgram.ErrorMessage();
+                                }
+                                else
+                                    RunProgram.ErrorMessage();
+                            }
+                            break;
+
+                        case 8:
+                            while (true)
+                            {
                                 int updateCategory = 0;
                                 Console.Write($"Which Product do you want to change category/subcategory on? or [B]ack: ");
                                 string catSubCheck = Console.ReadLine()!;
@@ -265,7 +410,7 @@ internal class Admin
                             db.SaveChanges();
                             break;
 
-                        case 6:
+                        case 9:
                             while (true)
                             {
                                 Console.Clear();
@@ -360,63 +505,7 @@ internal class Admin
                             //db.SaveChanges();
                             break;
 
-                        case 7:
-                            while (true)
-                            {
-                                int updateProductName = 0;
-                                Console.Write($"Which Product do you want to change Name on? or [B]ack: ");
-                                string propductNameCheck = Console.ReadLine()!;
-
-                                if (BackOption(propductNameCheck))
-                                    break;
-
-
-                                if (int.TryParse(propductNameCheck, out updateProductName) && updateProductName > 0 && !string.IsNullOrWhiteSpace(propductNameCheck))
-                                {
-                                    var productNameUpdate = db.Shop.Where(x => x.Id == updateProductName).SingleOrDefault();
-                                    Console.Write("What do you want to update the name to?: ");
-                                    string productNameInfo = Console.ReadLine()!;
-                                    productNameUpdate!.Name = productNameInfo;
-                                }
-                            }
-
-                            db.SaveChanges();
-                            break;
-
-                        case 8:
-                            while (true)
-                            {
-                                int updateProductInformation = 0;
-
-                                Console.Write($"Which product do you want to alter the information about? or [B]ack: ");
-                                string productAlter = Console.ReadLine()!;
-
-                                if (BackOption(productAlter))
-                                    break;
-
-                                if (int.TryParse(productAlter, out updateProductInformation) && updateProductInformation > 0 && !string.IsNullOrWhiteSpace(productAlter))
-                                {
-                                    Console.Clear();
-
-                                    var productInfo = db.Shop.Where(x => x.Id == updateProductInformation).SingleOrDefault();
-                                    Console.WriteLine($"Product: {productInfo!.Name}");
-                                    Console.Write($"Information about the product: ");
-                                    Console.ForegroundColor = ConsoleColor.Blue;
-                                    Console.WriteLine(productInfo.ProductInformation + "\n");
-                                    Console.ResetColor();
-                                    Console.WriteLine("What do tou want to update the information to? or [B]ack: ");
-                                    string checkProductInfo = Console.ReadLine()!;
-
-                                    if (BackOption(checkProductInfo))
-                                        break;
-
-                                    productInfo.ProductInformation = checkProductInfo;
-                                }
-                            }
-                            db.SaveChanges();
-                            break;
-
-                        case 9:
+                        case 10:
                             while (true)
                             {
                                 Console.Clear();
@@ -503,7 +592,7 @@ internal class Admin
 
                             break;
 
-                        case 10:
+                        case 11:
                             while (true)
                             {
                                 Console.Clear();
@@ -754,7 +843,7 @@ internal class Admin
                             db.SaveChanges();
                             break;
 
-                        case 11:
+                        case 12:
                             Console.Clear();
 
                             var allOrders = db.Order.Include(a => a.Customer)
@@ -782,8 +871,9 @@ internal class Admin
                                             Console.WriteLine($"Name: {product.Name!.PadRight(48)} Amount: {product.Amount} - Price: {product.Price:C}");
 
                                         }
-                                        Console.WriteLine($"------ Shipping: {item.ShippingFee:C} ------ Taxes: {Convert.ToInt32((item.TotalAmountPrice - item.ShippingFee) * 0.25):C} ------ Total Price: {item.TotalAmountPrice:C} ------");
+                                        Console.WriteLine($"------ Shipping: {item.ShippingFee:C} ------ Taxes: {Convert.ToInt32((item.TotalAmountPrice - item.ShippingFee) * 0.25):C} ------ Total Price: {item.TotalAmountPrice:C} ------\n");
                                     }
+                                    Console.WriteLine();
                                 }
                             }
 
@@ -791,7 +881,7 @@ internal class Admin
                             Console.ReadKey();
                             break;
 
-                        case 12:
+                        case 13:
                             while (true)
                             {
                                 Console.Clear();
