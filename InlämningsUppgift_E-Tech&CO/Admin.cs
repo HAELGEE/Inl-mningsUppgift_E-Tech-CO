@@ -69,7 +69,7 @@ internal class Admin
                             Console.WriteLine("-----------------------");
                             foreach (var item in cat)
                             {
-                                Console.WriteLine($"ID:{item.Id} \t Name: {item.Name}\t in Stock: {item.Quantity}, Price: {item.Price}");
+                                Console.WriteLine($"ID:{item.Id} \t Name: {item.Name!.PadRight(34)}\t in Stock: {item.Quantity}, Price: {item.Price}");
                             }
                             Console.WriteLine();
                         }

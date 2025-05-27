@@ -19,7 +19,7 @@ namespace InlämningsUppgift_E_Tech_CO
                 if (db.Customer.Count() == 0)
                 {
                     CreateCustomer();
-                    db.SaveChanges();                    
+                    db.SaveChanges();
                 }
                 SetLogin();
                 Console.CursorVisible = false;
