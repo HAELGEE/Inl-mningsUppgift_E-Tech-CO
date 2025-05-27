@@ -40,61 +40,7 @@ internal class RunProgram
                     WelcomeMessage();       // Skrivet ut ett välkomstmeddelande
                     CompanyName();          // Skriver ut Företagsnamnet
 
-                    List<string> top3List = new List<string>();
-
-                    var top3 = await db.Shop.Where(x => x.IsActive == true)
-                        .OrderByDescending(x => x.Sold)
-                        .Take(3).ToListAsync();
-
-                    var top3Category = await db.Shop
-                        .OrderByDescending(x => x.Sold)
-                        .Where(x => x.IsActiveCategory != null)
-                        .Take(1).SingleOrDefaultAsync();
-
-                    // Här kommer logiken för att få fram vilken kategori som har mest sålda produkter
-                    var allCategories = db.Shop.GroupBy(x => x.SubCategory);
-
-                    List<(string Category, int? totalSold)> topCategories = new List<(string, int?)>(); // Tillfälligt skapad Lista för att sortera ut
-
-                    foreach (var key in allCategories)
-                    {
-                        int? counter = 0;
-                        foreach (var product in key)
-                        {
-                            counter += product.Sold;
-                        }
-                        topCategories.Add((key.Key!, counter));
-                    }
-                    var orderedList = topCategories.OrderByDescending(x => x.totalSold)
-                    .Take(3);
-
-                    if (top3Category == null)
-                    {
-                        top3List.Add($"The List is empty at the moment");
-                    }
-                    else if (top3Category.IsActiveCategory == 1)
-                    {
-                        int i = 1;
-                        foreach (var item in top3)
-                        {
-                            top3List.Add($"Nr {i}. Product Name: {item.Name!.PadRight(33)} Sold: {item.Sold} Price: {item.Price:C}/unit");
-                            i++;
-                        }
-                    }
-                    else if (top3Category.IsActiveCategory == 2)
-                    {
-                        int i = 1;
-                        foreach (var item in orderedList)
-                        {
-                            top3List.Add($"Nr {i}. Subcategory/Maker: {item.Category}");
-                            i++;
-                        }
-                    }
-
-                    GUI.DrawWindow("Top3", 40, 13, top3List);
-
-                    Console.CursorLeft = 0;
-                    Console.CursorTop = 13;
+                    showTop3();             // Skriver ut Top3 Information
 
                     Console.WriteLine($"What do you want to do?");
                     if (!isGuest.LoggedIn)
@@ -634,6 +580,66 @@ internal class RunProgram
                         break;
                 }
             }
+        }
+    }
+
+    private static void showTop3()
+    {
+        using (var db = new MyDbContext())
+        {
+            List<string> top3List = new List<string>();
+
+            var top3 = db.Shop.Where(x => x.IsActive == true)
+                .OrderByDescending(x => x.Sold)
+                .Take(3).ToList();
+
+            var top3Category = db.Shop
+                .OrderByDescending(x => x.Sold)
+                .Where(x => x.IsActiveCategory != null)
+                .Take(1).SingleOrDefault();
+
+            // Här kommer logiken för att få fram vilken kategori som har mest sålda produkter
+            var allCategories = db.Shop.GroupBy(x => x.SubCategory);
+
+            List<(string Category, int? totalSold)> topCategories = new List<(string, int?)>(); // Tillfälligt skapad Lista för att sortera ut
+
+            foreach (var key in allCategories)
+            {
+                int? counter = 0;
+                foreach (var product in key)
+                {
+                    counter += product.Sold;
+                }
+                topCategories.Add((key.Key!, counter));
+            }
+            var orderedList = topCategories.OrderByDescending(x => x.totalSold)
+            .Take(3);
+
+            if (top3Category == null)
+            {
+                top3List.Add($"The List is empty at the moment");
+            }
+            else if (top3Category.IsActiveCategory == 1)
+            {
+                int i = 1;
+                foreach (var item in top3)
+                {
+                    top3List.Add($"Nr {i}. Product Name: {item.Name!.PadRight(33)} Sold: {item.Sold} Price: {item.Price:C}/unit");
+                    i++;
+                }
+            }
+            else if (top3Category.IsActiveCategory == 2)
+            {
+                int i = 1;
+                foreach (var item in orderedList)
+                {
+                    top3List.Add($"Nr {i}. Subcategory/Maker: {item.Category}");
+                    i++;
+                }
+            }
+
+            GUI.DrawWindow("Top3", 40, 13, top3List);
+            Console.SetCursorPosition(0, 13);            
         }
     }
 
