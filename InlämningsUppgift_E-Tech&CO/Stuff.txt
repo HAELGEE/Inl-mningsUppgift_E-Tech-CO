@@ -2,4 +2,4 @@
 
 Här skrivs vad som behöver fixas. Lätt att komma åt över flera datorer då det sparas in i Git
 
-När man lägger till produkt krashar det när man inte skriver rätt Kategori och subkategori?
+
