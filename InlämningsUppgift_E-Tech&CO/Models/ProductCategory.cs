@@ -9,7 +9,6 @@ internal class ProductCategory
 {
     public int Id { get; set; }
     public string? ProductCategoryName { get; set; }
-    //public int ProductSubcategoryId { get; set; }
     public virtual ICollection<ProductSubcategory> ProductSubcategories { get; set; } = new List<ProductSubcategory>();
     public virtual ICollection<Shop> Shop { get; set; } = new List<Shop>();
 
