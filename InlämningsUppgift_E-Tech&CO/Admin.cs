@@ -433,8 +433,6 @@ internal class Admin
                                     {
                                         if (intcatOption == 1)
                                         {
-                                            var rightCategoryId = db.ProductCategory.Where(x => x.Id == updateCategory).SingleOrDefault();
-
                                             Console.Write($"Which Category do u want to change to? Chose ID: ");
                                             string categoryChange = Console.ReadLine()!;
                                             int intcategoryChange = 0;
@@ -453,10 +451,10 @@ internal class Admin
                                                     var updateToNewSubcategory = db.ProductSubcategory.Where(x => x.Id == intsubcatCheck)
                                                     .Select(x => new { x.Id, x.ProductSubcategoryName }).SingleOrDefault();
 
-                                                    var dabasestuff = db.ProductSubcategory.Where(x => x.Id == intsubcatCheck && x.ProductCategoryId == intcategoryChange).SingleOrDefault();
+                                                    var controllForNull = db.ProductSubcategory.Where(x => x.Id == intsubcatCheck && x.ProductCategoryId == intcategoryChange).SingleOrDefault();
 
 
-                                                    if (updateToNewSubcategory != null && dabasestuff != null)
+                                                    if (updateToNewSubcategory != null && controllForNull != null)
                                                     {
                                                         productToAlter!.ProductCategoryId = updateToNewCategory!.Id;
                                                         productToAlter!.ProductSubcategoryId = updateToNewSubcategory.Id;
@@ -471,7 +469,8 @@ internal class Admin
                                         }
                                         else if (intcatOption == 2)
                                         {
-                                            var subcategoryUpdate = db.ProductSubcategory.Where(x => x.ProductCategoryId == updateCategory).SingleOrDefault();
+                                            var subcategoryUpdate = db.Shop.Where(x => x.Id == updateCategory)
+                                                .Select(x => new { x.ProductCategoryId, x.Id}).SingleOrDefault();
 
                                             Console.Write($"Which Subcategory do u want to change to?: ");
                                             string subCategoryChange = Console.ReadLine()!;
@@ -480,9 +479,9 @@ internal class Admin
                                             if (int.TryParse(subCategoryChange, out intsubCategoryChange))
                                             {
                                                 var updateToNewSubcategory = db.ProductSubcategory.Where(x => x.Id == intsubCategoryChange)
-                                                    .Select(x => new { x.Id, x.ProductSubcategoryName }).SingleOrDefault();
+                                                    .Select(x => new { x.Id, x.ProductSubcategoryName, x.ProductCategoryId }).SingleOrDefault();
 
-                                                if (updateToNewSubcategory != null)
+                                                if (updateToNewSubcategory != null && updateToNewSubcategory.ProductCategoryId == subcategoryUpdate!.ProductCategoryId)
                                                 {
                                                     productToAlter!.ProductSubcategoryId = updateToNewSubcategory!.Id;
                                                     RunProgram.ChangeColor("Product Subcategory have been succefully changed", "Green");
