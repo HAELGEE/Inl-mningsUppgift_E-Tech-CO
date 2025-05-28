@@ -10,7 +10,7 @@ internal class ProductSubcategory
 {
     public int Id { get; set; }                  
     public string? ProductSubcategoryName { get; set; }
-    public int? ProductCategoryId { get; set; }     // Foreign Key till ProductCategory
-    public virtual ProductCategory? ProductCategory { get; set; }  // Navigation property till ProductCategory
+    public int? ProductCategoryId { get; set; }     
+    public virtual ProductCategory? ProductCategory { get; set; }  
 }
 
