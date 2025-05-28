@@ -971,7 +971,7 @@ internal class Admin
                             break;
 
                         case 13:
-                            ShowingTop3();
+                            ChangeTop3();
                             break;
                     }
                 }
@@ -1039,7 +1039,7 @@ internal class Admin
         }
     }
 
-    private static void ShowingTop3()
+    private static void ChangeTop3()
     {
         while (true)
         {
@@ -1149,7 +1149,7 @@ internal class Admin
                 .Take(3).ToList();
 
             int activeCategory = 0;
-            foreach (var sell in topSellers)
+            foreach (var sell in resetTop)
             {
                 if (sell.IsActiveCategory == 1)
                     activeCategory = 1;
