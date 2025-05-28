@@ -817,16 +817,14 @@ internal class RunProgram
         using (var db = new MyDbContext())
         {
             var gettingProducts = db.Shop.Where(x => x.ProductCategoryId == categoryName)
-                .Include(x => x.ProductCategoryId)
+                .Include(x => x.ProductCategory)                
                 .ToList().GroupBy(x => x.ProductSubcategoryId);
-
+            
             Console.Clear();
 
             // Denna loopen skriver ut listan så man ser vad man kan köpa
             foreach (var products in gettingProducts)
-            {
-                Console.WriteLine(products.Key);
-                Console.ReadKey();
+            {                
                 var gettingSubcategoryName = db.ProductSubcategory.Where(x => x.Id == products.Key).SingleOrDefault();
                 var getProducts = db.Shop.Where(x => x.ProductSubcategoryId == products.Key);
 
