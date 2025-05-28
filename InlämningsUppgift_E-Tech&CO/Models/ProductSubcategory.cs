@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace InlämningsUppgift_E_Tech_CO.Models;
 internal class ProductSubcategory
 {
-    public int ProductSubcategoryId { get; set; }                  
+    public int Id { get; set; }                  
     public string? ProductSubcategoryName { get; set; }
     public int? ProductCategoryId { get; set; }     // Foreign Key till ProductCategory
     public virtual ProductCategory? ProductCategory { get; set; }  // Navigation property till ProductCategory

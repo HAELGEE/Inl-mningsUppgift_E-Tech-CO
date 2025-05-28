@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 namespace InlämningsUppgift_E_Tech_CO.Models;
 internal class ProductCategory
 {
-    public int ProductCategoryId { get; set; }
+    public int Id { get; set; }
     public string? ProductCategoryName { get; set; }
-    public virtual ICollection<ProductSubcategory> ProductSubcategories { get; set; }
+    public int? ProductSubcategoryId { get; set; }
+    public virtual ICollection<ProductSubcategory> ProductSubcategories { get; set; } = new List<ProductSubcategory>();
     public virtual ICollection<Shop> Shop { get; set; } = new List<Shop>();
     
 }

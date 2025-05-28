@@ -124,11 +124,11 @@ internal class Admin
                                     break;
 
                                 var categoryID = db.ProductCategory.Where(x => x.ProductCategoryName == category)
-                                    .Select(x => x.ProductCategoryId)
+                                    .Select(x => x.Id)
                                     .SingleOrDefault();
 
                                 var subcategoryID = db.ProductSubcategory.Where(x => x.ProductSubcategoryName == subCategory)
-                                    .Select(x => x.ProductSubcategoryId)
+                                    .Select(x => x.Id)
                                     .SingleOrDefault();
 
                                 if (categoryID != 0 && subcategoryID != 0)
@@ -368,7 +368,7 @@ internal class Admin
                                         var printCategories = db.ProductCategory.ToList();
                                         foreach (var category in printCategories)
                                         {
-                                            Console.WriteLine($"Id. {category.ProductCategoryId} - {category.ProductCategoryName}");
+                                            Console.WriteLine($"Id. {category.Id} - {category.ProductCategoryName}");
                                         }
                                         Console.WriteLine("Which Category do you want to add this Subcategory?");
                                         string? categoryCheck = Console.ReadLine()!;
@@ -376,7 +376,7 @@ internal class Admin
 
                                         if (int.TryParse(categoryCheck, out intcategoryCheck))
                                         {
-                                            var allCategories = db.ProductCategory.Where(x => x.ProductCategoryId == intcategoryCheck).SingleOrDefault();
+                                            var allCategories = db.ProductCategory.Where(x => x.Id == intcategoryCheck).SingleOrDefault();
 
                                             Console.Clear();
 
@@ -433,27 +433,33 @@ internal class Admin
                                     {
                                         if (intcatOption == 1)
                                         {
-                                            var rightCategoryId = db.ProductCategory.Where(x => x.ProductCategoryId == updateCategory).SingleOrDefault();
+                                            var rightCategoryId = db.ProductCategory.Where(x => x.Id == updateCategory).SingleOrDefault();
 
-                                            Console.Write($"Which Category do u want to change to?: ");
+                                            Console.Write($"Which Category do u want to change to? Chose ID: ");
                                             string categoryChange = Console.ReadLine()!;
-                                            if (!string.IsNullOrWhiteSpace(categoryChange))
+                                            int intcategoryChange = 0;
+
+                                            if (int.TryParse(categoryChange, out intcategoryChange))
                                             {
-                                                var updateToNewCategory = db.ProductCategory.Where(x => x.ProductCategoryName == categoryChange)
-                                                    .Select(x => new { x.ProductCategoryId, x.ProductCategoryName }).SingleOrDefault();
+                                                var updateToNewCategory = db.ProductCategory.Where(x => x.Id == intcategoryChange)
+                                                    .Select(x => new { x.Id, x.ProductCategoryName }).SingleOrDefault();
 
-                                                Console.WriteLine("Which Subcategory in that Category do you want to change to?");
+                                                Console.WriteLine("Which Subcategory in that Category do you want to change to? Chose ID: ");
                                                 string subcatCheck = Console.ReadLine()!;
+                                                int intsubcatCheck = 0;
 
-                                                if (!string.IsNullOrWhiteSpace(subcatCheck) && updateToNewCategory != null)
-                                                {
-                                                    var updateToNewSubcategory = db.ProductSubcategory.Where(x => x.ProductSubcategoryName == subcatCheck)
-                                                    .Select(x => new { x.ProductSubcategoryId, x.ProductSubcategoryName }).SingleOrDefault();
+                                                if (int.TryParse(subcatCheck, out intsubcatCheck))
+                                                {   
+                                                    var updateToNewSubcategory = db.ProductSubcategory.Where(x => x.Id == intsubcatCheck)
+                                                    .Select(x => new { x.Id, x.ProductSubcategoryName }).SingleOrDefault();
 
-                                                    if (updateToNewSubcategory != null)
+                                                    var dabasestuff = db.ProductSubcategory.Where(x => x.Id == intsubcatCheck && x.ProductCategoryId == intcategoryChange).SingleOrDefault();
+
+
+                                                    if (updateToNewSubcategory != null && dabasestuff != null)
                                                     {
-                                                        productToAlter!.ProductCategoryId = updateToNewCategory.ProductCategoryId;
-                                                        productToAlter!.ProductSubcategoryId = updateToNewSubcategory.ProductSubcategoryId;
+                                                        productToAlter!.ProductCategoryId = updateToNewCategory!.Id;
+                                                        productToAlter!.ProductSubcategoryId = updateToNewSubcategory.Id;
                                                         RunProgram.ChangeColor("Product Categories have been succefully changed", "Green");
                                                         Thread.Sleep(1000);
                                                         db.SaveChanges();
@@ -469,15 +475,16 @@ internal class Admin
 
                                             Console.Write($"Which Subcategory do u want to change to?: ");
                                             string subCategoryChange = Console.ReadLine()!;
+                                            int intsubCategoryChange = 0;
 
-                                            if (!string.IsNullOrWhiteSpace(subCategoryChange))
+                                            if (int.TryParse(subCategoryChange, out intsubCategoryChange))
                                             {
-                                                var updateToNewSubcategory = db.ProductSubcategory.Where(x => x.ProductSubcategoryName == subCategoryChange)
-                                                    .Select(x => new { x.ProductSubcategoryId, x.ProductSubcategoryName }).SingleOrDefault();
+                                                var updateToNewSubcategory = db.ProductSubcategory.Where(x => x.Id == intsubCategoryChange)
+                                                    .Select(x => new { x.Id, x.ProductSubcategoryName }).SingleOrDefault();
 
                                                 if (updateToNewSubcategory != null)
                                                 {
-                                                    productToAlter!.ProductSubcategoryId = updateToNewSubcategory!.ProductSubcategoryId;
+                                                    productToAlter!.ProductSubcategoryId = updateToNewSubcategory!.Id;
                                                     RunProgram.ChangeColor("Product Subcategory have been succefully changed", "Green");
                                                     Thread.Sleep(1000);
                                                     db.SaveChanges();
@@ -513,15 +520,15 @@ internal class Admin
                                         while (true)
                                         {
                                             Console.Clear();
-                                            var allCategory = db.ProductCategory.Select(x => new { x.ProductCategoryId, x.ProductCategoryName })
-                                                .OrderBy(x => x.ProductCategoryId)
+                                            var allCategory = db.ProductCategory.Select(x => new { x.Id, x.ProductCategoryName })
+                                                .OrderBy(x => x.Id)
                                                 .ToList();
 
                                             Console.WriteLine("B to back");
                                             Console.WriteLine("Which do you want to Delete?");
                                             foreach (var cate in allCategory)
                                             {
-                                                Console.WriteLine($"{cate.ProductCategoryId}. {cate.ProductCategoryName}");
+                                                Console.WriteLine($"{cate.Id}. {cate.ProductCategoryName}");
                                             }
                                             string inputDelete = Console.ReadLine()!;
                                             int intInputDelete = 0;
@@ -533,7 +540,7 @@ internal class Admin
                                             {
                                                 var selectedCategory = allCategory[intInputDelete - 1];
 
-                                                var cateToDelete = db.ProductCategory.Where(x => x.ProductCategoryId == selectedCategory.ProductCategoryId).SingleOrDefault();
+                                                var cateToDelete = db.ProductCategory.Where(x => x.Id == selectedCategory.Id).SingleOrDefault();
                                                 db.ProductCategory.Remove(cateToDelete!);
                                                 db.SaveChanges();
 
@@ -550,8 +557,8 @@ internal class Admin
                                         {
                                             int counter = 1;
                                             Console.Clear();
-                                            var allSubcategory = db.ProductSubcategory.Select(x => new { x.ProductSubcategoryId, x.ProductSubcategoryName })
-                                                .OrderBy(x => x.ProductSubcategoryId).ToList();
+                                            var allSubcategory = db.ProductSubcategory.Select(x => new { x.Id, x.ProductSubcategoryName })
+                                                .OrderBy(x => x.Id).ToList();
 
                                             Console.WriteLine("B to back");
                                             Console.WriteLine("Which do you want to Delete?");
@@ -570,7 +577,7 @@ internal class Admin
                                             {
                                                 var selectedCategory = allSubcategory[intInputDelete - 1];
 
-                                                var cateToDelete = db.ProductSubcategory.Where(x => x.ProductSubcategoryId == selectedCategory.ProductSubcategoryId).SingleOrDefault();
+                                                var cateToDelete = db.ProductSubcategory.Where(x => x.Id == selectedCategory.Id).SingleOrDefault();
                                                 db.ProductSubcategory.Remove(cateToDelete!);
                                                 db.SaveChanges();
 
@@ -984,25 +991,25 @@ internal class Admin
         {
             Console.Clear();
 
-            var categoryInfo = db.ProductCategory.Select(x => new { x.ProductCategoryName, x.ProductCategoryId }).ToList();
+            var categoryInfo = db.ProductCategory.Select(x => new { x.ProductCategoryName, x.Id }).ToList();
 
-            var subcategoryInfo = db.ProductSubcategory.Select(x => new { x.ProductSubcategoryId, x.ProductSubcategoryName, x.ProductCategoryId })
+            var subcategoryInfo = db.ProductSubcategory.Select(x => new { x.Id, x.ProductSubcategoryName, x.ProductCategoryId })
                 .ToList();
 
 
             // Denna loopen skriver ut listan så man ser vad man kan köpa
             foreach (var name in categoryInfo)
             {
-                RunProgram.ChangeColor($"Category: {name.ProductCategoryName}", "DarkCyan");
+                RunProgram.ChangeColor($"Category: {name.ProductCategoryName} - ID: {name.Id}", "DarkCyan");
                 Console.WriteLine("");
                 foreach (var subcategoryName in subcategoryInfo)
                 {
-                    if (subcategoryName.ProductCategoryId == name.ProductCategoryId)
+                    if (subcategoryName.ProductCategoryId == name.Id)
                     {
-                        RunProgram.ChangeColor($"  Subcategory: {subcategoryName.ProductSubcategoryName}", "DarkGreen");
+                        RunProgram.ChangeColor($"  Subcategory: {subcategoryName.ProductSubcategoryName} - ID: {subcategoryName.Id}", "DarkGreen");
                         Console.WriteLine("\n----------------------");
 
-                        var productsInfo = db.Shop.Where(x => x.ProductSubcategoryId == subcategoryName.ProductSubcategoryId).ToList();
+                        var productsInfo = db.Shop.Where(x => x.ProductSubcategoryId == subcategoryName.Id).ToList();
 
                         foreach (var product in productsInfo)
                         {

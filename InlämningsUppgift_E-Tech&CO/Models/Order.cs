@@ -21,7 +21,7 @@ internal class Order
     public string? PaymentChoice { get; set; }
     public double? TotalAmountPrice { get; set; }
     public int? TotalItems { get; set; }
-    public List<Product>? Products { get; set; } = new List<Product>();
+    public List<OrderProduct>? Products { get; set; } = new List<OrderProduct>();
     public int? Zipcode { get; set; }
     public string? City { get; set; }
     public string? Adress { get; set; }

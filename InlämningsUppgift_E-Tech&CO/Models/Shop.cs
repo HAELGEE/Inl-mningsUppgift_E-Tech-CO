@@ -14,11 +14,11 @@ internal class Shop
         ExpressShipping = 500;
     }
 
-    public int Id { get; set; }
-    //public string? Category { get; set; }
-    //public string? SubCategory { get; set; }
+    public int Id { get; set; }   
     public int ProductCategoryId { get; set; }
+    public virtual ProductCategory ProductCategory { get; set; }
     public int ProductSubcategoryId { get; set; }
+    public virtual ProductSubcategory ProductSubcategory { get; set; }
     public string? Name { get; set; }
     public int? Sold { get; set; }
     public int? Quantity { get; set; }

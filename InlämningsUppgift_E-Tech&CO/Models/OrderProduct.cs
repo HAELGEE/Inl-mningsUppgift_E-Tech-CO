@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace InlämningsUppgift_E_Tech_CO.Models;
-public class Product
+public class OrderProduct
 {
-    public Product(string? name, int? amount, double? price)
+    public OrderProduct(string? name, int? amount, double? price)
     {
         Name = name;
         Amount = amount;

@@ -18,7 +18,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace InlämningsUppgift_E_Tech_CO;
 internal class RunProgram
 {
-    static List<Product> cartProducts = new List<Product>();
+    static List<OrderProduct> cartProducts = new List<OrderProduct>();
     static List<string> cartProductsInString = new List<string>();
     static double totalAmount = 0;
     static ICustomer isGuest = new Customer();
@@ -358,7 +358,7 @@ internal class RunProgram
                                 .Take(3);
 
                             //var items = db.Shop.ToList().GroupBy(x => x.ProductCategoryId);
-                            var gettingName = db.ProductCategory.ToList().GroupBy(x => x.ProductCategoryId);
+                            var gettingName = db.ProductCategory.ToList().GroupBy(x => x.Id);
 
                             Console.Clear();
 
@@ -428,7 +428,7 @@ internal class RunProgram
                                 {
                                     while (true)
                                     {
-                                        List<Product> productList = new List<Product>();
+                                        List<OrderProduct> productList = new List<OrderProduct>();
                                         Console.Clear();
 
                                         if (isGuest.LoggedIn)
@@ -515,14 +515,14 @@ internal class RunProgram
                                                                 }
                                                                 if (!nameCheck)
                                                                 {
-                                                                    cartProducts.Add(new Product(itemToBuy.Name, intAmountAdd, itemToBuy.Price));
-                                                                    productList.Add(new Product(itemToBuy.Name, intAmountAdd, itemToBuy.Price));
+                                                                    cartProducts.Add(new OrderProduct(itemToBuy.Name, intAmountAdd, itemToBuy.Price));
+                                                                    productList.Add(new OrderProduct(itemToBuy.Name, intAmountAdd, itemToBuy.Price));
                                                                 }
                                                             }
                                                             else
                                                             {
-                                                                cartProducts.Add(new Product(itemToBuy.Name, intAmountAdd, itemToBuy.Price));
-                                                                productList.Add(new Product(itemToBuy.Name, intAmountAdd, itemToBuy.Price));
+                                                                cartProducts.Add(new OrderProduct(itemToBuy.Name, intAmountAdd, itemToBuy.Price));
+                                                                productList.Add(new OrderProduct(itemToBuy.Name, intAmountAdd, itemToBuy.Price));
                                                             }
 
                                                             cartProductsInString.Clear();
@@ -639,7 +639,7 @@ internal class RunProgram
                 int i = 1;
                 foreach (var item in orderedList)
                 {
-                    var selectedCategory = db.ProductSubcategory.Where(x => x.ProductSubcategoryId == item.Category).SingleOrDefault();
+                    var selectedCategory = db.ProductSubcategory.Where(x => x.Id == item.Category).SingleOrDefault();
                     top3List.Add($"Nr {i}. Subcategory/Maker: {selectedCategory!.ProductSubcategoryName}");
                     i++;
                 }
@@ -682,7 +682,7 @@ internal class RunProgram
             Console.Clear();
             using (var db = new MyDbContext())
             {
-                List<Product> productList = new List<Product>();
+                List<OrderProduct> productList = new List<OrderProduct>();
                 ShopItems(categoryName);
 
 
@@ -770,14 +770,14 @@ internal class RunProgram
                                     }
                                     if (!nameCheck)
                                     {
-                                        cartProducts.Add(new Product(itemToBuy.Name, amount, itemToBuy.Price));
-                                        productList.Add(new Product(itemToBuy.Name, amount, itemToBuy.Price));
+                                        cartProducts.Add(new OrderProduct(itemToBuy.Name, amount, itemToBuy.Price));
+                                        productList.Add(new OrderProduct(itemToBuy.Name, amount, itemToBuy.Price));
                                     }
                                 }
                                 else
                                 {
-                                    cartProducts.Add(new Product(itemToBuy.Name, amount, itemToBuy.Price));
-                                    productList.Add(new Product(itemToBuy.Name, amount, itemToBuy.Price));
+                                    cartProducts.Add(new OrderProduct(itemToBuy.Name, amount, itemToBuy.Price));
+                                    productList.Add(new OrderProduct(itemToBuy.Name, amount, itemToBuy.Price));
                                 }
 
                                 cartProductsInString.Clear();
@@ -816,14 +816,18 @@ internal class RunProgram
     {
         using (var db = new MyDbContext())
         {
-            var gettingProducts = db.Shop.Where(x => x.ProductCategoryId == categoryName).ToList().GroupBy(x => x.ProductSubcategoryId);
+            var gettingProducts = db.Shop.Where(x => x.ProductCategoryId == categoryName)
+                .Include(x => x.ProductCategoryId)
+                .ToList().GroupBy(x => x.ProductSubcategoryId);
 
             Console.Clear();
 
             // Denna loopen skriver ut listan så man ser vad man kan köpa
             foreach (var products in gettingProducts)
             {
-                var gettingSubcategoryName = db.ProductSubcategory.Where(x => x.ProductSubcategoryId == products.Key).SingleOrDefault();
+                Console.WriteLine(products.Key);
+                Console.ReadKey();
+                var gettingSubcategoryName = db.ProductSubcategory.Where(x => x.Id == products.Key).SingleOrDefault();
                 var getProducts = db.Shop.Where(x => x.ProductSubcategoryId == products.Key);
 
                 Console.WriteLine($"Category: {gettingSubcategoryName!.ProductSubcategoryName}\n----------------------");
