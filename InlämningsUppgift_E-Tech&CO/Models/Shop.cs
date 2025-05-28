@@ -18,7 +18,6 @@ internal class Shop
     public int ProductCategoryId { get; set; }
     public virtual ProductCategory ProductCategory { get; set; }
     public int ProductSubcategoryId { get; set; }
-    public virtual ProductSubcategory ProductSubcategory { get; set; }
     public string? Name { get; set; }
     public int? Sold { get; set; }
     public int? Quantity { get; set; }

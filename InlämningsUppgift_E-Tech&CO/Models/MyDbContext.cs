@@ -28,5 +28,32 @@ internal class MyDbContext : DbContext
             .HasIndex(c => c.UserName)
             .IsUnique();
         base.OnModelCreating(modelBuilder);
+
+        //modelBuilder.Entity<Shop>()
+        //    .HasOne(x => x.ProductCategory)
+        //    .WithMany(c => c.Shop)
+        //    .HasForeignKey(x => x.ProductCategoryId)
+        //    .OnDelete(DeleteBehavior.Cascade);
+
+        // ProductCategory → ProductSubcategory (SetNull så man kan ta bort en kategori utan att ta bort subkategorier)
+        //modelBuilder.Entity<ProductSubcategory>()
+        //    .HasOne(psc => psc.ProductCategory)
+        //    .WithMany(pc => pc.ProductSubcategories)
+        //    .HasForeignKey(psc => psc.ProductCategoryId)
+        //    .OnDelete(DeleteBehavior.Cascade);
+
+        // Shop → ProductCategory (kan vara Restrict eller Cascade beroende på vad du vill)
+    //    modelBuilder.Entity<Shop>()
+    //        .HasOne(s => s.ProductCategory)
+    //        .WithMany(pc => pc.Shop)
+    //        .HasForeignKey(s => s.ProductCategoryId)
+    //        .OnDelete(DeleteBehavior.Cascade);
+
+    //    // Shop → ProductSubcategory (samma här)
+    //    modelBuilder.Entity<Shop>()
+    //        .HasOne(s => s.ProductSubcategory)
+    //        .WithMany()
+    //        .HasForeignKey(s => s.ProductSubcategoryId)
+    //        .OnDelete(DeleteBehavior.Cascade);
     }
 }
