@@ -304,7 +304,7 @@ internal class RunProgram
                                                     ChangePriceColor(Convert.ToInt32((item.TotalAmountPrice - item.ShippingFee) * 0.25), "DarkCyan");
                                                     Console.Write($" ---- Total Price: ");
                                                     ChangePriceColor(item.TotalAmountPrice, "DarkCyan");
-                                                    Console.Write($" ----\n");
+                                                    Console.Write($" ----\n\n");
 
                                                 }
 
