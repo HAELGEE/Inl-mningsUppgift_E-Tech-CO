@@ -3,3 +3,15 @@
 Här skrivs vad som behöver fixas. Lätt att komma åt över flera datorer då det sparas in i Git
 
 
+var subcategoryUpdate = db.Shop.Where(x => x.Id == updateCategory)
+                                                .Select(x => new { x.ProductCategoryId, x.Id }).SingleOrDefault();
+
+
+ var updateToNewSubcategory = db.ProductSubcategory.Where(x => x.Id == intsubCategoryChange)
+                                                    .Select(x => new { x.Id, x.ProductSubcategoryName, x.ProductCategoryId }).SingleOrDefault();
+
+                                                if (updateToNewSubcategory != null && updateToNewSubcategory.ProductCategoryId == subcategoryUpdate!.ProductCategoryId)
+                                                {
+
+                                                }
+

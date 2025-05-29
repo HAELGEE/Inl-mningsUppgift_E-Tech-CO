@@ -49,7 +49,7 @@ internal class Admin
                 string input = Console.ReadLine()!;
 
                 if (BackOption(input))
-                    break;                              
+                    break;
 
                 //var gettingProducts = db.Shop.ToList().GroupBy(x => new { x.ProductCategoryId, x.ProductSubcategoryId });
 
@@ -63,14 +63,42 @@ internal class Admin
                                 Console.Clear();
                                 Categorylist();
 
-                                Console.WriteLine("Press [B] to back");
-                                Console.Write("Which Category do you want to add this item to?: ");
-                                string category = Console.ReadLine()!;
+                                string category = "";
+                                int intcategory = 0;
+                                while (true)
+                                {
+                                    Console.WriteLine("Press [B] to back");
+                                    Console.Write("Which Category do you want to add this item to? Chose ID: ");
+                                    category = Console.ReadLine()!;
+
+                                    if (category.ToLower() == "b")
+                                        break;
+
+                                    if (int.TryParse(category, out intcategory))
+                                        break;
+                                    else
+                                        RunProgram.ErrorMessage();
+
+                                }
                                 if (category.ToLower() == "b")
                                     break;
 
-                                Console.Write("Which Subcategory/product maker do you want to add this item to?: ");
-                                string subCategory = Console.ReadLine()!;
+                                string subCategory = "";
+                                int intsubCategory = 0;
+                                while (true)
+                                {
+                                    Console.Write("Which Subcategory/product maker do you want to add this item to? Chose ID: ");
+                                    subCategory = Console.ReadLine()!;
+
+                                    if (subCategory.ToLower() == "b")
+                                        break;
+
+
+                                    if (int.TryParse(subCategory, out intsubCategory))
+                                        break;
+                                    else
+                                        RunProgram.ErrorMessage();
+                                }
                                 if (subCategory.ToLower() == "b")
                                     break;
 
@@ -112,6 +140,7 @@ internal class Admin
                                     }
                                     else if (stockString.ToLower() == "b")
                                         break;
+
                                     else
                                         RunProgram.ErrorMessage();
                                 }
@@ -123,20 +152,27 @@ internal class Admin
                                 if (information.ToLower() == "b")
                                     break;
 
-                                var categoryID = db.ProductCategory.Where(x => x.ProductCategoryName == category)
-                                    .Select(x => x.Id)
+
+                                var categoryID = db.ProductCategory.Where(x => x.Id == intcategory)
                                     .SingleOrDefault();
 
-                                var subcategoryID = db.ProductSubcategory.Where(x => x.ProductSubcategoryName == subCategory)
-                                    .Select(x => x.Id)
+                                var subcategoryID = db.ProductSubcategory.Where(x => x.Id == intsubCategory)
                                     .SingleOrDefault();
 
-                                if (categoryID != 0 && subcategoryID != 0)
+
+                                var categoryUpdate = db.ProductCategory.Where(x => x.Id == intcategory)
+                                                .Select(x => new { x.Id }).SingleOrDefault();
+
+                                var categoryCheck = db.ProductSubcategory.Where(x => x.Id == intsubCategory)
+                                                      .Select(x => new { x.Id, x.ProductCategoryId }).SingleOrDefault();
+
+
+                                if (categoryID != null && subcategoryID != null && categoryUpdate!.Id == categoryCheck!.ProductCategoryId)
                                 {
                                     db.Shop.Add(new Shop
                                     {
-                                        ProductCategoryId = categoryID,
-                                        ProductSubcategoryId = subcategoryID,
+                                        ProductCategoryId = categoryID.Id,
+                                        ProductSubcategoryId = subcategoryID.Id,
                                         Name = productName,
                                         Price = productPrice,
                                         Quantity = stock,
@@ -334,7 +370,7 @@ internal class Admin
 
                         case 7:
                             while (true)
-                            {                               
+                            {
                                 Console.Clear();
 
                                 Console.WriteLine("1. To add new Category");
@@ -447,7 +483,7 @@ internal class Admin
                                                 int intsubcatCheck = 0;
 
                                                 if (int.TryParse(subcatCheck, out intsubcatCheck))
-                                                {   
+                                                {
                                                     var updateToNewSubcategory = db.ProductSubcategory.Where(x => x.Id == intsubcatCheck)
                                                     .Select(x => new { x.Id, x.ProductSubcategoryName }).SingleOrDefault();
 
@@ -470,7 +506,7 @@ internal class Admin
                                         else if (intcatOption == 2)
                                         {
                                             var subcategoryUpdate = db.Shop.Where(x => x.Id == updateCategory)
-                                                .Select(x => new { x.ProductCategoryId, x.Id}).SingleOrDefault();
+                                                .Select(x => new { x.ProductCategoryId, x.Id }).SingleOrDefault();
 
                                             Console.Write($"Which Subcategory do u want to change to?: ");
                                             string subCategoryChange = Console.ReadLine()!;

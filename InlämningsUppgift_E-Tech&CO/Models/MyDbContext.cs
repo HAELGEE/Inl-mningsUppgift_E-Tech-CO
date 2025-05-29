@@ -11,7 +11,7 @@ internal class MyDbContext : DbContext
     public DbSet<Customer> Customer { get; set; }
     public DbSet<Order> Order { get; set; }
     public DbSet<Shop> Shop { get; set; }
-    public DbSet<CustomerSave> CustomerSave { get; set; }   
+    public DbSet<CustomerSave> CustomerSave { get; set; }
     public DbSet<OrderItem> OrderItem { get; set; }
     public DbSet<OrderProduct> Product { get; set; }
     public DbSet<ProductCategory> ProductCategory { get; set; }
@@ -28,5 +28,17 @@ internal class MyDbContext : DbContext
             .HasIndex(c => c.UserName)
             .IsUnique();
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<ProductSubcategory>()
+            .HasOne(ps => ps.ProductCategory)
+            .WithMany(pc => pc.ProductSubcategories)
+            .HasForeignKey(ps => ps.ProductCategoryId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Shop>()
+            .HasOne(s => s.ProductCategory)
+            .WithMany(pc => pc.Shop)
+            .HasForeignKey(s => s.ProductCategoryId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
