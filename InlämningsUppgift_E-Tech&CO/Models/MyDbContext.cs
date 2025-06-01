@@ -40,5 +40,11 @@ internal class MyDbContext : DbContext
             .WithMany(pc => pc.Shop)
             .HasForeignKey(s => s.ProductCategoryId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Order>()
+             .HasOne(o => o.Customer)
+             .WithMany(c => c.Order)
+             .HasForeignKey(o => o.CustomerId)
+             .OnDelete(DeleteBehavior.SetNull);
     }
 }
