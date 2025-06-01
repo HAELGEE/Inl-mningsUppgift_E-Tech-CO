@@ -90,7 +90,8 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                         name: "FK_Order_Customer_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "Customer",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -109,7 +110,8 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                         name: "FK_ProductSubcategory_ProductCategory_ProductCategoryId",
                         column: x => x.ProductCategoryId,
                         principalTable: "ProductCategory",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -142,7 +144,7 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Product",
+                name: "OrderProduct",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -150,44 +152,16 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Amount = table.Column<int>(type: "int", nullable: true),
                     Price = table.Column<double>(type: "float", nullable: true),
-                    OrderItemId = table.Column<int>(type: "int", nullable: true),
                     OrderId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Product", x => x.Id);
+                    table.PrimaryKey("PK_OrderProduct", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Product_Order_OrderId",
+                        name: "FK_OrderProduct_Order_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Order",
                         principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "OrderItem",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OrderId = table.Column<int>(type: "int", nullable: false),
-                    ShopId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OrderItem", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_OrderItem_Order_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Order",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_OrderItem_Shop_ShopId",
-                        column: x => x.ShopId,
-                        principalTable: "Shop",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -207,18 +181,8 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderItem_OrderId",
-                table: "OrderItem",
-                column: "OrderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OrderItem_ShopId",
-                table: "OrderItem",
-                column: "ShopId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Product_OrderId",
-                table: "Product",
+                name: "IX_OrderProduct_OrderId",
+                table: "OrderProduct",
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
@@ -239,10 +203,7 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                 name: "CustomerSave");
 
             migrationBuilder.DropTable(
-                name: "OrderItem");
-
-            migrationBuilder.DropTable(
-                name: "Product");
+                name: "OrderProduct");
 
             migrationBuilder.DropTable(
                 name: "ProductSubcategory");

@@ -23,7 +23,6 @@ internal class Shop
     public int? Quantity { get; set; }
     public double? Price { get; set; }
     public string? ProductInformation { get; set; }
-    public virtual ICollection<OrderItem> OrderItem { get; set; }
     public bool? IsActive { get; set; }
     public int? IsActiveCategory { get; set; }
     public int? RegularShipping { get; set; }

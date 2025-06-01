@@ -12,8 +12,7 @@ internal class MyDbContext : DbContext
     public DbSet<Order> Order { get; set; }
     public DbSet<Shop> Shop { get; set; }
     public DbSet<CustomerSave> CustomerSave { get; set; }
-    public DbSet<OrderItem> OrderItem { get; set; }
-    public DbSet<OrderProduct> Product { get; set; }
+    public DbSet<OrderProduct> OrderProduct { get; set; }
     public DbSet<ProductCategory> ProductCategory { get; set; }
     public DbSet<ProductSubcategory> ProductSubcategory { get; set; }
 

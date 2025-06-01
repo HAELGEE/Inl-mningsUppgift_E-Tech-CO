@@ -141,32 +141,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.ToTable("Order");
                 });
 
-            modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.OrderItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ShopId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("ShopId");
-
-                    b.ToTable("OrderItem");
-                });
-
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.OrderProduct", b =>
                 {
                     b.Property<int>("Id")
@@ -184,9 +158,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Property<int?>("OrderId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("OrderItemId")
-                        .HasColumnType("int");
-
                     b.Property<double?>("Price")
                         .HasColumnType("float");
 
@@ -194,7 +165,7 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("Product");
+                    b.ToTable("OrderProduct");
                 });
 
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.ProductCategory", b =>
@@ -301,25 +272,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.OrderItem", b =>
-                {
-                    b.HasOne("InlämningsUppgift_E_Tech_CO.Models.Order", "Order")
-                        .WithMany("OrderItem")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("InlämningsUppgift_E_Tech_CO.Models.Shop", "Shop")
-                        .WithMany("OrderItem")
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-
-                    b.Navigation("Shop");
-                });
-
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.OrderProduct", b =>
                 {
                     b.HasOne("InlämningsUppgift_E_Tech_CO.Models.Order", null)
@@ -357,8 +309,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
 
             modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Order", b =>
                 {
-                    b.Navigation("OrderItem");
-
                     b.Navigation("Products");
                 });
 
@@ -367,11 +317,6 @@ namespace InlämningsUppgift_E_Tech_CO.Migrations
                     b.Navigation("ProductSubcategories");
 
                     b.Navigation("Shop");
-                });
-
-            modelBuilder.Entity("InlämningsUppgift_E_Tech_CO.Models.Shop", b =>
-                {
-                    b.Navigation("OrderItem");
                 });
 #pragma warning restore 612, 618
         }
