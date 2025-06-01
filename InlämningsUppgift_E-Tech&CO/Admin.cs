@@ -758,8 +758,8 @@ internal class Admin
                                     }
                                     else
                                     {
-
-                                        while (true)
+                                        bool runningProgram = true;
+                                        while (runningProgram)
                                         {
                                             Console.Clear();
                                             Console.Write("What do you want to do with ");
@@ -804,6 +804,7 @@ internal class Admin
                                                             RunProgram.ChangeColor("\nCustomer is now deleted from Database", "Red");
                                                             Thread.Sleep(1500);
                                                             db.SaveChanges();
+                                                            runningProgram = false;
                                                         }
 
                                                         break;
